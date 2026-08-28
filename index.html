@@ -1,0 +1,801 @@
+<title>Air Boss — Effects Per Spot — RockWorx</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --ground:#080b12; --panel:#0f1622; --panel-2:#131d2c; --rule:#1d2a3d;
+  --ink:#ccd6e4; --ink-dim:#8a97a9; --ink-faint:#5f6b7d;
+  --amber:#f5b027; --amber-glow:#ffcf6b;
+  --strike:#e5484d; --tanker:#9a7bec; --cap:#4a90d9; --isr:#41c46a; --over:#e5484d;
+  --mono:ui-monospace,"SFMono-Regular","Cascadia Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{background:radial-gradient(1200px 700px at 80% -10%,#12203400,#0a1220 60%),
+  radial-gradient(900px 500px at 10% 110%,#10182800,var(--ground) 55%),var(--ground);
+  color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.45;min-height:100vh}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 40px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink-dim);font-size:11px;letter-spacing:.28em;text-transform:uppercase;font-weight:700}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--amber);box-shadow:0 0 10px var(--amber)}
+h1{font-size:clamp(26px,5vw,44px);margin:8px 0 3px;font-weight:800;line-height:1;text-wrap:balance;
+  background:linear-gradient(180deg,#fff,#b9c6d8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tagline{color:var(--ink-dim);font-size:13.5px;max-width:60ch} .tagline b{color:var(--amber)}
+.illus{display:inline-block;margin-top:7px;font-size:10.5px;letter-spacing:.04em;color:var(--ink-faint);
+  border:1px solid var(--rule);border-radius:20px;padding:3px 11px}
+.modebar{display:flex;gap:18px;flex-wrap:wrap;margin:16px 0 4px}
+.modegrp{display:flex;flex-direction:column;gap:5px}
+.modegrp .lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.seg{display:flex;border:1px solid var(--rule);border-radius:9px;overflow:hidden;flex-wrap:wrap}
+.seg button{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-dim);background:#0c1420;border:0;
+  padding:9px 14px;cursor:pointer;transition:.14s;border-right:1px solid var(--rule)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{color:#0a0e16;background:var(--amber)}
+.console{display:grid;grid-template-columns:.95fr 1.12fr;gap:18px;margin-top:16px}
+@media(max-width:860px){.console{grid-template-columns:1fr}}
+.panel{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--rule);
+  border-radius:14px;padding:17px 17px 19px;box-shadow:inset 0 1px 0 #ffffff08,0 18px 40px -30px #000}
+.panel h2{margin:0 0 6px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-dim);
+  font-weight:700;display:flex;align-items:center;gap:8px}
+.panel h2::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--amber)}
+.subhead{font-size:11px;color:var(--ink-faint);margin-bottom:12px}
+.pool{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);margin-bottom:8px;font-variant-numeric:tabular-nums}
+.pool b{color:var(--amber)}
+.spotbar{display:flex;height:16px;border-radius:5px;overflow:hidden;border:1px solid var(--rule);margin-bottom:16px;background:#0b1220}
+.spotbar i{display:block;height:100%;transition:width .3s}
+.grp{margin-bottom:14px}
+.grp-h{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:800;color:var(--ink-dim);margin:0 0 7px;padding-bottom:5px;border-bottom:1px solid var(--rule)}
+.chip{width:11px;height:11px;border-radius:3px;flex:none}
+.c-strike{background:var(--strike)} .c-tanker{background:var(--tanker)} .c-cap{background:var(--cap)} .c-isr{background:var(--isr)}
+.ac{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 10px;padding:5px 0}
+.ac-nm{font-size:13px;font-weight:650;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tag{font-size:8px;letter-spacing:.1em;font-weight:800;color:#0a0e16;background:var(--amber);padding:1px 5px;border-radius:4px}
+.tag.ghost{background:transparent;color:var(--ink-faint);border:1px solid var(--rule)}
+.ac-note{grid-column:1;font-size:10.5px;color:var(--ink-faint)}
+.stepper{display:flex;align-items:center;gap:4px;grid-row:1/3}
+.stepper button{width:34px;height:34px;border-radius:7px;border:1px solid var(--rule);background:#0c1420;color:var(--ink);
+  font-size:18px;font-weight:700;cursor:pointer;line-height:1}
+.stepper button:hover:not(:disabled){border-color:#2c3d55}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper .n{font-family:var(--mono);font-size:16px;font-weight:700;width:26px;text-align:center;color:var(--ink);font-variant-numeric:tabular-nums}
+.stepper .n.zero{color:var(--ink-faint)}
+.info{width:22px;height:22px;border-radius:50%;border:1px solid var(--rule);background:#0c1420;color:var(--ink-dim);
+  font-family:var(--mono);font-size:12px;font-weight:700;font-style:italic;cursor:pointer;line-height:19px;padding:0;text-align:center}
+.info:hover{color:var(--amber);border-color:var(--amber)}
+.info[aria-expanded="true"]{color:#0a0e16;background:var(--amber);border-color:var(--amber)}
+.acdesc{font-size:11.5px;color:var(--ink-dim);line-height:1.55;background:#0b1220;border:1px solid var(--rule);
+  border-left:3px solid var(--amber);border-radius:8px;padding:9px 12px;margin:2px 0 9px} .acdesc b{color:var(--ink)}
+.spec{margin:4px 0 8px;padding:11px 12px;background:#0b1220;border:1px solid var(--rule);border-radius:9px}
+.spec-h{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);font-weight:800;margin-bottom:9px}
+.spec-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.spec-row label{font-size:11px;font-weight:600;width:92px;flex:none}
+.spec-row .sv{font-family:var(--mono);font-size:11.5px;color:var(--amber);width:56px;text-align:right;font-variant-numeric:tabular-nums}
+.budget{display:flex;align-items:center;gap:9px;margin-top:4px;padding-top:9px;border-top:1px solid var(--rule)}
+.budget label{font-size:10.5px;font-weight:700;color:var(--ink-dim);width:92px;flex:none;letter-spacing:.02em}
+.budget .track{flex:1;height:7px;border-radius:4px;background:#111c2b;overflow:hidden}
+.budget .track i{display:block;height:100%;border-radius:4px;background:var(--isr);transition:width .25s}
+.budget .track i.over{background:var(--over)}
+.budget .sv{font-family:var(--mono);font-size:11px;width:56px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.budget .sv.over{color:var(--over);font-weight:700}
+.mission{margin-top:14px;padding-top:14px;border-top:1px solid var(--rule);display:flex;flex-direction:column;gap:13px}
+.field .fh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.field .fl{font-size:12px;font-weight:650} .field .fv{font-family:var(--mono);font-size:13px;color:var(--amber);font-variant-numeric:tabular-nums}
+.picker{display:flex;gap:6px;flex-wrap:wrap}
+.picker button{font-size:11.5px;font-weight:700;color:var(--ink-dim);background:#0c1420;border:1px solid var(--rule);
+  padding:8px 12px;border-radius:7px;cursor:pointer;transition:.14s}
+.picker button[aria-pressed="true"]{color:#0a0e16;background:var(--amber)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:4px;background:#0b1220;
+  border:1px solid #14202f;outline:none;cursor:pointer;flex:1}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;border-radius:50%;background:var(--ink);
+  border:3px solid var(--amber);box-shadow:0 0 10px -1px var(--amber)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid var(--amber)}
+input[type=range]:focus-visible{box-shadow:0 0 0 3px #f5b02744}
+.hero{position:relative;text-align:center;padding:12px 8px 14px;border-bottom:1px dashed var(--rule);margin-bottom:12px}
+.hero .cap{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-dim);font-weight:700}
+.hero .num{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;font-size:clamp(48px,11vw,80px);
+  line-height:.98;color:var(--amber);text-shadow:0 0 34px #f5b02755;margin:2px 0}
+.hero .unit{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.hero .rank{position:absolute;top:6px;right:6px;font-family:var(--mono);font-size:11px;color:var(--ink-dim);
+  border:1px solid var(--rule);border-radius:20px;padding:4px 10px;cursor:help} .hero .rank b{color:var(--amber)}
+.readline{font-family:var(--mono);font-size:11px;color:var(--ink-dim);background:#0c1420;border:1px solid var(--rule);
+  border-radius:8px;padding:8px 11px;margin-bottom:9px;line-height:1.55;font-variant-numeric:tabular-nums}
+.readline .k{color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase;font-size:9px;font-weight:700}
+.readline b{color:var(--ink)} .readline .hot{color:var(--tanker);font-weight:700} .readline .cool{color:var(--isr);font-weight:700}
+.chart-cap{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 4px}
+.chart-cap .t{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim);font-weight:700}
+.chart-cap .leg{font-size:10px;color:var(--ink-faint);font-family:var(--mono)}
+canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-radius:10px;background:#0a1018}
+.stack{margin:14px 0 4px}
+.stackbar{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid var(--rule);background:#0b1220}
+.stackbar i{display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;font-weight:800;color:#0a0e16;
+  transition:width .4s cubic-bezier(.2,.7,.2,1);overflow:hidden;white-space:nowrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--ink-dim)}
+.legend span{display:flex;align-items:center;gap:5px} .legend .d{width:10px;height:10px;border-radius:3px}
+.trade{font-size:12.5px;color:var(--ink-dim);background:#0c1420;border:1px solid var(--rule);border-left:3px solid var(--amber);
+  border-radius:8px;padding:10px 12px;margin-top:12px;min-height:40px} .trade b{color:var(--ink)}
+.actions{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--sans);font-size:12.5px;font-weight:700;cursor:pointer;border-radius:9px;padding:11px 16px;
+  border:1px solid var(--rule);background:#0c1420;color:var(--ink);transition:.14s} .btn:hover{border-color:#2c3d55}
+.btn.primary{background:var(--amber);color:#0a0e16;border-color:var(--amber)}
+.toast{font-size:12px;color:var(--isr);opacity:0;transition:.2s} .toast.show{opacity:1}
+.clock{font-family:var(--mono);font-size:12px;color:var(--amber);font-variant-numeric:tabular-nums}
+footer{margin-top:28px;padding-top:15px;border-top:1px solid var(--rule);color:var(--ink-faint);font-size:11px;line-height:1.6}
+footer b{color:var(--ink-dim)}
+.opt-lab{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:2px 0 7px}
+.opt-note{font-size:10.5px;color:var(--ink-faint);margin-top:10px;line-height:1.5}
+.lb-h{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);font-weight:800;margin:2px 0 12px}
+.lb-empty{font-size:12.5px;color:var(--ink-dim);background:#0c1420;border:1px solid var(--rule);border-radius:9px;padding:15px;line-height:1.5}
+.lb-row{background:linear-gradient(180deg,#0e1826,#0c1420);border:1px solid var(--rule);border-radius:11px;padding:12px 13px;margin-bottom:10px}
+.lb-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.lb-rank{font-family:var(--mono);font-size:13px;font-weight:800;color:#0a0e16;background:var(--amber);width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:none}
+.lb-metric{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--amber);font-variant-numeric:tabular-nums;line-height:1}
+.lb-metric small{font-size:9.5px;color:var(--ink-faint);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.lb-load{margin-left:auto;font-size:11.5px;font-weight:700;color:#0a0e16;background:var(--amber);border:0;border-radius:7px;padding:8px 12px;cursor:pointer}
+.lb-load:hover{background:var(--amber-glow)}
+.lb-mix{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.lb-chip{font-size:10.5px;font-weight:650;color:var(--ink);background:#0b1220;border:1px solid var(--rule);border-radius:6px;padding:3px 7px;display:flex;align-items:center;gap:5px}
+.lb-chip .d{width:8px;height:8px;border-radius:2px;flex:none}
+.lb-stats{display:flex;flex-wrap:wrap;gap:7px 15px;font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
+.lb-stats b{color:var(--ink)}
+.tally-h{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);font-weight:800;margin:14px 0 9px}
+.tally-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:11px}
+@media(max-width:520px){.tally-grid{grid-template-columns:repeat(2,1fr)}}
+.tstat{background:#0c1420;border:1px solid var(--rule);border-radius:9px;padding:10px 8px;text-align:center}
+.tstat .tv{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--amber);font-variant-numeric:tabular-nums;line-height:1}
+.tstat .tk{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);margin-top:5px;font-weight:700}
+.tally-types{background:#0b1220;border:1px solid var(--rule);border-radius:9px;padding:10px 12px}
+.tt-cap{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);font-weight:800;margin-bottom:8px}
+.tt-row{display:flex;align-items:center;gap:9px;padding:3px 0}
+.tt-row .dot{width:9px;height:9px;border-radius:2px;flex:none}
+.tt-row .nm{font-size:12px;font-weight:600;width:118px;flex:none}
+.tt-row .tbar{flex:1;height:8px;border-radius:4px;background:#111c2b;overflow:hidden}
+.tt-row .tbar i{display:block;height:100%;border-radius:4px}
+.tt-row .ct{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink);width:40px;text-align:right;font-variant-numeric:tabular-nums}
+.tt-note{font-size:10px;color:var(--ink-faint);margin-top:8px;line-height:1.5}
+.hide{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brand"><span class="dot"></span>RockWorx&nbsp;&middot;&nbsp;Operations Analysis</div>
+      <h1>Air Boss</h1>
+      <p class="tagline">You run the air wing. Build your mix of aircraft across a finite deck, then maximize the
+        <b>effect index delivered at range</b>. Every spot you give a tanker or a fighter is a spot not on target.</p>
+      <span class="illus">Illustrative model &mdash; a teaching game, not operational analysis. All figures fictional.</span>
+    </div>
+    <div class="brand" style="align-self:flex-start">CVN&nbsp;/&nbsp;PRI-FLY&nbsp;/&nbsp;AIR&nbsp;OPS</div>
+  </header>
+
+  <div class="modebar">
+    <div class="modegrp"><span class="lab">Wing mode</span>
+      <div class="seg" id="wingmode" role="group" aria-label="Wing mode">
+        <button type="button" data-w="0" aria-pressed="false">Skirmish</button>
+        <button type="button" data-w="1" aria-pressed="true">Standard</button>
+        <button type="button" data-w="2" aria-pressed="false">Full Wing</button>
+      </div></div>
+    <div class="modegrp"><span class="lab">Play mode</span>
+      <div class="seg" id="playmode" role="group" aria-label="Play mode">
+        <button type="button" data-p="0" aria-pressed="true">Planner</button>
+        <button type="button" data-p="1" aria-pressed="false">Run the Day</button>
+        <button type="button" data-p="2" aria-pressed="false">Auto-Boss</button>
+      </div></div>
+  </div>
+
+  <div class="console">
+    <section class="panel" aria-label="Air wing roster">
+      <h2>Air Wing Roster</h2>
+      <div id="manualalloc">
+        <div class="subhead">Add deck spots to each aircraft. Your mix is the wing. Tap &#9432; to learn each one.</div>
+        <div class="pool" id="pool"></div>
+        <div class="spotbar" id="spotbar"></div>
+        <div id="roster"></div>
+      </div>
+      <div id="optctl" class="hide">
+        <div class="subhead">Pick an objective and a floor; Auto-Boss samples thousands of wing mixes on this deck and ranks the best (a heuristic search, not exhaustive; reproducible per settings).</div>
+        <div class="opt-lab">Rank wings by</div>
+        <div class="picker" id="rankpick">
+          <button type="button" data-r="effect" aria-pressed="true">Most effect</button>
+          <button type="button" data-r="perspot" aria-pressed="false">Effect / spot</button>
+          <button type="button" data-r="surv" aria-pressed="false">Survivability</button>
+          <button type="button" data-r="gas" aria-pressed="false">Least gas</button>
+          <button type="button" data-r="dollar" aria-pressed="false">Effect / $</button>
+        </div>
+        <div class="field" style="margin-top:13px">
+          <div class="fh"><span class="fl">Min effect index</span><span class="fv" id="v-target"></span></div>
+          <input type="range" id="s-target" min="0" max="2000" step="50" value="0" aria-label="Minimum effect index the wing must deliver">
+        </div>
+        <div class="opt-lab" style="margin-top:14px">Unit cost</div>
+        <div class="field"><div class="fh"><span class="fl">F-35C Lightning II <span style="color:var(--ink-faint);font-weight:500">&plusmn;15%</span></span><span class="fv" id="v-cf35">$102M</span></div>
+          <input type="range" id="s-cf35" min="87" max="117" step="1" value="102" aria-label="F-35C unit cost in millions"></div>
+        <div class="field" style="margin-top:8px"><div class="fh"><span class="fl">Your Design <span style="color:var(--ink-faint);font-weight:500">(custom jet)</span></span><span class="fv" id="v-ccustom">$90M</span></div>
+          <input type="range" id="s-ccustom" min="10" max="250" step="5" value="90" aria-label="Custom jet unit cost in millions"></div>
+        <div class="opt-note">F-35C ~$102M contract-lot flyaway; the &plusmn;15% is a what-if control, not a sourced uncertainty. F/A-18E/F fixed $67M (FY23 was the last E/F buy; line shutdown funded). MQ-25 ~$184M (FY25). Your design's price is floored by its capability. Effect/$ uses illustrative flyaway cost only &mdash; not full life-cycle value.</div>
+        <button class="btn primary" id="autoselect" style="width:100%;margin-top:14px">Auto-select best wings &#9654;</button>
+        <div class="opt-note">Searches the current deck, range, tempo &amp; wing mode. The design-your-own jet is excluded.</div>
+      </div>
+
+      <div class="mission">
+        <div class="field">
+          <div class="fh"><span class="fl">Carrier deck</span></div>
+          <div class="picker" id="deckpick">
+            <button type="button" data-d="nimitz" aria-pressed="true">Nimitz</button>
+            <button type="button" data-d="ford" aria-pressed="false">Ford-class</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="fh"><span class="fl">Combat spots</span><span class="fv" id="v-spots"></span></div>
+          <input type="range" id="s-spots" min="8" max="48" step="1" aria-label="Deck combat spots">
+        </div>
+        <div class="field">
+          <div class="fh"><span class="fl">Target range</span><span class="fv" id="v-rng"></span></div>
+          <input type="range" id="s-rng" min="200" max="900" step="10" value="500" aria-label="Target range nm">
+        </div>
+        <div class="field">
+          <div class="fh"><span class="fl">Op tempo</span></div>
+          <div class="picker" id="tempopick">
+            <button type="button" data-o="0" aria-pressed="true">Sustained</button>
+            <button type="button" data-o="1" aria-pressed="false">Surge</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="fh"><span class="fl">A2A weapon loadout</span></div>
+          <div class="picker" id="weappick">
+            <button type="button" data-m="amraam" aria-pressed="true">AMRAAM</button>
+            <button type="button" data-m="gunslinger" aria-pressed="false">GUNSLINGER</button>
+            <button type="button" data-m="malice" aria-pressed="false">MALICE</button>
+          </div>
+          <div class="opt-note" id="weapdesc"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Air operations readout" aria-live="polite">
+      <h2>Air Ops Readout</h2>
+      <div id="readout-normal">
+      <div class="subhead" id="wingsum"></div>
+      <div class="hero">
+        <div class="rank" id="rank"></div>
+        <div class="cap" id="herocap">Effect index</div>
+        <div class="num" id="score">0</div>
+        <div class="unit">at target range &middot; illustrative</div>
+      </div>
+      <div class="readline" id="cyc"></div>
+      <div class="readline" id="gas"></div>
+      <div class="readline" id="cost"></div>
+      <div class="stack">
+        <div class="chart-cap"><span class="t">Sorties generated / day</span><span class="leg" id="sortietot"></span></div>
+        <div class="stackbar" id="stackbar"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div id="planchart">
+        <div class="chart-cap" style="margin-top:16px"><span class="t">Effect index at range</span><span class="leg" id="curveleg"></span></div>
+        <canvas id="curve" width="640" height="230" role="img" aria-label="Effect index vs target range"></canvas>
+      </div>
+      <div id="deckwrap" class="hide">
+        <div class="chart-cap" style="margin-top:16px"><span class="t">Cyclic ops &mdash; the deck</span><span class="leg" id="deckleg">press Launch the day</span></div>
+        <canvas id="deck" width="640" height="300" role="img" aria-label="Animated carrier flight deck: aircraft launching off the bow, recovering on the angled deck, and respotting"></canvas>
+        <div id="daytally" class="hide" aria-live="polite"></div>
+      </div>
+      <div class="trade" id="trade"></div>
+      <div class="actions">
+        <button class="btn primary hide" id="launch">Launch the day &#9654;</button>
+        <span class="clock hide" id="clock"></span>
+        <button class="btn" id="share">Copy wing</button>
+        <span class="toast" id="toast"></span>
+      </div>
+      </div>
+      <div id="leaderboard" class="hide" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <footer>
+    <b>How the index works (an abstraction, on purpose).</b> Each spot generates sorties at
+    <span style="font-family:var(--mono)">24 &divide; cycle</span> (cycle = out-and-back transit from range + station + deck
+    turn; a bigger/faster-cycling deck and surge tempo shorten the turn). Strikers past ~450 nm need tanker gas
+    <span style="font-family:var(--mono)">(deficit &divide; offload)</span> pooled across the wing &mdash; unsupplied strikers
+    don't reach. CAP and ISR/EW spend spots to raise survivability. <b>Effect index = strikes that reach &times; payload
+    &times; survivability</b>, summed across the mix, compared to a fixed reference wing. Every coefficient here is fictional
+    and chosen for teaching, not calibrated to real platforms &mdash; treat named aircraft as archetypes, not specifications.
+    <b>Not operational analysis and not for planning.</b> RockWorx Aerospace &mdash; a give-away.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CRUISE=480, STATION=0.5, CLEAN=450, BURN=14, BUDGET=100;
+  var DECKS={nimitz:{name:"Nimitz-class",spots:44,turnAdj:0},
+             ford:{name:"Ford-class",spots:48,turnAdj:-3}};
+  var DECK="nimitz", POOL=DECKS[DECK].spots;
+  var REFWING={f35c:4,fa18:14,mq25:6,cap:6,isr:2};
+  var REFDESC="Reference wing (fixed): 4 F-35C, 14 Super Hornet, 6 MQ-25, 6 CAP, 2 ISR/EW.";
+  var CAT={
+    f35c: {name:"F-35C", role:"strike", pay:15000, surv:85, rate:1.00, note:"Stealth, long legs.",
+      desc:"<b>F-35C</b> &mdash; a carrier-based stealth strike-fighter archetype. Low-observable with long reach and high survivability, but a big deck footprint. Reaches deep, but the long legs stretch the sortie cycle."},
+    fa18: {name:"F/A-18E/F", role:"strike", pay:17750, surv:42, rate:1.06, note:"Heavy payload, fast deck turn.",
+      desc:"<b>F/A-18E/F Super Hornet</b> &mdash; the workhorse strike-fighter archetype. Heavy payload and a fast, mature deck turn, but a conventional (non-stealth) signature. High-tempo &mdash; cheap sorties, but survivability drops against a defended target."},
+    kf1:  {name:"CCA-Strike", role:"strike", pay:6200, surv:70, rate:1.30, concept:1, note:"Small, uncrewed, high tempo.",
+      desc:"<b>CCA-Strike</b> &mdash; a RockWorx clean-sheet carrier concept. Small, uncrewed, built for tempo: a tiny deck footprint means more spots and faster cycling, so it wins the effect-per-spot fight where big jets can't. RockWorx's take on 'quantity is a quality all its own.'"},
+    ccap:{name:"CCA-Penetrator", role:"strike", pay:9000, surv:88, rate:1.18, concept:1, note:"Low-observable, uncrewed.",
+      desc:"<b>CCA-Penetrator</b> &mdash; a RockWorx low-observable carrier concept. Stealth-shaped and uncrewed, trading raw payload for survivability and the ability to reach into defended airspace. Where the CCA-Strike brings tempo, the CCA-Penetrator brings penetration."},
+    custom:{name:"Your Design", role:"strike", custom:true, concept:1, note:"Set the spec below, then field it.",
+      desc:"<b>Your Design</b> &mdash; roll your own carrier aircraft within a design-point budget. Payload, survivability, and small size all cost points &mdash; you can't max everything, because on a real deck you never can. Field it and see where it lands."},
+    mq25: {name:"MQ-25 Stingray", role:"tanker", offload:15000, note:"Purpose-built tanker archetype.",
+      desc:"<b>MQ-25 Stingray</b> &mdash; a carrier-based unmanned aerial-refueling tanker archetype (large offload). It exists to stop the fleet burning strike-fighters as gas trucks &mdash; exactly the trade you're making as Air Boss."},
+    horn5:{name:"F/A-18 5-wet", role:"tanker", offload:3500, note:"A striker robbed for gas.",
+      desc:"<b>F/A-18 5-wet</b> &mdash; a strike-fighter rigged as a buddy tanker with external tanks. It can pass gas, but offloads a fraction of a dedicated tanker, and every one you launch is a strike-fighter you're NOT striking with. The expensive way to tank."},
+    cap:  {name:"CAP fighter", role:"cap", note:"Defends the force &mdash; +survivability.",
+      desc:"<b>CAP &mdash; Combat Air Patrol</b> &mdash; fighters held aloft to defend the carrier and the strike from enemy air. No ordnance on target, but they raise how much of your strike survives to reach it."},
+    isr:  {name:"E-2 / EA-18G", role:"isr", note:"AEW + EW &mdash; +survivability at range.",
+      desc:"<b>ISR / EW &mdash; airborne early warning + electronic warfare archetype</b> &mdash; sensors and jamming that raise your strikers' odds of getting through at range. Force multipliers that cost spots."}
+  };
+  // Unit cost, $M/aircraft. f35c/fa18 = public flyaway ballpark (adjustable +/-15% below).
+  CAT.f35c.cost=102; CAT.fa18.cost=67; CAT.horn5.cost=67;      // F-35C ~$102M contract-lot flyaway ballpark; F/A-18E/F ~$67M (5-wet is a Super Hornet)
+  CAT.mq25.cost=184; CAT.cap.cost=70; CAT.isr.cost=110;         // MQ-25 ~$184M FY25 weapon-system unit; CAP fighter; E-2/EA-18G blend [EST]
+  CAT.kf1.cost=28; CAT.ccap.cost=48;                           // notional RockWorx concepts (small/LO uncrewed)
+  // Tier-2 (agy #181): type-specific clean radius (unrefueled combat radius, nm) + burn (lb fuel / extra nm round-trip)
+  CAT.f35c.clean=650; CAT.f35c.burn=13.5; CAT.fa18.clean=420; CAT.fa18.burn=16.5;
+  CAT.kf1.clean=550;  CAT.kf1.burn=8.0;   CAT.ccap.clean=720; CAT.ccap.burn=9.5;
+  // Air-to-air weapon loadout -- real Navy AAMs. Trade: AMRAAM = magazine depth (more shots -> raw effect);
+  // the long-range AAMs carry fewer/bigger rounds but kill the archer at range -> higher striker survivability.
+  var WEAPONS={
+    amraam:{name:"AMRAAM",dsg:"AIM-120",leth:1.06,surv:0.00,
+      desc:"AIM-120 AMRAAM &mdash; the proven medium-range workhorse. A jet carries many, so more shots per sortie: best raw effect, no long-range standoff. (Illustrative model.)"},
+    gunslinger:{name:"GUNSLINGER",dsg:"AIM-174B",leth:1.00,surv:0.08,
+      desc:"AIM-174B &lsquo;Gunslinger&rsquo; &mdash; an air-launched SM-6 on the F/A-18E/F, the Navy's first dedicated long-range AAM since the Phoenix (published range is classified). Fewer, bigger rounds, but killing the archer at range means more strikers survive. (Illustrative model.)"},
+    malice:{name:"MALICE",dsg:"AIM-424",leth:0.94,surv:0.14,
+      desc:"AIM-424 &lsquo;Malice&rsquo; &mdash; a very-long-range LRAAM revealed at Tailhook 2026 (specifics not yet public). Modeled as the deepest standoff and best survivability at range, at the fewest rounds. (Illustrative archetype.)"}
+  };
+  var GROUPS=[
+    {role:"strike",chip:"c-strike",col:"#e5484d",label:"Strike — ordnance on target",keys:["f35c","fa18","kf1","ccap","custom"]},
+    {role:"tanker",chip:"c-tanker",col:"#9a7bec",label:"Tanker — gas in the air",keys:["mq25","horn5"]},
+    {role:"cap",chip:"c-cap",col:"#4a90d9",label:"Defense — CAP",keys:["cap"]},
+    {role:"isr",chip:"c-isr",col:"#41c46a",label:"ISR / EW",keys:["isr"]}
+  ];
+  var WINGROLES=[["strike","tanker"],["strike","tanker","cap"],["strike","tanker","cap","isr"]];
+  var st={wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102,custom:90}, weapon:"amraam",
+          custom:{pay:6000,surv:60,size:55},
+          alloc:{f35c:6,fa18:14,kf1:0,ccap:0,custom:0,mq25:5,horn5:0,cap:6,isr:3}};
+
+  var el=function(id){return document.getElementById(id);};
+  var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  function fmt(n,d){return n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});}
+  function activeRoles(){return WINGROLES[st.wing];}
+  function activeKeys(){var ar=activeRoles();return Object.keys(CAT).filter(function(k){return ar.indexOf(CAT[k].role)>=0;});}
+  function used(){return activeKeys().reduce(function(s,k){return s+(st.alloc[k]||0);},0);}
+  function sizeRate(sz){return 1.4-(sz-20)/80*0.55;}
+  function statsFor(k){var a=CAT[k];return a.custom?{pay:st.custom.pay,surv:st.custom.surv,rate:sizeRate(st.custom.size)}:a;}
+  function designCost(){return st.custom.pay/1000*2.5 + st.custom.surv*0.7 + (100-st.custom.size)*0.6;}
+  function designPenalty(){var c=designCost();return c>BUDGET?Math.pow(BUDGET/c,3):1;}
+  function costFor(k){                                  // $M per aircraft
+    if(k==="custom")return Math.max(st.cost.custom, 25+designCost()*0.85); // floored by capability -- can't price a monster design at $10M
+    if(k==="f35c")return st.cost.f35c;                   // F-35C still in production -> adjustable +/-15%
+    return CAT[k].cost||0;                               // fa18/horn5 fixed $67M (line shutdown funded); others sourced/notional
+  }
+  // ---- Tier-2 OA realism (agy #181) ----
+  function customClean(){return Math.max(250, 450+(100-st.custom.size)*2.5-(st.custom.pay/1000)*10);}
+  function customBurn(){return 9.0+(st.custom.size/100)*8.0;}
+  function cleanFor(k){return k==="custom"?customClean():(CAT[k].clean||450);}
+  function burnFor(k){return k==="custom"?customBurn():(CAT[k].burn||14);}
+  function tankerOffloadFor(k,range){                    // offload falls as the orbit pushes out from the CVN
+    if(k==="mq25")return 15000*Math.max(0.20,1-Math.max(0,range-350)/750);   // turbofan tanker: 15k <=350nm -> 3k floor
+    if(k==="horn5")return 3500*Math.max(0,1-Math.max(0,range-200)/350);      // buddy pod falls off a cliff past 450nm
+    return CAT[k].offload||0;
+  }
+  function calcSurvBonus(nCAP,nISR,wsurv){               // saturating escort value -- first units buy the most
+    return 0.22*(1-Math.exp(-0.35*nCAP))+0.28*(1-Math.exp(-0.55*nISR))+(wsurv||0);
+  }
+  function trimToPool(){var g=0;while(used()>POOL && g++<800){var ks=activeKeys(),big=ks[0];
+    ks.forEach(function(k){if((st.alloc[k]||0)>(st.alloc[big]||0))big=k;});
+    if((st.alloc[big]||0)>0)st.alloc[big]--; else break;}}
+
+  function evalWing(range,alloc){
+    alloc=alloc||st.alloc;
+    // Sortie generation on defensible terms: a jet flies (flying-day window / its own sortie cycle),
+    // knocked down by a duty factor (maintenance, crew, it doesn't launch every event) and hard-capped
+    // per aircraft per day. Sustained ~1-1.6 sorties/jet, surge ~2-2.8 -- not 24/cycle.
+    // Sortie generation, deck-cycle-BASED (still abstract -- no catapult/recovery throughput, package
+    // timing, or deck congestion): over an EVENTS-cycle day a jet re-flies once per its own (airborne +
+    // deck-turnaround) span, knocked down by availability + a per-jet cap. Anchored to the 1997 Nimitz
+    // surge (~2.6 sorties/strike-jet/day) and Desert Storm/OIF sustained (~1.2-1.55) -- agy #181.
+    var WINDOW=st.tempo?16:12;              // flight-ops hours in the day (surge / sustained)
+    var eventLen=st.tempo?1.3:1.5;          // deck event spacing (hours)
+    var events=WINDOW/eventLen;             // cyclic events flown in the day (~8 sustained, ~12 surge)
+    var AVAIL=0.85;                         // fraction of the fleet mission-capable
+    var TURNC=(st.tempo?0.7:0.8)+DECKS[DECK].turnAdj/60/eventLen; // deck turnaround, in cycles
+    var CAPS=st.tempo?4.5:3.5;              // per-aircraft single-day sortie cap
+    function rateFor(airborneH){return Math.min(CAPS, events*AVAIL/(airborneH/eventLen+TURNC));}
+    var airborne=2*range/CRUISE+STATION;    // strike airborne: out-and-back + station
+    var baseStrike=rateFor(airborne);
+    var rateTank=rateFor(2*(range*0.62)/CRUISE+0.4);
+    var rateCap=rateFor(2.0), rateISR=rateFor(3.0);
+    var cyc=airborne+TURNC*eventLen;        // per-aircraft sortie cycle (hours), for display
+    var strikeSorties=0, tankerSorties=0, tankerOffload=0, nCAP=0, nISR=0, byType=[], byKey={}, cost=0;
+    activeKeys().forEach(function(k){
+      var a=CAT[k], n=alloc[k]||0; if(n<=0)return; var s=statsFor(k); cost+=n*costFor(k);
+      if(a.role==="strike"){var ss=n*Math.min(CAPS,baseStrike*s.rate); strikeSorties+=ss; byType.push({key:k,s:s,ss:ss,pen:a.custom?designPenalty():1}); byKey[k]=ss;}
+      else if(a.role==="tanker"){var ts=n*rateTank; tankerSorties+=ts; tankerOffload+=ts*tankerOffloadFor(k,range); byKey[k]=ts;}
+      else if(a.role==="cap"){nCAP+=n;} else if(a.role==="isr"){nISR+=n;}
+    });
+    var gasDemand=0;                                     // per-type: each striker's own clean radius + burn
+    byType.forEach(function(x){gasDemand+=x.ss*Math.max(0,range-cleanFor(x.key))*burnFor(x.key);});
+    var support=gasDemand>0?Math.min(1,tankerOffload/gasDemand):1;
+    var W=WEAPONS[st.weapon]||WEAPONS.amraam;
+    var survBonus=calcSurvBonus(nCAP,nISR,W.surv), effects=0, survNum=0, survDen=0;
+    byType.forEach(function(x){var surv=Math.min(0.98,x.s.surv/100+survBonus);
+      effects += x.ss*support*(x.s.pay/1000)*(0.35+0.65*surv)*x.pen;
+      survNum+=x.ss*x.s.pay*surv; survDen+=x.ss*x.s.pay;});
+    effects*=W.leth;
+    var meanSurv=survDen>0?survNum/survDen:0, survScore=support*meanSurv;
+    var capSorties=nCAP*rateCap, isrSorties=nISR*rateISR;
+    if(nCAP>0)byKey.cap=capSorties; if(nISR>0)byKey.isr=isrSorties;
+    return {cyc:cyc,airborne:airborne,rateStrike:baseStrike,events:events,sps:baseStrike,
+      strikeSorties:strikeSorties,tankerSorties:tankerSorties,capSorties:capSorties,isrSorties:isrSorties,
+      support:support,gasDemand:gasDemand,tankerOffload:tankerOffload,effects:effects,
+      meanSurv:meanSurv,survScore:survScore,cost:cost,byKey:byKey};
+  }
+
+  function buildRoster(){
+    var host=el("roster"); host.innerHTML="";
+    GROUPS.forEach(function(g){
+      if(activeRoles().indexOf(g.role)<0)return;
+      var box=document.createElement("div"); box.className="grp";
+      box.innerHTML='<div class="grp-h"><span class="chip '+g.chip+'"></span>'+g.label+'</div>';
+      g.keys.forEach(function(k){
+        var a=CAT[k], n=st.alloc[k]||0, atMax=used()>=POOL;
+        var row=document.createElement("div"); row.className="ac";
+        row.innerHTML='<div class="ac-nm">'+a.name+(a.custom?' <span class="tag ghost">CUSTOM</span>':(a.concept?' <span class="tag">CONCEPT</span>':''))+
+          ' <button type="button" class="info" aria-label="About '+a.name+'" aria-expanded="'+(st.open[k]?'true':'false')+'">i</button></div>'+
+          '<div class="stepper"><button type="button" aria-label="less '+a.name+'"'+(n<=0?' disabled':'')+'>&minus;</button>'+
+          '<span class="n'+(n<=0?' zero':'')+'">'+n+'</span>'+
+          '<button type="button" aria-label="more '+a.name+'"'+(atMax?' disabled':'')+'>+</button></div>'+
+          '<div class="ac-note">'+a.note+'</div>';
+        var bs=row.querySelectorAll(".stepper button");
+        bs[0].addEventListener("click",function(){if((st.alloc[k]||0)>0){st.alloc[k]--;buildRoster();render();}});
+        bs[1].addEventListener("click",function(){if(used()<POOL){st.alloc[k]=(st.alloc[k]||0)+1;buildRoster();render();}});
+        row.querySelector(".info").addEventListener("click",function(){st.open[k]=!st.open[k];buildRoster();});
+        box.appendChild(row);
+        if(st.open[k]){var dd=document.createElement("div");dd.className="acdesc";dd.innerHTML=a.desc||a.note;box.appendChild(dd);}
+        if(a.custom){ box.appendChild(specBlock()); }
+      });
+      host.appendChild(box);
+    });
+  }
+  function specBlock(){
+    var d=document.createElement("div"); d.className="spec";
+    d.innerHTML='<div class="spec-h">Your Design — spec (within budget)</div>'+
+      '<div class="spec-row"><label>Payload</label><input type="range" id="c-pay" min="2000" max="20000" step="250" value="'+st.custom.pay+'"><span class="sv" id="cv-pay"></span></div>'+
+      '<div class="spec-row"><label>Survivability</label><input type="range" id="c-surv" min="10" max="98" step="1" value="'+st.custom.surv+'"><span class="sv" id="cv-surv"></span></div>'+
+      '<div class="spec-row"><label>Airframe size</label><input type="range" id="c-size" min="20" max="100" step="1" value="'+st.custom.size+'"><span class="sv" id="cv-size"></span></div>'+
+      '<div class="budget"><label>Design points</label><div class="track"><i id="c-bud"></i></div><span class="sv" id="cv-bud"></span></div>';
+    d.querySelector("#c-pay").addEventListener("input",function(){st.custom.pay=+this.value;render();});
+    d.querySelector("#c-surv").addEventListener("input",function(){st.custom.surv=+this.value;render();});
+    d.querySelector("#c-size").addEventListener("input",function(){st.custom.size=+this.value;render();});
+    return d;
+  }
+
+  function drawCurve(){
+    var c=el("curve"),dpr=Math.min(2,window.devicePixelRatio||1),W=c.clientWidth||640,H=230;
+    c.width=W*dpr;c.height=H*dpr;var x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+    var padL=8,padR=8,padT=12,padB=22,gw=W-padL-padR,gh=H-padT-padB;
+    var pts=[];for(var r=200;r<=900;r+=20)pts.push([r,evalWing(r).effects]);
+    var maxE=10;pts.forEach(function(p){if(p[1]>maxE)maxE=p[1];});maxE*=1.12;
+    var X=function(r){return padL+(r-200)/700*gw;},Y=function(e){return padT+gh-(e/maxE)*gh;};
+    x.strokeStyle="#12203050";x.lineWidth=1;[300,400,500,600,700,800].forEach(function(r){x.beginPath();x.moveTo(X(r),padT);x.lineTo(X(r),padT+gh);x.stroke();});
+    x.strokeStyle="#2a3a52";x.setLineDash([3,4]);x.beginPath();x.moveTo(X(CLEAN),padT);x.lineTo(X(CLEAN),padT+gh);x.stroke();x.setLineDash([]);
+    x.fillStyle="#556072";x.font="10px ui-monospace,monospace";x.fillText("clean ~450",X(CLEAN)+4,padT+10);
+    x.beginPath();pts.forEach(function(p,i){var xx=X(p[0]),yy=Y(p[1]);i?x.lineTo(xx,yy):x.moveTo(xx,yy);});
+    x.lineTo(X(900),padT+gh);x.lineTo(X(200),padT+gh);x.closePath();
+    var g=x.createLinearGradient(0,padT,0,padT+gh);g.addColorStop(0,"#f5b02733");g.addColorStop(1,"#f5b02703");x.fillStyle=g;x.fill();
+    x.beginPath();pts.forEach(function(p,i){var xx=X(p[0]),yy=Y(p[1]);i?x.lineTo(xx,yy):x.moveTo(xx,yy);});
+    x.strokeStyle="#f5b027";x.lineWidth=2.4;x.stroke();
+    var e=evalWing(st.rng).effects;
+    x.strokeStyle="#e5484d";x.lineWidth=1.4;x.beginPath();x.moveTo(X(st.rng),padT);x.lineTo(X(st.rng),padT+gh);x.stroke();
+    x.fillStyle="#f5b027";x.beginPath();x.arc(X(st.rng),Y(e),4.5,0,7);x.fill();
+    x.fillStyle="#e5747a";x.font="10px ui-monospace,monospace";x.fillText(st.rng+" nm",X(st.rng)+5,padT+gh-4);
+    x.fillStyle="#556072";x.fillText("200",padL,H-6);x.fillText("900 nm",W-padR-42,H-6);
+  }
+
+  var animFrom=0, animId=0;
+  function animateScore(to){var node=el("score");
+    if(reduce){node.textContent=fmt(to,0);animFrom=to;return;}
+    if(animId)cancelAnimationFrame(animId);
+    var start=performance.now(),from=animFrom;
+    function step(t){var k=Math.min(1,(t-start)/500);k=1-Math.pow(1-k,3);node.textContent=fmt(from+(to-from)*k,0);
+      if(k<1)animId=requestAnimationFrame(step);else animId=0;}
+    animId=requestAnimationFrame(step);animFrom=to;}
+
+  function render(){
+    var u=used(), r=evalWing(st.rng);
+    el("v-spots").textContent=POOL+" / "+DECKS[DECK].spots;
+    el("s-spots").max=DECKS[DECK].spots; el("s-spots").value=POOL;
+    el("pool").innerHTML='<b>'+DECKS[DECK].name+' &mdash; '+POOL+' spots</b>: '+u+' assigned '+(POOL-u>0?'('+(POOL-u)+' idle)':'(full)');
+    var sb="";GROUPS.forEach(function(g){if(activeRoles().indexOf(g.role)<0)return;
+      var n=g.keys.reduce(function(s,k){return s+(st.alloc[k]||0);},0);if(n>0)sb+='<i style="width:'+(n/POOL*100)+'%;background:'+g.col+'"></i>';});
+    var idle=(POOL-u)/POOL*100;if(idle>0)sb+='<i style="width:'+idle+'%;background:#141f2e"></i>';
+    el("spotbar").innerHTML=sb;
+
+    var mix=activeKeys().filter(function(k){return (st.alloc[k]||0)>0;}).map(function(k){return st.alloc[k]+"× "+CAT[k].name;});
+    el("wingsum").textContent=mix.length?mix.join("   ·   "):"Empty deck — add aircraft.";
+
+    if(el("cv-pay")){el("cv-pay").textContent=(st.custom.pay/1000).toFixed(1)+"k";
+      el("cv-surv").textContent=st.custom.surv+"%"; el("cv-size").textContent=(st.custom.size<40?"small":st.custom.size<70?"med":"large");
+      var cost=designCost(), over=cost>BUDGET;
+      el("c-bud").style.width=Math.min(100,cost/BUDGET*100)+"%"; el("c-bud").className=over?"over":"";
+      el("cv-bud").textContent=fmt(cost,0)+"/"+BUDGET; el("cv-bud").className="sv"+(over?" over":"");}
+
+    animateScore(r.effects);
+    var rf=POOL/32, ref={}; Object.keys(REFWING).forEach(function(k){ref[k]=Math.round(REFWING[k]*rf);});
+    var bench=evalWing(st.rng,ref).effects;
+    el("rank").innerHTML="vs reference <b>"+(r.effects>=bench?"+":"")+fmt((r.effects-bench)/Math.max(bench,1)*100,0)+"%</b>";
+    el("rank").title=REFDESC+" Scaled to this deck ("+POOL+" spots).";
+
+    el("cyc").innerHTML='<span class="k">Sortie cycle</span> <b>'+fmt(r.cyc,1)+' h</b> = airborne '+fmt(r.airborne,1)+
+      ' h <span style="color:var(--ink-faint)">(out-and-back '+st.rng+' nm + station)</span> + deck turnaround &rarr; <b>'+
+      fmt(r.rateStrike,1)+'</b> sorties/day per strike aircraft';
+    if(r.gasDemand<=0.5){el("gas").innerHTML='<span class="k">Gas in the air</span> <span class="cool">Organic reach</span> at '+st.rng+' nm &mdash; strikers reach unrefueled.';}
+    else{el("gas").innerHTML='<span class="k">Gas in the air</span> demand '+fmt(r.gasDemand/1000,0)+'k lb/day, tankers supply '+
+      fmt(r.tankerOffload/1000,0)+'k &rarr; <span class="'+(r.support>=0.999?"cool":"hot")+'">'+fmt(r.support*100,0)+'% of strikers reach '+st.rng+' nm</span>.';}
+    el("cost").innerHTML='<span class="k">Fleet cost</span> <b>$'+fmt(r.cost/1000,1)+'B</b> for the wing &rarr; <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b> effect index per $B';
+
+    var series=[["strike","#e5484d","Strike",r.strikeSorties],["tanker","#9a7bec","Tanker",r.tankerSorties],
+      ["cap","#4a90d9","CAP",r.capSorties],["isr","#41c46a","ISR/EW",r.isrSorties]].filter(function(p){return activeRoles().indexOf(p[0])>=0;});
+    var tot=series.reduce(function(s,p){return s+p[3];},0);
+    el("sortietot").textContent=fmt(tot,0)+" /day";
+    var html="",leg="";
+    series.forEach(function(p){var w=tot>0?p[3]/tot*100:0;
+      html+='<i style="width:'+w+'%;background:'+p[1]+'">'+(w>12?fmt(p[3],0):"")+'</i>';
+      leg+='<span><span class="d" style="background:'+p[1]+'"></span>'+p[2]+' '+fmt(p[3],0)+'</span>';});
+    el("stackbar").innerHTML=html; el("legend").innerHTML=leg;
+
+    el("v-rng").textContent=st.rng+" nm"; el("curveleg").textContent="your wing, 200–900 nm";
+    el("v-target").textContent=st.target>0?fmt(st.target,0):"none";
+    el("v-cf35").textContent="$"+st.cost.f35c+"M"; el("v-ccustom").textContent="$"+st.cost.custom+"M";
+    el("weapdesc").innerHTML=(WEAPONS[st.weapon]||WEAPONS.amraam).desc;
+    drawCurve();
+    el("curve").setAttribute("aria-label","Effect index vs target range for your wing: "+fmt(evalWing(200).effects,0)+
+      " at 200 nm, "+fmt(evalWing(500).effects,0)+" at 500 nm, "+fmt(evalWing(900).effects,0)+" at 900 nm. Current target "+
+      st.rng+" nm: "+fmt(r.effects,0)+".");
+
+    var t="<b>Air Boss read.</b> ";
+    if(u===0)t+="Empty deck &mdash; start adding aircraft.";
+    else if(r.strikeSorties===0)t+="No strikers spotted &mdash; sorties, but nothing on target.";
+    else if(r.support<0.7 && r.deficit>0)t+="Strikers gas-starved &mdash; only "+fmt(r.support*100,0)+"% reach. Add tankers (a dedicated tanker offloads far more than a buddy pod) or pull the range in.";
+    else if(r.tankerOffload>r.gasDemand*1.7 && r.deficit>0)t+="Over-tanked &mdash; convert a tanker spot to a striker.";
+    else t+="effect index "+fmt(r.effects,0)+" at "+st.rng+" nm, "+fmt(r.support*100,0)+"% of strikers reaching. Nudge the mix and watch the range curve.";
+    el("trade").innerHTML=t;
+    deckPreview();
+  }
+
+  /* ---- deck ballet (Run the Day) ---- */
+  var ROLECOL={strike:"#e5484d",tanker:"#9a7bec",cap:"#4a90d9",isr:"#41c46a"};
+  var deckAgents=[];
+  function buildDeckAgents(){
+    var list=[];
+    activeKeys().forEach(function(k){var role=CAT[k].role,n=st.alloc[k]||0;for(var i=0;i<n;i++)list.push({col:ROLECOL[role]||"#c9d3e0"});});
+    if(list.length>28)list=list.slice(0,28);
+    var N=Math.max(1,list.length);
+    // start the day with a FULL DECK: cluster initial phases in the "parked/spotted" band (0.86-0.99)
+    // so Launch opens with a staggered launch wave; recoveries only come back after the mission.
+    list.forEach(function(a,i){a.off=0.86+(i/N)*0.12+(i%3)*0.003;a.spd=0.85+((i*37)%22)/100;a.spot=i;});
+    deckAgents=list;
+  }
+  function deckGeo(W,H){
+    var cx=W*0.55,bowY=24,sternY=H-14,half=Math.min(118,W*0.13);
+    var cats=[{x:cx-13,y:bowY+36},{x:cx+13,y:bowY+36}];
+    var ramp={x:cx-2,y:sternY-6},fwd={x:cx-half*0.62,y:H*0.26};   // angled deck canted to PORT: aft round-down -> forward end out over the port side
+    var trap=lp(ramp,fwd,0.42),approach=lp(ramp,fwd,-0.22);        // touchdown on the deck; approach on the extended groove astern
+    var spots=[];for(var i=0;i<14;i++)spots.push({x:cx+half*0.34+((i%3)*13),y:H*0.30+i*((H*0.56)/14)});
+    return {W:W,H:H,cx:cx,bowY:bowY,sternY:sternY,half:half,cats:cats,ramp:ramp,fwd:fwd,trap:trap,approach:approach,spots:spots};
+  }
+  function lp(a,b,t){return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};}
+  function agentPos(p,ag,g){
+    var spot=g.spots[ag.spot%g.spots.length],cat=g.cats[ag.spot%2],tip={x:cat.x,y:g.bowY},exit={x:cat.x+16,y:g.bowY-50},o;
+    if(p<0.10){o=lp(spot,cat,p/0.10);o.a=1;}
+    else if(p<0.18){var t=(p-0.10)/0.08;o=lp(cat,tip,t*t);o.a=1;}
+    else if(p<0.30){var t=(p-0.18)/0.12;o=lp(tip,exit,t);o.a=1-t;}
+    else if(p<0.54){o={x:exit.x,y:exit.y,a:0};}
+    else if(p<0.60){var t=(p-0.54)/0.06;o={x:g.approach.x,y:g.approach.y,a:t};}
+    else if(p<0.72){var t=(p-0.60)/0.12;o=lp(g.approach,g.trap,t*(2-t));o.a=1;}
+    else if(p<0.85){var t=(p-0.72)/0.13;o=lp(g.trap,spot,t);o.a=1;}
+    else{o={x:spot.x,y:spot.y,a:1};}
+    return o;
+  }
+  function drawDeckBg(x,g){
+    var H=g.H,cx=g.cx,half=g.half;
+    x.fillStyle="#0a1018";x.fillRect(0,0,g.W,H);
+    x.fillStyle="#131c28";x.strokeStyle="#26344a";x.lineWidth=1.5;
+    x.beginPath();x.moveTo(cx-half,g.sternY);x.lineTo(cx-half,g.bowY+26);
+    x.quadraticCurveTo(cx-half,g.bowY,cx,g.bowY);x.quadraticCurveTo(cx+half,g.bowY,cx+half,g.bowY+26);
+    x.lineTo(cx+half,g.sternY);x.quadraticCurveTo(cx,g.sternY+9,cx-half,g.sternY);x.closePath();x.fill();x.stroke();
+    // angled landing deck -- canted to PORT (aft round-down -> forward end out over the port side)
+    var R=g.ramp,F=g.fwd,dx=F.x-R.x,dy=F.y-R.y,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,wd=15;
+    x.fillStyle="#182437";
+    x.beginPath();x.moveTo(R.x+nx*wd,R.y+ny*wd);x.lineTo(F.x+nx*wd,F.y+ny*wd);
+    x.lineTo(F.x-nx*wd,F.y-ny*wd);x.lineTo(R.x-nx*wd,R.y-ny*wd);x.closePath();x.fill();
+    x.strokeStyle="#3a4c66";x.setLineDash([6,6]);x.lineWidth=1;
+    x.beginPath();x.moveTo(R.x,R.y);x.lineTo(F.x,F.y);x.stroke();x.setLineDash([]);
+    x.strokeStyle="#51678a";x.lineWidth=1.4;                       // arresting wires, across the deck near the ramp
+    for(var i=1;i<=3;i++){var t=0.10+i*0.06,px=R.x+dx*t,py=R.y+dy*t;
+      x.beginPath();x.moveTo(px+nx*wd,py+ny*wd);x.lineTo(px-nx*wd,py-ny*wd);x.stroke();}
+    x.strokeStyle="#3a4c66";x.lineWidth=2;g.cats.forEach(function(c){x.beginPath();x.moveTo(c.x,c.y);x.lineTo(c.x,g.bowY+2);x.stroke();});
+    x.fillStyle="#0e1622";x.strokeStyle="#2a3a52";x.lineWidth=1;x.fillRect(cx+half-13,H*0.44,10,42);x.strokeRect(cx+half-13,H*0.44,10,42);
+  }
+  function drawDeckFrame(gp){
+    var c=el("deck");if(!c)return;var dpr=Math.min(2,window.devicePixelRatio||1),W=c.clientWidth||640,H=300;
+    c.width=W*dpr;c.height=H*dpr;var x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);
+    var g=deckGeo(W,H);drawDeckBg(x,g);
+    g.spots.forEach(function(s){x.fillStyle="#0f1a28";x.beginPath();x.arc(s.x,s.y,5,0,7);x.fill();});
+    deckAgents.forEach(function(ag){var p=(gp*ag.spd+ag.off)%1;var o=agentPos(p,ag,g);if(o.a<=0.03)return;
+      var o2=agentPos((p+0.006)%1,ag,g);var ang=Math.atan2(o2.y-o.y,o2.x-o.x);
+      x.save();x.globalAlpha=Math.max(0,Math.min(1,o.a));x.translate(o.x,o.y);x.rotate(ang);
+      x.fillStyle=ag.col;x.beginPath();x.moveTo(6,0);x.lineTo(-4,3.2);x.lineTo(-4,-3.2);x.closePath();x.fill();x.restore();});
+  }
+  function buildTally(r){
+    var total=r.strikeSorties+r.tankerSorties+r.capSorties+r.isrSorties;
+    var events=r.events, perEvent=events>0?total/events:0;
+    var keys=activeKeys().filter(function(k){return (r.byKey[k]||0)>0.05;});
+    var maxc=1;keys.forEach(function(k){if(r.byKey[k]>maxc)maxc=r.byKey[k];});
+    var rows=keys.map(function(k){var c=r.byKey[k],col=ROLECOL[CAT[k].role]||"#c9d3e0";
+      return '<div class="tt-row"><span class="dot" style="background:'+col+'"></span>'+
+        '<span class="nm">'+CAT[k].name+'</span>'+
+        '<span class="tbar"><i style="width:'+(c/maxc*100)+'%;background:'+col+'"></i></span>'+
+        '<span class="ct">'+fmt(c,0)+'</span></div>';}).join("");
+    return '<div class="tally-h">Day tally &mdash; T+24:00 at '+st.rng+' nm</div>'+
+      '<div class="tally-grid">'+
+        '<div class="tstat"><div class="tv">'+fmt(total,0)+'</div><div class="tk">sorties / day</div></div>'+
+        '<div class="tstat"><div class="tv">'+fmt(events,0)+'</div><div class="tk">events (cycles)</div></div>'+
+        '<div class="tstat"><div class="tv">'+fmt(perEvent,1)+'</div><div class="tk">sorties / event</div></div>'+
+        '<div class="tstat"><div class="tv">'+fmt(r.effects,0)+'</div><div class="tk">effect index</div></div>'+
+      '</div>'+
+      '<div class="tally-types"><div class="tt-cap">Sorties generated by aircraft type</div>'+rows+
+      '<div class="tt-note">A day is flown as '+fmt(events,0)+' cyclic events; strike spots fly ~once per event (~'+
+      fmt(st.tempo?0.78:0.62,2)+' availability), while CAP / tanker / ISR cycle faster on their own shorter tempos. '+
+      fmt(r.support*100,0)+'% of strikers reach '+st.rng+' nm. Illustrative model.</div></div>';
+  }
+  function deckPreview(){ if(st.play===1 && !running){ el("daytally").classList.add("hide"); buildDeckAgents(); if(!reduce)drawDeckFrame(0); } }
+
+  var running=false;
+  function runDay(){
+    if(running)return;running=true;
+    buildDeckAgents(); el("daytally").classList.add("hide");
+    var r=evalWing(st.rng),target=r.effects,cpd=r.events,launch=el("launch");
+    launch.disabled=true;launch.textContent="Cycling…";el("deckleg").textContent="flight ops underway…";
+    var start=performance.now(),dur=reduce?1:7000;
+    function step(t){var k=Math.min(1,(t-start)/dur),gp=(t-start)/2000,hours=k*24,cyc=Math.floor(k*cpd);
+      if(!reduce)drawDeckFrame(gp);
+      el("clock").textContent="T+"+String(Math.floor(hours)).padStart(2,"0")+":"+String(Math.floor((hours%1)*60)).padStart(2,"0")+"  —  cycle "+cyc;
+      el("score").textContent=fmt(target*k,0);
+      if(k<1)requestAnimationFrame(step);
+      else{running=false;launch.disabled=false;launch.textContent="Re-run the day ▶";el("score").textContent=fmt(target,0);animFrom=target;
+        el("clock").textContent="T+24:00 — "+fmt(cpd,0)+" cycles complete";el("deckleg").textContent="day complete — "+fmt(cpd,0)+" cycles";
+        if(!reduce)drawDeckFrame(dur/2000);
+        el("daytally").innerHTML=buildTally(r); el("daytally").classList.remove("hide");}}
+    requestAnimationFrame(step);
+  }
+
+  /* ---- Auto-Boss optimizer ---- */
+  var autoTop=[], _seed=1;
+  function srand(){_seed=(_seed*1103515245+12345)&0x7fffffff;return _seed/0x7fffffff;}
+  function seedFrom(){ // deterministic per input state -> Auto-Boss results are reproducible, not a fresh roll each time
+    var s=(POOL*7+(DECK==="ford"?131:0)+st.rng+st.tempo*97+st.wing*31+Math.round(st.target/50)+st.rankBy.length*11+st.cost.f35c+st.cost.custom+(st.weapon.length*17))|0;
+    _seed=(s&0x7fffffff)||1;
+  }
+  function randomMix(keys){
+    var w={},sum=0;
+    keys.forEach(function(k){var b=srand();if(CAT[k].role==="strike")b*=1.5;w[k]=b*b;sum+=w[k];});
+    if(sum<=0)sum=1;
+    var cap=Math.max(4,Math.round(POOL*(0.5+srand()*0.5)));  // use 50-100% of the deck so lean wings can win on per-spot / gas
+    var alloc={},usedN=0;
+    keys.forEach(function(k){var n=Math.floor(w[k]/sum*cap);alloc[k]=n;usedN+=n;});
+    var rem=cap-usedN;
+    while(rem>0){var k=keys[(srand()*keys.length)|0];alloc[k]=(alloc[k]||0)+1;rem--;}
+    return alloc;
+  }
+  function objVal(r,spots){
+    if(st.rankBy==="perspot")return r.effects/Math.max(1,spots);
+    if(st.rankBy==="dollar")return r.effects/Math.max(1,r.cost);
+    if(st.rankBy==="surv")return r.survScore;
+    if(st.rankBy==="gas")return -(r.gasDemand/Math.max(1,r.effects));   // least gas PER UNIT EFFECT -> higher is better
+    return r.effects;
+  }
+  function autoSearch(){
+    var keys=activeKeys();   // includes the player's Your Design jet, priced via its Auto-Boss cost slider
+    var pool=[],SAMP=2500,maxEff=0;
+    seedFrom();
+    for(var i=0;i<SAMP;i++){
+      var alloc=randomMix(keys), r=evalWing(st.rng,alloc);
+      if(r.effects<st.target || r.strikeSorties<=0)continue;
+      if(r.effects>maxEff)maxEff=r.effects;
+      var spots=keys.reduce(function(s,k){return s+(alloc[k]||0);},0);
+      pool.push({alloc:alloc,r:r,spots:spots});
+    }
+    // gas / survivability are degenerate without an effect floor (a tiny, fully-supported force "wins");
+    // require >= 40% of the best effect found so these objectives rank real fighting wings.
+    if((st.rankBy==="gas"||st.rankBy==="surv") && st.target<0.4*maxEff){
+      var floor=0.4*maxEff; pool=pool.filter(function(p){return p.r.effects>=floor;});
+    }
+    pool.sort(function(a,b){var d=objVal(b.r,b.spots)-objVal(a.r,a.spots);return d!==0?d:b.r.effects-a.r.effects;});
+    var seen={},top=[];
+    for(var j=0;j<pool.length && top.length<5;j++){
+      var sig=keys.map(function(k){return (pool[j].alloc[k]||0);}).join("-");
+      if(seen[sig])continue; seen[sig]=1; top.push(pool[j]);
+    }
+    return top;
+  }
+  function buildLeaderboard(){
+    var top=autoSearch(), host=el("leaderboard");
+    var labels={effect:"most effect",perspot:"effect per spot",surv:"survivability",gas:"least gas per effect",dollar:"effect per illustrative $"};
+    if(!top.length){host.innerHTML='<div class="lb-h">Auto-Boss &mdash; no wing found</div><div class="lb-empty">No wing on this deck reaches '+fmt(st.target,0)+' effect index at '+st.rng+' nm. Lower the target, pull the range in, or switch to Full Wing for more tools.</div>';autoTop=[];return;}
+    var html='<div class="lb-h">Auto-Boss &mdash; top wings by '+labels[st.rankBy]+(st.target>0?' (&ge; '+fmt(st.target,0)+' effect)':'')+'</div>';
+    top.forEach(function(t,i){var r=t.r,a=t.alloc;
+      var metric=st.rankBy==="perspot"?fmt(r.effects/Math.max(1,t.spots),1)+' <small>eff / spot</small>'
+        :st.rankBy==="dollar"?fmt(r.effects/Math.max(0.001,r.cost/1000),0)+' <small>eff / $B</small>'
+        :st.rankBy==="surv"?fmt(r.survScore*100,0)+' <small>surv score</small>'
+        :st.rankBy==="gas"?fmt(r.gasDemand/1000,0)+'k <small>lb gas / day</small>'
+        :fmt(r.effects,0)+' <small>effect index</small>';
+      var chips=activeKeys().filter(function(k){return (a[k]||0)>0;}).map(function(k){
+        return '<span class="lb-chip"><span class="d" style="background:'+(ROLECOL[CAT[k].role]||"#ccc")+'"></span>'+a[k]+' '+CAT[k].name+'</span>';}).join("");
+      var total=r.strikeSorties+r.tankerSorties+r.capSorties+r.isrSorties;
+      var aria='Load rank '+(i+1)+' wing: '+activeKeys().filter(function(k){return (a[k]||0)>0;}).map(function(k){return a[k]+' '+CAT[k].name;}).join(", ");
+      html+='<div class="lb-row"><div class="lb-top"><span class="lb-rank">'+(i+1)+'</span><span class="lb-metric">'+metric+
+        '</span><button class="lb-load" data-i="'+i+'" aria-label="'+aria.replace(/"/g,"")+'">Load wing &#9654;</button></div><div class="lb-mix">'+chips+'</div>'+
+        '<div class="lb-stats"><span>effect <b>'+fmt(r.effects,0)+'</b></span><span>sorties/day <b>'+fmt(total,0)+
+        '</b></span><span>reach <b>'+fmt(r.support*100,0)+'%</b></span><span>surv <b>'+fmt(r.meanSurv*100,0)+
+        '%</b></span><span>gas <b>'+fmt(r.gasDemand/1000,0)+'k</b></span><span>cost <b>$'+fmt(r.cost/1000,1)+'B</b></span><span>eff/$B <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b></span><span>spots <b>'+t.spots+'/'+POOL+'</b></span></div></div>';
+    });
+    host.innerHTML=html; autoTop=top;
+    host.querySelectorAll(".lb-load").forEach(function(btn){btn.addEventListener("click",function(){
+      var t=autoTop[+btn.dataset.i]; if(!t)return;
+      activeKeys().forEach(function(k){st.alloc[k]=t.alloc[k]||0;});
+      st.play=0; applyModes();
+    });});
+  }
+  function refresh(){ render(); if(st.play===2)buildLeaderboard(); }
+
+  function applyModes(){
+    document.querySelectorAll("#wingmode button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.w===st.wing?"true":"false");});
+    document.querySelectorAll("#playmode button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.p===st.play?"true":"false");});
+    var isRun=st.play===1, isAuto=st.play===2;
+    el("manualalloc").classList.toggle("hide",isAuto); el("optctl").classList.toggle("hide",!isAuto);
+    el("readout-normal").classList.toggle("hide",isAuto); el("leaderboard").classList.toggle("hide",!isAuto);
+    el("launch").classList.toggle("hide",!isRun); el("clock").classList.toggle("hide",!isRun);
+    el("herocap").textContent=isRun?"Effect index (24h run)":"Effect index";
+    el("planchart").classList.toggle("hide",isRun); el("deckwrap").classList.toggle("hide",!isRun);
+    if(isRun)el("deckleg").textContent="press Launch the day";
+    trimToPool(); buildRoster(); refresh();
+  }
+  document.querySelectorAll("#wingmode button").forEach(function(b){b.addEventListener("click",function(){st.wing=+b.dataset.w;applyModes();});});
+  document.querySelectorAll("#playmode button").forEach(function(b){b.addEventListener("click",function(){st.play=+b.dataset.p;applyModes();});});
+  document.querySelectorAll("#deckpick button").forEach(function(b){b.addEventListener("click",function(){
+    DECK=b.dataset.d; POOL=DECKS[DECK].spots;
+    document.querySelectorAll("#deckpick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});
+    trimToPool(); buildRoster(); refresh();});});
+  document.querySelectorAll("#tempopick button").forEach(function(b){b.addEventListener("click",function(){
+    st.tempo=+b.dataset.o;document.querySelectorAll("#tempopick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});refresh();});});
+  el("s-spots").addEventListener("input",function(){POOL=+this.value; trimToPool(); buildRoster(); refresh();});
+  el("s-rng").addEventListener("input",function(){st.rng=+this.value;refresh();});
+  document.querySelectorAll("#rankpick button").forEach(function(b){b.addEventListener("click",function(){
+    st.rankBy=b.dataset.r;document.querySelectorAll("#rankpick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});buildLeaderboard();});});
+  el("s-target").addEventListener("input",function(){st.target=+this.value; el("v-target").textContent=st.target>0?fmt(st.target,0):"none"; if(st.play===2)buildLeaderboard();});
+  el("s-cf35").addEventListener("input",function(){st.cost.f35c=+this.value; el("v-cf35").textContent="$"+this.value+"M"; refresh();});
+  el("s-ccustom").addEventListener("input",function(){st.cost.custom=+this.value; el("v-ccustom").textContent="$"+this.value+"M"; refresh();});
+  document.querySelectorAll("#weappick button").forEach(function(b){b.addEventListener("click",function(){
+    st.weapon=b.dataset.m;document.querySelectorAll("#weappick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});refresh();});});
+  el("autoselect").addEventListener("click",buildLeaderboard);
+  el("launch").addEventListener("click",runDay);
+  el("share").addEventListener("click",function(){
+    var r=evalWing(st.rng), mix=activeKeys().filter(function(k){return (st.alloc[k]||0)>0;}).map(function(k){return st.alloc[k]+"x "+CAT[k].name;});
+    var txt="RockWorx — Air Boss ["+["Skirmish","Standard","Full"][st.wing]+", "+DECKS[DECK].name+"]\nWing: "+mix.join(", ")+
+      " | target "+st.rng+" nm | "+(st.tempo?"surge":"sustained")+"\n→ effect index "+fmt(r.effects,0)+" ("+fmt(r.support*100,0)+"% of strikers reach). Illustrative teaching model.";
+    var toast=el("toast");
+    function ok(){toast.textContent="Wing copied to clipboard.";toast.style.color="var(--isr)";toast.classList.add("show");setTimeout(function(){toast.classList.remove("show");},2000);}
+    function fail(){toast.textContent="Couldn't copy — long-press / select the score to copy.";toast.style.color="var(--over)";toast.classList.add("show");setTimeout(function(){toast.classList.remove("show");},2600);}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fail);else fail();
+  });
+  window.addEventListener("resize",function(){drawCurve(); if(st.play===1 && !running)drawDeckFrame(0);});
+  applyModes();
+})();
+</script>
