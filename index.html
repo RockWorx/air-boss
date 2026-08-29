@@ -248,6 +248,15 @@ footer b{color:var(--ink-dim)}
           </div>
           <div class="opt-note" id="weapdesc"></div>
         </div>
+        <div class="field">
+          <div class="fh"><span class="fl">Strike ordnance</span></div>
+          <div class="picker" id="strikepick">
+            <button type="button" data-s="direct" aria-pressed="false">Direct Attack</button>
+            <button type="button" data-s="mixed" aria-pressed="true">Mixed</button>
+            <button type="button" data-s="standoff" aria-pressed="false">Standoff</button>
+          </div>
+          <div class="opt-note" id="strikedesc"></div>
+        </div>
       </div>
     </section>
 
@@ -348,6 +357,16 @@ footer b{color:var(--ink-dim)}
     malice:{name:"MALICE",dsg:"AIM-424",leth:0.94,surv:0.14,
       desc:"AIM-424 &lsquo;Malice&rsquo; &mdash; a very-long-range LRAAM revealed at Tailhook 2026 (specifics not yet public). Modeled as the deepest standoff and best survivability at range, at the fewest rounds. (Illustrative archetype.)"}
   };
+  // Air-to-GROUND strike ordnance -- a mass-vs-standoff trade (parallel to the A2A loadout).
+  // sleth = strike throughput (aimpoints/pounds delivered); ssurv = survivability from NOT overflying the target.
+  var STRIKES={
+    direct:{name:"Direct Attack",dsg:"JDAM / SDB II",sleth:1.12,ssurv:-0.10,
+      desc:"JDAM + GBU-53 SDB II StormBreaker &mdash; many aimpoints per jet (4+ SDBs per station, moving-target capable) and cheap, but only ~15-70 nm standoff, so you fly into the defenses. Max throughput where you can survive the run (stealth, close, or permissive). (Illustrative model.)"},
+    mixed:{name:"Mixed",dsg:"bombs + standoff",sleth:1.00,ssurv:0.00,
+      desc:"A balanced strike package &mdash; direct-attack bombs for volume plus a few standoff missiles for the defended aimpoints. The all-rounder. (Illustrative model.)"},
+    standoff:{name:"Standoff",dsg:"JASSM-ER / LRASM",sleth:0.88,ssurv:0.20,
+      desc:"AGM-158B JASSM-ER (500+ mi, low-observable) / AGM-158C LRASM &mdash; fewer, pricier cruise missiles launched far outside the defenses. Fewer aimpoints per jet, but even a non-stealth striker survives and reaches a defended target. (Illustrative model.)"}
+  };
   var GROUPS=[
     {role:"strike",chip:"c-strike",col:"#e5484d",label:"Strike — ordnance on target",keys:["f35c","fa18","kf1","ccap","custom"]},
     {role:"tanker",chip:"c-tanker",col:"#9a7bec",label:"Tanker — gas in the air",keys:["mq25","horn5"]},
@@ -355,7 +374,7 @@ footer b{color:var(--ink-dim)}
     {role:"isr",chip:"c-isr",col:"#41c46a",label:"ISR / EW",keys:["isr"]}
   ];
   var WINGROLES=[["strike","tanker"],["strike","tanker","cap"],["strike","tanker","cap","isr"]];
-  var st={wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102,custom:90}, weapon:"amraam",
+  var st={wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102,custom:90}, weapon:"amraam", strike:"mixed",
           custom:{pay:6000,surv:60,size:55},
           alloc:{f35c:6,fa18:14,kf1:0,ccap:0,custom:0,mq25:5,horn5:0,cap:6,isr:3}};
 
@@ -422,12 +441,12 @@ footer b{color:var(--ink-dim)}
     var gasDemand=0;                                     // per-type: each striker's own clean radius + burn
     byType.forEach(function(x){gasDemand+=x.ss*Math.max(0,range-cleanFor(x.key))*burnFor(x.key);});
     var support=gasDemand>0?Math.min(1,tankerOffload/gasDemand):1;
-    var W=WEAPONS[st.weapon]||WEAPONS.amraam;
-    var survBonus=calcSurvBonus(nCAP,nISR,W.surv), effects=0, survNum=0, survDen=0;
+    var W=WEAPONS[st.weapon]||WEAPONS.amraam, SW=STRIKES[st.strike]||STRIKES.mixed;
+    var survBonus=calcSurvBonus(nCAP,nISR,W.surv+SW.ssurv), effects=0, survNum=0, survDen=0;
     byType.forEach(function(x){var surv=Math.min(0.98,x.s.surv/100+survBonus);
       effects += x.ss*support*(x.s.pay/1000)*(0.35+0.65*surv)*x.pen;
       survNum+=x.ss*x.s.pay*surv; survDen+=x.ss*x.s.pay;});
-    effects*=W.leth;
+    effects*=W.leth*SW.sleth;
     var meanSurv=survDen>0?survNum/survDen:0, survScore=support*meanSurv;
     var capSorties=nCAP*rateCap, isrSorties=nISR*rateISR;
     if(nCAP>0)byKey.cap=capSorties; if(nISR>0)byKey.isr=isrSorties;
@@ -554,6 +573,7 @@ footer b{color:var(--ink-dim)}
     el("v-target").textContent=st.target>0?fmt(st.target,0):"none";
     el("v-cf35").textContent="$"+st.cost.f35c+"M"; el("v-ccustom").textContent="$"+st.cost.custom+"M";
     el("weapdesc").innerHTML=(WEAPONS[st.weapon]||WEAPONS.amraam).desc;
+    el("strikedesc").innerHTML=(STRIKES[st.strike]||STRIKES.mixed).desc;
     drawCurve();
     el("curve").setAttribute("aria-label","Effect index vs target range for your wing: "+fmt(evalWing(200).effects,0)+
       " at 200 nm, "+fmt(evalWing(500).effects,0)+" at 500 nm, "+fmt(evalWing(900).effects,0)+" at 900 nm. Current target "+
@@ -784,6 +804,8 @@ footer b{color:var(--ink-dim)}
   el("s-ccustom").addEventListener("input",function(){st.cost.custom=+this.value; el("v-ccustom").textContent="$"+this.value+"M"; refresh();});
   document.querySelectorAll("#weappick button").forEach(function(b){b.addEventListener("click",function(){
     st.weapon=b.dataset.m;document.querySelectorAll("#weappick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});refresh();});});
+  document.querySelectorAll("#strikepick button").forEach(function(b){b.addEventListener("click",function(){
+    st.strike=b.dataset.s;document.querySelectorAll("#strikepick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});refresh();});});
   el("autoselect").addEventListener("click",buildLeaderboard);
   el("launch").addEventListener("click",runDay);
   el("share").addEventListener("click",function(){
