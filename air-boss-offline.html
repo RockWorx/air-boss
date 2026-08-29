@@ -407,7 +407,7 @@ footer b{color:var(--ink-dim)}
     Strikers past ~450 nm need tanker gas
     <span style="font-family:var(--mono)">(deficit &divide; offload)</span> pooled across the wing &mdash; unsupplied strikers
     don't reach. CAP and ISR/EW spend spots to raise survivability; <b>standoff ordnance's survivability edge widens past 400 nm</b>, and the <b>"under fire"</b> line applies attrition (loss/sortie scales with 1 &minus; survivability) to show daily losses and how long the deck sustains. <b>Effect index = strikes that reach &times; payload
-    &times; survivability</b>, summed across the mix, compared to a fixed reference wing. Every coefficient here is fictional
+    &times; an illustrative survivability response (0.35 + 0.65 &times; survivability &mdash; a 35% floor so a fragile option isn't zeroed)</b>, summed across the mix, compared to a fixed reference wing; the <b>&ldquo;under fire&rdquo;</b> losses above are a separate campaign readout and do not feed this index. Every coefficient here is fictional
     and chosen for teaching, not calibrated to real platforms &mdash; treat named aircraft as archetypes, not specifications.
     <b>Not operational analysis and not for planning.</b> RockWorx Aerospace &mdash; a give-away.
   </footer>
@@ -455,7 +455,7 @@ footer b{color:var(--ink-dim)}
   // the long-range AAMs carry fewer/bigger rounds but kill the archer at range -> higher striker survivability.
   var WEAPONS={
     amraam:{name:"AMRAAM",dsg:"AIM-120",leth:1.06,surv:0.00,wezK:0,gasFrac:0.05,bayFits:1,burden:1.0,mag:200,
-      desc:"AIM-120D AMRAAM &mdash; the proven medium-BVR workhorse (~355 lb). A jet carries many and the deck moves them fast, so a <b>deep, sustainable magazine</b> (~200 rounds): best raw effect, shortest reach, lightest gas, and it never runs dry. The volume shooter. (Illustrative; A2A-STD-001. `leth` is an escort-throughput proxy, not literal lethality.)"},
+      desc:"AIM-120D AMRAAM &mdash; the proven medium-BVR workhorse (~355 lb). A jet carries many and the deck moves them fast, so a <b>deep, sustainable magazine</b> (~200 rounds): best raw effect, shortest reach, lightest gas, and the <b>deepest magazine</b> &mdash; it usually sustains the modeled day, though a full, high-tempo strike can still Winchester it. The volume shooter. (Illustrative; A2A-STD-001. `leth` is an escort-throughput proxy, not literal lethality.)"},
     gunslinger:{name:"GUNSLINGER",dsg:"AIM-174B",leth:0.94,surv:0.10,wezK:3.0,gasFrac:0.22,burden:7.0,mag:20,
       desc:"AIM-174B &lsquo;Gunslinger&rsquo; &mdash; an air-launched SM-6 (~3,300 lb), the Navy's first dedicated long-range AAM since the Phoenix. The <b>longest reach / best single shot</b> &mdash; kills the archer farthest out. But it's a scarce, exquisite sniper round: ~20 in the magazine, a <b>7&times; deck-handling burden</b> (one per heavy skid, crane, blocks taxiways), external-only, and the biggest gas hog. <b>You Winchester it fast</b> &mdash; it wins a small, deep, high-value strike, not a wing-wide fight. (Illustrative; A2A-STD-001 + agy deck-ordnance brief.)"},
     malice:{name:"MALICE",dsg:"AIM-424",leth:0.98,surv:0.06,wezK:1.8,gasFrac:0.12,bayFits:1,burden:1.4,mag:64,
@@ -520,7 +520,7 @@ footer b{color:var(--ink-dim)}
   function weaponSurvBonus(weapon,range){                // A2A weapon survivability, now WEZ/range-textured
     var W=WEAPONS[weapon]||WEAPONS.amraam;                // a bigger-WEZ weapon kills the archer farther out,
     var deep=Math.max(0,range-400)/500;                   // so it protects the strike more the deeper it goes
-    return W.surv*(1+(W.wezK||0)*deep);                   // AMRAAM flat; GUNSLINGER +0.08->0.13; MALICE +0.14->0.27 at 900
+    return W.surv*(1+(W.wezK||0)*deep);                   // AMRAAM flat 0; GUNSLINGER 0.10->0.40 at 900 (longest/deepest); MALICE 0.06->0.168 (bay-compatible middle)
   }
   function weaponGasFrac(weapon){                        // A2A weapon weight/drag -> fractional clean-radius cut
     return (WEAPONS[weapon]||WEAPONS.amraam).gasFrac||0;  // A2A-STD-001: AMRAAM 0.05, MALICE 0.12, GUNSLINGER 0.22 (SM-6)
@@ -913,7 +913,7 @@ footer b{color:var(--ink-dim)}
       var metric=st.rankBy==="perspot"?fmt(r.effects/Math.max(1,t.spots),1)+' <small>eff / spot</small>'
         :st.rankBy==="dollar"?fmt(r.effects/Math.max(0.001,r.cost/1000),0)+' <small>eff / $B</small>'
         :st.rankBy==="surv"?fmt(r.survScore*100,0)+' <small>surv score</small>'
-        :st.rankBy==="gas"?fmt(r.gasDemand/1000,0)+'k <small>lb gas / day</small>'
+        :st.rankBy==="gas"?fmt(r.gasDemand/Math.max(1,r.effects),0)+' <small>lb gas / effect</small>'
         :fmt(r.effects,0)+' <small>effect index</small>';
       var chips=activeKeys().filter(function(k){return (a[k]||0)>0;}).map(function(k){
         return '<span class="lb-chip"><span class="d" style="background:'+(ROLECOL[CAT[k].role]||"#ccc")+'"></span>'+a[k]+' '+CAT[k].name+'</span>';}).join("");
@@ -999,7 +999,7 @@ footer b{color:var(--ink-dim)}
       p:{0:"Build Wing: build & tune your wing, read effects at range",1:"Simulate Day: watch cyclic ops + a 24-hour sortie tally",2:"Optimize Wing: let Auto-Boss search wing mixes and rank them"},
       d:{nimitz:"Nimitz-class — about 44 flight-deck spots",ford:"Ford-class — a larger, faster-cycling deck"},
       o:{0:"Sustained: a pace-yourself flying day (~1.5 sorties/jet)",1:"Surge: a max-effort day (~2.6 sorties/jet)"},
-      m:{amraam:"AMRAAM (AIM-120): medium-range, big magazine — best raw effect",gunslinger:"GUNSLINGER (AIM-174B): long-range SM-6 — survivability at range",malice:"MALICE (AIM-424): very-long-range LRAAM — deepest standoff"},
+      m:{amraam:"AMRAAM (AIM-120): medium reach, deepest magazine — best raw effect",gunslinger:"GUNSLINGER (AIM-174B): SM-6 — longest reach / deepest standoff, scarce & heavy",malice:"MALICE (AIM-424): LRAAM — bay-compatible, sustainable middle"},
       s:{direct:"Direct Attack (JDAM/SDB II): many aimpoints, but you overfly the target",mixed:"Mixed: balanced bombs + standoff",standoff:"Standoff (JASSM-ER/LRASM): launch outside the defenses, survive to reach"},
       r:{effect:"Rank by total effect index",perspot:"Rank by effect per deck spot (efficiency)",surv:"Rank by how much of the strike survives",gas:"Rank by least tanker gas per unit effect",dollar:"Rank by effect per illustrative flyaway dollar"}
     };
