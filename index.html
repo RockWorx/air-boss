@@ -2,27 +2,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{
-  --ground:#080b12; --panel:#0f1622; --panel-2:#131d2c; --rule:#1d2a3d;
-  --ink:#ccd6e4; --ink-dim:#8a97a9; --ink-faint:#5f6b7d;
-  --amber:#f5b027; --amber-glow:#ffcf6b;
-  --strike:#e5484d; --tanker:#9a7bec; --cap:#4a90d9; --isr:#41c46a; --over:#e5484d;
+  /* flight-deck & bulkhead environment (US Navy haze gray + non-skid) */
+  --ground:#070b11; --deck-nonskid:#0a0f18; --panel:#0f1826; --panel-2:#13202f; --rule:#243449;
+  --ink:#d4dde9; --ink-dim:#8b98ab; --ink-faint:#5e6b7e;
+  /* flight-deck jersey colors (shooter yellow is the primary accent/score) */
+  --amber:#f5b62a; --amber-glow:#ffd15e;
+  --strike:#e5484d;   /* red — ordnance / strike */
+  --tanker:#a06cff;   /* purple — grapes / fuels / tankers */
+  --cap:#3d8bff;      /* blue — handlers / CAP */
+  --isr:#22c58a;      /* green — arresting gear / ISR-EW */
+  --over:#e5484d; --foul:#e0a922; --meatball:#ff9e2c; --good:#22c58a;
   --mono:ui-monospace,"SFMono-Regular","Cascadia Mono",Menlo,Consolas,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --stencil:"DIN Alternate","Bahnschrift","Oswald","Arial Narrow",var(--sans);
 }
 *{box-sizing:border-box} html,body{margin:0}
-body{background:radial-gradient(1200px 700px at 80% -10%,#12203400,#0a1220 60%),
-  radial-gradient(900px 500px at 10% 110%,#10182800,var(--ground) 55%),var(--ground);
-  color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.45;min-height:100vh}
-.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 40px}
-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:14px}
+html{-webkit-text-size-adjust:100%}
+body{background:
+  repeating-linear-gradient(90deg,#ffffff03 0 2px,transparent 2px 4px),
+  radial-gradient(1200px 700px at 80% -10%,#13223400,#0a1220 60%),
+  radial-gradient(900px 500px at 10% 110%,#10182800,var(--ground) 55%),var(--deck-nonskid);
+  color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.45;min-height:100vh;overflow-x:hidden}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 18px 40px}
+.stencil{font-family:var(--stencil);text-transform:uppercase;letter-spacing:.14em;font-weight:800}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  border-bottom:2px dashed var(--foul);padding-bottom:13px}
 .brand{display:flex;align-items:center;gap:11px;color:var(--ink-dim);font-size:11px;letter-spacing:.28em;text-transform:uppercase;font-weight:700}
 .brand .dot{width:9px;height:9px;border-radius:2px;background:var(--amber);box-shadow:0 0 10px var(--amber)}
-h1{font-size:clamp(26px,5vw,44px);margin:8px 0 3px;font-weight:800;line-height:1;text-wrap:balance;
-  background:linear-gradient(180deg,#fff,#b9c6d8);-webkit-background-clip:text;background-clip:text;color:transparent}
-.tagline{color:var(--ink-dim);font-size:13.5px;max-width:60ch} .tagline b{color:var(--amber)}
+h1{font-family:var(--stencil);font-size:clamp(28px,6vw,50px);margin:8px 0 3px;font-weight:800;line-height:.95;
+  text-transform:uppercase;letter-spacing:.06em;text-wrap:balance;
+  background:linear-gradient(180deg,#fff,#aebccf);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tagline{color:var(--ink-dim);font-size:13.5px;max-width:62ch} .tagline b{color:var(--amber)}
 .illus{display:inline-block;margin-top:7px;font-size:10.5px;letter-spacing:.04em;color:var(--ink-faint);
-  border:1px solid var(--rule);border-radius:20px;padding:3px 11px}
-.modebar{display:flex;gap:18px;flex-wrap:wrap;margin:16px 0 4px}
+  border:1px solid var(--rule);border-radius:4px;padding:3px 11px}
+/* HOW TO PLAY strip */
+.howto{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:15px 0 2px;padding:10px 13px;
+  background:linear-gradient(180deg,#14202f,#0e1826);border:1px solid var(--rule);border-left:4px solid var(--amber);border-radius:9px}
+.howto .step{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink-dim);font-weight:600}
+.howto .n{font-family:var(--mono);font-weight:800;color:#0a0e16;background:var(--amber);width:18px;height:18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:11px;flex:none}
+.howto .arr{color:var(--ink-faint)} .howto b{color:var(--amber)}
+.howto .x{margin-left:auto;background:none;border:1px solid var(--rule);color:var(--ink-faint);border-radius:6px;
+  font-size:11px;padding:3px 9px;cursor:pointer} .howto .x:hover{color:var(--ink);border-color:#33455e}
+/* archetype presets */
+.presets{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 2px}
+.presets .pl{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;
+  align-self:center;margin-right:2px}
+.preset{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink);background:linear-gradient(180deg,#16273a,#101c2b);
+  border:1px solid var(--rule);border-radius:9px;padding:9px 13px;cursor:pointer;transition:.14s;text-align:left;line-height:1.25}
+.preset:hover{border-color:var(--amber);transform:translateY(-1px)} .preset small{display:block;font-size:9.5px;color:var(--ink-faint);font-weight:600;margin-top:2px}
+.modebar{display:flex;gap:18px;flex-wrap:wrap;margin:15px 0 4px}
 .modegrp{display:flex;flex-direction:column;gap:5px}
 .modegrp .lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
 .seg{display:flex;border:1px solid var(--rule);border-radius:9px;overflow:hidden;flex-wrap:wrap}
@@ -30,13 +59,18 @@ h1{font-size:clamp(26px,5vw,44px);margin:8px 0 3px;font-weight:800;line-height:1
   padding:9px 14px;cursor:pointer;transition:.14s;border-right:1px solid var(--rule)}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{color:#0a0e16;background:var(--amber)}
-.console{display:grid;grid-template-columns:.95fr 1.12fr;gap:18px;margin-top:16px}
-@media(max-width:860px){.console{grid-template-columns:1fr}}
+.console{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.12fr);gap:18px;margin-top:16px}
+@media(max-width:860px){.console{grid-template-columns:minmax(0,1fr)}}
 .panel{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--rule);
-  border-radius:14px;padding:17px 17px 19px;box-shadow:inset 0 1px 0 #ffffff08,0 18px 40px -30px #000}
-.panel h2{margin:0 0 6px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-dim);
-  font-weight:700;display:flex;align-items:center;gap:8px}
-.panel h2::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--amber)}
+  border-radius:12px;padding:16px 16px 18px;min-width:0;max-width:100%;
+  box-shadow:inset 0 1px 0 #ffffff08,0 18px 40px -30px #000}
+.panel h2{margin:0 0 8px;font-family:var(--stencil);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);
+  font-weight:800;display:flex;align-items:center;gap:9px;padding-bottom:8px;border-bottom:2px dashed var(--foul)}
+.panel h2::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.mg-h{font-family:var(--stencil);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);
+  font-weight:800;margin:2px 0 9px;display:flex;align-items:center;gap:7px}
+.mg-h::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--rule),transparent)}
+.mgroup{margin-bottom:15px}
 .subhead{font-size:11px;color:var(--ink-faint);margin-bottom:12px}
 .pool{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);margin-bottom:8px;font-variant-numeric:tabular-nums}
 .pool b{color:var(--amber)}
@@ -152,6 +186,33 @@ footer b{color:var(--ink-dim)}
 .tt-row .tbar i{display:block;height:100%;border-radius:4px}
 .tt-row .ct{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink);width:40px;text-align:right;font-variant-numeric:tabular-nums}
 .tt-note{font-size:10px;color:var(--ink-faint);margin-top:8px;line-height:1.5}
+/* IFLOLS "meatball" — gas / strikers-supported status */
+.meatball-row{display:flex;align-items:center;gap:12px;background:#0c1420;border:1px solid var(--rule);
+  border-left:3px solid var(--meatball);border-radius:8px;padding:9px 11px;margin-bottom:9px}
+.lens{position:relative;width:30px;height:46px;background:#05080e;border:1px solid var(--rule);border-radius:5px;flex:none}
+.lens .datum{position:absolute;left:3px;right:3px;top:50%;height:2px;background:var(--good);transform:translateY(-1px);box-shadow:0 0 6px var(--good)}
+.lens .src{position:absolute;top:50%;width:4px;height:2px;background:var(--good);transform:translateY(-1px)}
+.lens .src.l{left:-6px} .lens .src.r{right:-6px}
+.lens .ball{position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:50%;background:var(--meatball);
+  box-shadow:0 0 10px var(--meatball);transform:translate(-50%,-50%);transition:top .3s,background .3s,box-shadow .3s}
+.lens .ball.low{background:var(--over);box-shadow:0 0 11px var(--over)}
+.mb-txt{font-size:11.5px;color:var(--ink-dim);line-height:1.45;min-width:0}
+.mb-txt .k{font-family:var(--stencil);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);display:block}
+.mb-txt b{color:var(--ink)} .mb-txt .cool{color:var(--good);font-weight:700} .mb-txt .hot{color:var(--over);font-weight:700}
+.delta{font-family:var(--mono);font-size:11px;font-weight:700;padding:1px 6px;border-radius:5px;font-variant-numeric:tabular-nums;vertical-align:middle}
+.delta.up{color:var(--good);background:#12351f} .delta.dn{color:var(--over);background:#361417} .delta.z{color:var(--ink-faint)}
+.eff-def{font-size:10px;color:var(--ink-faint);margin-top:4px;line-height:1.45}
+.playhint{font-size:10.5px;color:var(--ink-faint);margin:3px 0 0;min-height:14px}
+.readline,.trade,.opt-note,.mb-txt{overflow-wrap:anywhere}
+@media(max-width:600px){
+  .wrap{padding:16px 12px 32px}
+  .console{gap:14px}
+  .stepper button{width:40px;height:40px}
+  .info{width:26px;height:26px;line-height:23px}
+  .hero .num{font-size:clamp(40px,15vw,64px)}
+  .lb-stats{gap:5px 11px}
+  .presets{flex-direction:column;align-items:stretch}
+}
 .hide{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -175,19 +236,86 @@ footer b{color:var(--ink-dim)}
         <button type="button" data-w="1" aria-pressed="true">Standard</button>
         <button type="button" data-w="2" aria-pressed="false">Full Wing</button>
       </div></div>
-    <div class="modegrp"><span class="lab">Play mode</span>
-      <div class="seg" id="playmode" role="group" aria-label="Play mode">
-        <button type="button" data-p="0" aria-pressed="true">Planner</button>
-        <button type="button" data-p="1" aria-pressed="false">Run the Day</button>
-        <button type="button" data-p="2" aria-pressed="false">Auto-Boss</button>
-      </div></div>
+    <div class="modegrp"><span class="lab">Mode</span>
+      <div class="seg" id="playmode" role="group" aria-label="Mode">
+        <button type="button" data-p="0" aria-pressed="true">Build Wing</button>
+        <button type="button" data-p="1" aria-pressed="false">Simulate Day</button>
+        <button type="button" data-p="2" aria-pressed="false">Optimize Wing</button>
+      </div>
+      <p class="playhint" id="playhint"></p></div>
+  </div>
+
+  <div class="howto" id="howto">
+    <span class="step"><span class="n">1</span>Set the <b>mission</b></span><span class="arr">&rarr;</span>
+    <span class="step"><span class="n">2</span>Allocate <b>deck spots</b></span><span class="arr">&rarr;</span>
+    <span class="step"><span class="n">3</span>Read the <b>effect index</b></span><span class="arr">&rarr;</span>
+    <span class="step"><span class="n">4</span><b>Simulate</b> or <b>Optimize</b></span>
+    <button class="x" id="howtox" type="button" title="Dismiss">Got it &#10005;</button>
+  </div>
+
+  <div class="presets">
+    <span class="pl">Quick start</span>
+    <button class="preset" data-preset="legacy" type="button" title="Load a Super-Hornet-heavy legacy wing">Legacy Wing<small>heavy bomb load &mdash; starves at long range</small></button>
+    <button class="preset" data-preset="stealth" type="button" title="Load a stealth + tanker penetration wing">Stealth Penetration<small>reaches deep, high spot cost</small></button>
+    <button class="preset" data-preset="cca" type="button" title="Load a distributed uncrewed CCA wing">Distributed CCA<small>uncrewed &mdash; wins effect-per-spot</small></button>
   </div>
 
   <div class="console">
     <section class="panel" aria-label="Air wing roster">
-      <h2>Air Wing Roster</h2>
+      <h2>Mission &amp; Air Wing</h2>
+      <div class="mgroup">
+        <div class="mg-h">1 &middot; Mission</div>
+        <div class="mission" style="margin:0;padding:0;border:0">
+          <div class="field">
+            <div class="fh"><span class="fl">Carrier deck</span></div>
+            <div class="picker" id="deckpick">
+              <button type="button" data-d="nimitz" aria-pressed="true">Nimitz</button>
+              <button type="button" data-d="ford" aria-pressed="false">Ford-class</button>
+            </div>
+          </div>
+          <div class="field">
+            <div class="fh"><span class="fl">Combat spots <span style="color:var(--ink-faint);font-weight:500">(deck capacity)</span></span><span class="fv" id="v-spots"></span></div>
+            <input type="range" id="s-spots" min="8" max="48" step="1" aria-label="Deck combat spots">
+          </div>
+          <div class="field">
+            <div class="fh"><span class="fl">Target range</span><span class="fv" id="v-rng"></span></div>
+            <input type="range" id="s-rng" min="200" max="900" step="10" value="500" aria-label="Target range nm">
+          </div>
+          <div class="field">
+            <div class="fh"><span class="fl">Op tempo</span></div>
+            <div class="picker" id="tempopick">
+              <button type="button" data-o="0" aria-pressed="true">Sustained</button>
+              <button type="button" data-o="1" aria-pressed="false">Surge</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mgroup">
+        <div class="mg-h">2 &middot; Loadout</div>
+        <div class="mission" style="margin:0;padding:0;border:0">
+          <div class="field">
+            <div class="fh"><span class="fl">A2A weapon</span></div>
+            <div class="picker" id="weappick">
+              <button type="button" data-m="amraam" aria-pressed="true">AMRAAM</button>
+              <button type="button" data-m="gunslinger" aria-pressed="false">GUNSLINGER</button>
+              <button type="button" data-m="malice" aria-pressed="false">MALICE</button>
+            </div>
+            <div class="opt-note" id="weapdesc"></div>
+          </div>
+          <div class="field">
+            <div class="fh"><span class="fl">Strike ordnance</span></div>
+            <div class="picker" id="strikepick">
+              <button type="button" data-s="direct" aria-pressed="false">Direct Attack</button>
+              <button type="button" data-s="mixed" aria-pressed="true">Mixed</button>
+              <button type="button" data-s="standoff" aria-pressed="false">Standoff</button>
+            </div>
+            <div class="opt-note" id="strikedesc"></div>
+          </div>
+        </div>
+      </div>
       <div id="manualalloc">
-        <div class="subhead">Add deck spots to each aircraft. Your mix is the wing. Tap &#9432; to learn each one.</div>
+        <div class="mg-h">3 &middot; Air Wing &mdash; allocate the deck</div>
+        <div class="subhead">Add spots to each aircraft; your mix is the wing. Tap &#9432; to learn each one.</div>
         <div class="pool" id="pool"></div>
         <div class="spotbar" id="spotbar"></div>
         <div id="roster"></div>
@@ -216,51 +344,9 @@ footer b{color:var(--ink-dim)}
         <div class="opt-note">Searches the current deck, range, tempo &amp; wing mode. The design-your-own jet is excluded.</div>
       </div>
 
-      <div class="mission">
-        <div class="field">
-          <div class="fh"><span class="fl">Carrier deck</span></div>
-          <div class="picker" id="deckpick">
-            <button type="button" data-d="nimitz" aria-pressed="true">Nimitz</button>
-            <button type="button" data-d="ford" aria-pressed="false">Ford-class</button>
-          </div>
-        </div>
-        <div class="field">
-          <div class="fh"><span class="fl">Combat spots</span><span class="fv" id="v-spots"></span></div>
-          <input type="range" id="s-spots" min="8" max="48" step="1" aria-label="Deck combat spots">
-        </div>
-        <div class="field">
-          <div class="fh"><span class="fl">Target range</span><span class="fv" id="v-rng"></span></div>
-          <input type="range" id="s-rng" min="200" max="900" step="10" value="500" aria-label="Target range nm">
-        </div>
-        <div class="field">
-          <div class="fh"><span class="fl">Op tempo</span></div>
-          <div class="picker" id="tempopick">
-            <button type="button" data-o="0" aria-pressed="true">Sustained</button>
-            <button type="button" data-o="1" aria-pressed="false">Surge</button>
-          </div>
-        </div>
-        <div class="field">
-          <div class="fh"><span class="fl">A2A weapon loadout</span></div>
-          <div class="picker" id="weappick">
-            <button type="button" data-m="amraam" aria-pressed="true">AMRAAM</button>
-            <button type="button" data-m="gunslinger" aria-pressed="false">GUNSLINGER</button>
-            <button type="button" data-m="malice" aria-pressed="false">MALICE</button>
-          </div>
-          <div class="opt-note" id="weapdesc"></div>
-        </div>
-        <div class="field">
-          <div class="fh"><span class="fl">Strike ordnance</span></div>
-          <div class="picker" id="strikepick">
-            <button type="button" data-s="direct" aria-pressed="false">Direct Attack</button>
-            <button type="button" data-s="mixed" aria-pressed="true">Mixed</button>
-            <button type="button" data-s="standoff" aria-pressed="false">Standoff</button>
-          </div>
-          <div class="opt-note" id="strikedesc"></div>
-        </div>
-      </div>
     </section>
 
-    <section class="panel" aria-label="Air operations readout" aria-live="polite">
+    <section class="panel" aria-label="Air operations readout">
       <h2>Air Ops Readout</h2>
       <div id="readout-normal">
       <div class="subhead" id="wingsum"></div>
@@ -268,10 +354,14 @@ footer b{color:var(--ink-dim)}
         <div class="rank" id="rank"></div>
         <div class="cap" id="herocap">Effect index</div>
         <div class="num" id="score">0</div>
-        <div class="unit">at target range &middot; illustrative</div>
+        <div class="unit">at target range &middot; illustrative <span class="delta z" id="delta"></span></div>
+        <div class="eff-def">Higher is better &mdash; compare wings under the same mission. Strikes that reach &times; payload &times; survivability.</div>
       </div>
       <div class="readline" id="cyc"></div>
-      <div class="readline" id="gas"></div>
+      <div class="meatball-row">
+        <div class="lens" aria-hidden="true"><span class="src l"></span><span class="src r"></span><span class="datum"></span><span class="ball" id="ball"></span></div>
+        <div class="mb-txt" id="gas"></div>
+      </div>
       <div class="readline" id="cost"></div>
       <div class="stack">
         <div class="chart-cap"><span class="t">Sorties generated / day</span><span class="leg" id="sortietot"></span></div>
@@ -332,9 +422,9 @@ footer b{color:var(--ink-dim)}
     custom:{name:"Your Design", role:"strike", custom:true, concept:1, note:"Set the spec below, then field it.",
       desc:"<b>Your Design</b> &mdash; roll your own carrier aircraft within a design-point budget. Payload, survivability, and small size all cost points &mdash; you can't max everything, because on a real deck you never can. Field it and see where it lands."},
     mq25: {name:"MQ-25 Stingray", role:"tanker", offload:15000, note:"Purpose-built tanker archetype.",
-      desc:"<b>MQ-25 Stingray</b> &mdash; a carrier-based unmanned aerial-refueling tanker archetype (large offload). It exists to stop the fleet burning strike-fighters as gas trucks &mdash; exactly the trade you're making as Air Boss."},
+      desc:"<b>MQ-25 Stingray</b> &mdash; a carrier-based unmanned tanker: large offload, long endurance. It works both ends of the cycle &mdash; outbound strike tanker AND inbound recovery tanker &mdash; and is persistent enough that it never has to yo-yo. It exists to stop the fleet burning strike-fighters as gas trucks."},
     horn5:{name:"F/A-18 5-wet", role:"tanker", offload:3500, note:"A striker robbed for gas.",
-      desc:"<b>F/A-18 5-wet</b> &mdash; a strike-fighter rigged as a buddy tanker with external tanks. It can pass gas, but offloads a fraction of a dedicated tanker, and every one you launch is a strike-fighter you're NOT striking with. The expensive way to tank."},
+      desc:"<b>F/A-18 5-wet</b> &mdash; a Super Hornet rigged as a buddy tanker. It flexes across the cycle: tops off strikers off the cat, then consolidates as the overhead recovery tanker for inbound and bolter jets &mdash; and can yo-yo (recover and relaunch). Less offload than a dedicated tanker, and every one is a striker you're not striking with, but always some value near the boat."},
     cap:  {name:"CAP fighter", role:"cap", note:"Defends the force &mdash; +survivability.",
       desc:"<b>CAP &mdash; Combat Air Patrol</b> &mdash; fighters held aloft to defend the carrier and the strike from enemy air. No ordnance on target, but they raise how much of your strike survives to reach it."},
     isr:  {name:"E-2 / EA-18G", role:"isr", note:"AEW + EW &mdash; +survivability at range.",
@@ -400,7 +490,7 @@ footer b{color:var(--ink-dim)}
   function burnFor(k){return k==="custom"?customBurn():(CAT[k].burn||14);}
   function tankerOffloadFor(k,range){                    // offload falls as the orbit pushes out from the CVN
     if(k==="mq25")return 15000*Math.max(0.20,1-Math.max(0,range-350)/750);   // turbofan tanker: 15k <=350nm -> 3k floor
-    if(k==="horn5")return 3500*Math.max(0,1-Math.max(0,range-200)/350);      // buddy pod falls off a cliff past 450nm
+    if(k==="horn5")return 3500*Math.max(0.28,1-Math.max(0,range-200)/350);   // departure tanking decays with range, but a RECOVERY-tanking floor stays (overhead the boat / yo-yo) -- always some value near the boat
     return CAT[k].offload||0;
   }
   function calcSurvBonus(nCAP,nISR,wsurv){               // saturating escort value -- first units buy the most
@@ -517,7 +607,7 @@ footer b{color:var(--ink-dim)}
     x.fillStyle="#556072";x.fillText("200",padL,H-6);x.fillText("900 nm",W-padR-42,H-6);
   }
 
-  var animFrom=0, animId=0;
+  var animFrom=0, animId=0, prevEff=null;
   function animateScore(to){var node=el("score");
     if(reduce){node.textContent=fmt(to,0);animFrom=to;return;}
     if(animId)cancelAnimationFrame(animId);
@@ -545,7 +635,13 @@ footer b{color:var(--ink-dim)}
       el("c-bud").style.width=Math.min(100,cost/BUDGET*100)+"%"; el("c-bud").className=over?"over":"";
       el("cv-bud").textContent=fmt(cost,0)+"/"+BUDGET; el("cv-bud").className="sv"+(over?" over":"");}
 
+    var de=el("delta");
+    if(prevEff!=null){var dd=r.effects-prevEff, dpp=prevEff>0?dd/prevEff*100:0;
+      if(Math.abs(dd)<0.5){de.textContent="";de.className="delta z";}
+      else{de.textContent=(dd>0?"+":"")+fmt(dd,0)+" ("+(dd>0?"+":"")+fmt(dpp,0)+"%)";de.className="delta "+(dd>0?"up":"dn");}}
+    prevEff=r.effects;
     animateScore(r.effects);
+    var bt=50+(1-r.support)*38; el("ball").style.top=bt+"%"; el("ball").classList.toggle("low",r.support<0.9);
     var rf=POOL/32, ref={}; Object.keys(REFWING).forEach(function(k){ref[k]=Math.round(REFWING[k]*rf);});
     var bench=evalWing(st.rng,ref).effects;
     el("rank").innerHTML="vs reference <b>"+(r.effects>=bench?"+":"")+fmt((r.effects-bench)/Math.max(bench,1)*100,0)+"%</b>";
@@ -554,9 +650,10 @@ footer b{color:var(--ink-dim)}
     el("cyc").innerHTML='<span class="k">Sortie cycle</span> <b>'+fmt(r.cyc,1)+' h</b> = airborne '+fmt(r.airborne,1)+
       ' h <span style="color:var(--ink-faint)">(out-and-back '+st.rng+' nm + station)</span> + deck turnaround &rarr; <b>'+
       fmt(r.rateStrike,1)+'</b> sorties/day per strike aircraft';
-    if(r.gasDemand<=0.5){el("gas").innerHTML='<span class="k">Gas in the air</span> <span class="cool">Organic reach</span> at '+st.rng+' nm &mdash; strikers reach unrefueled.';}
-    else{el("gas").innerHTML='<span class="k">Gas in the air</span> demand '+fmt(r.gasDemand/1000,0)+'k lb/day, tankers supply '+
-      fmt(r.tankerOffload/1000,0)+'k &rarr; <span class="'+(r.support>=0.999?"cool":"hot")+'">'+fmt(r.support*100,0)+'% of strikers reach '+st.rng+' nm</span>.';}
+    if(r.gasDemand<=0.5){el("gas").innerHTML='<span class="k">Ball &mdash; strikers supported</span> <span class="cool">Organic reach</span> at '+st.rng+' nm &mdash; strikers reach unrefueled; no tanking needed.';}
+    else{var head=r.tankerOffload>r.gasDemand*1.05, tail=r.support>=0.999?(head?' &mdash; <b>fully supplied; more tankers add nothing.</b>':' &mdash; supply just meets demand.'):' &mdash; <b>gas-starved</b>: add tankers or pull the range in.';
+      el("gas").innerHTML='<span class="k">Ball &mdash; strikers supported</span> demand '+fmt(r.gasDemand/1000,0)+'k lb/day &middot; supply '+
+      fmt(r.tankerOffload/1000,0)+'k &rarr; <span class="'+(r.support>=0.999?"cool":"hot")+'">'+fmt(r.support*100,0)+'% reach '+st.rng+' nm</span>'+tail;}
     el("cost").innerHTML='<span class="k">Fleet cost</span> <b>$'+fmt(r.cost/1000,1)+'B</b> for the wing &rarr; <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b> effect index per $B';
 
     var series=[["strike","#e5484d","Strike",r.strikeSorties],["tanker","#9a7bec","Tanker",r.tankerSorties],
@@ -569,7 +666,7 @@ footer b{color:var(--ink-dim)}
       leg+='<span><span class="d" style="background:'+p[1]+'"></span>'+p[2]+' '+fmt(p[3],0)+'</span>';});
     el("stackbar").innerHTML=html; el("legend").innerHTML=leg;
 
-    el("v-rng").textContent=st.rng+" nm"; el("curveleg").textContent="your wing, 200–900 nm";
+    el("v-rng").textContent=st.rng+" nm"; el("s-rng").value=st.rng; el("curveleg").textContent="your wing, 200–900 nm";
     el("v-target").textContent=st.target>0?fmt(st.target,0):"none";
     el("v-cf35").textContent="$"+st.cost.f35c+"M"; el("v-ccustom").textContent="$"+st.cost.custom+"M";
     el("weapdesc").innerHTML=(WEAPONS[st.weapon]||WEAPONS.amraam).desc;
@@ -582,8 +679,8 @@ footer b{color:var(--ink-dim)}
     var t="<b>Air Boss read.</b> ";
     if(u===0)t+="Empty deck &mdash; start adding aircraft.";
     else if(r.strikeSorties===0)t+="No strikers spotted &mdash; sorties, but nothing on target.";
-    else if(r.support<0.7 && r.deficit>0)t+="Strikers gas-starved &mdash; only "+fmt(r.support*100,0)+"% reach. Add tankers (a dedicated tanker offloads far more than a buddy pod) or pull the range in.";
-    else if(r.tankerOffload>r.gasDemand*1.7 && r.deficit>0)t+="Over-tanked &mdash; convert a tanker spot to a striker.";
+    else if(r.support<0.7 && r.gasDemand>0)t+="Strikers gas-starved &mdash; only "+fmt(r.support*100,0)+"% reach. Add tankers (a dedicated tanker offloads far more than a buddy pod) or pull the range in.";
+    else if(r.tankerOffload>r.gasDemand*1.7 && r.gasDemand>0)t+="Over-tanked &mdash; convert a tanker spot to a striker.";
     else t+="effect index "+fmt(r.effects,0)+" at "+st.rng+" nm, "+fmt(r.support*100,0)+"% of strikers reaching. Nudge the mix and watch the range curve.";
     el("trade").innerHTML=t;
     el("deckleg").textContent=deckLegendText();
@@ -777,10 +874,23 @@ footer b{color:var(--ink-dim)}
   }
   function refresh(){ render(); if(st.play===2)buildLeaderboard(); }
 
+  var PRESETS={   // one-click archetypes so a new player feels the whole thesis in 3 clicks
+    legacy:{wing:1,rng:600,alloc:{fa18:26,mq25:4,cap:6}},
+    stealth:{wing:2,rng:720,alloc:{f35c:10,mq25:6,cap:6,isr:2}},
+    cca:{wing:2,rng:620,alloc:{kf1:16,ccap:8,mq25:4,cap:6,isr:2}}
+  };
+  function applyPreset(name){var p=PRESETS[name]; if(!p)return;
+    st.wing=p.wing; st.rng=p.rng; st.play=0;
+    Object.keys(st.alloc).forEach(function(k){st.alloc[k]=0;});
+    Object.keys(p.alloc).forEach(function(k){st.alloc[k]=p.alloc[k];});
+    prevEff=null;                 // a preset jump shouldn't flash a huge misleading delta
+    applyModes();
+  }
   function applyModes(){
     document.querySelectorAll("#wingmode button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.w===st.wing?"true":"false");});
     document.querySelectorAll("#playmode button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.p===st.play?"true":"false");});
     var isRun=st.play===1, isAuto=st.play===2;
+    el("playhint").textContent=["Build & tune your wing; read the effect index at range.","Watch cyclic ops run the day + a 24-hour sortie tally.","Auto-Boss searches wing mixes and ranks the best (heuristic search)."][st.play];
     el("manualalloc").classList.toggle("hide",isAuto); el("optctl").classList.toggle("hide",!isAuto);
     el("readout-normal").classList.toggle("hide",isAuto); el("leaderboard").classList.toggle("hide",!isAuto);
     el("launch").classList.toggle("hide",!isRun); el("clock").classList.toggle("hide",!isRun);
@@ -810,6 +920,8 @@ footer b{color:var(--ink-dim)}
     st.strike=b.dataset.s;document.querySelectorAll("#strikepick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});refresh();});});
   el("autoselect").addEventListener("click",buildLeaderboard);
   el("launch").addEventListener("click",runDay);
+  document.querySelectorAll(".preset").forEach(function(b){b.addEventListener("click",function(){applyPreset(b.dataset.preset);});});
+  el("howtox").addEventListener("click",function(){el("howto").classList.add("hide");});
   el("share").addEventListener("click",function(){
     var r=evalWing(st.rng), mix=activeKeys().filter(function(k){return (st.alloc[k]||0)>0;}).map(function(k){return st.alloc[k]+"x "+CAT[k].name;});
     var txt="RockWorx — Air Boss ["+["Skirmish","Standard","Full"][st.wing]+", "+DECKS[DECK].name+"]\nWing: "+mix.join(", ")+
@@ -824,7 +936,7 @@ footer b{color:var(--ink-dim)}
   function tipsInit(){   // hover descriptions on every control
     var T={
       w:{0:"Skirmish: strike + tankers only — the lean package",1:"Standard: adds CAP fighters for air defense",2:"Full Wing: adds ISR/EW — the complete toolkit"},
-      p:{0:"Planner: build & tune your wing, read effects at range",1:"Run the Day: watch cyclic ops + a 24-hour sortie tally",2:"Auto-Boss: let the computer search wing mixes and rank them"},
+      p:{0:"Build Wing: build & tune your wing, read effects at range",1:"Simulate Day: watch cyclic ops + a 24-hour sortie tally",2:"Optimize Wing: let Auto-Boss search wing mixes and rank them"},
       d:{nimitz:"Nimitz-class — about 44 flight-deck spots",ford:"Ford-class — a larger, faster-cycling deck"},
       o:{0:"Sustained: a pace-yourself flying day (~1.5 sorties/jet)",1:"Surge: a max-effort day (~2.6 sorties/jet)"},
       m:{amraam:"AMRAAM (AIM-120): medium-range, big magazine — best raw effect",gunslinger:"GUNSLINGER (AIM-174B): long-range SM-6 — survivability at range",malice:"MALICE (AIM-424): very-long-range LRAAM — deepest standoff"},
