@@ -405,7 +405,7 @@ footer b{color:var(--ink-dim)}
     and a per-jet cap &mdash; about 1.2&ndash;1.6 sorties/jet sustained, ~2.6 surge (anchored to the 1997 USS Nimitz surge).
     Strikers past ~450 nm need tanker gas
     <span style="font-family:var(--mono)">(deficit &divide; offload)</span> pooled across the wing &mdash; unsupplied strikers
-    don't reach. CAP and ISR/EW spend spots to raise survivability; <b>standoff ordnance's survivability edge widens past 400 nm</b>, and the <b>"under fire"</b> line applies attrition (loss/sortie &asymp; 1 &minus; survivability) to show daily losses and how long the deck sustains. <b>Effect index = strikes that reach &times; payload
+    don't reach. CAP and ISR/EW spend spots to raise survivability; <b>standoff ordnance's survivability edge widens past 400 nm</b>, and the <b>"under fire"</b> line applies attrition (loss/sortie scales with 1 &minus; survivability) to show daily losses and how long the deck sustains. <b>Effect index = strikes that reach &times; payload
     &times; survivability</b>, summed across the mix, compared to a fixed reference wing. Every coefficient here is fictional
     and chosen for teaching, not calibrated to real platforms &mdash; treat named aircraft as archetypes, not specifications.
     <b>Not operational analysis and not for planning.</b> RockWorx Aerospace &mdash; a give-away.
@@ -673,9 +673,9 @@ footer b{color:var(--ink-dim)}
       el("gas").innerHTML='<span class="k">Ball &mdash; strikers supported</span> demand '+fmt(r.gasDemand/1000,0)+'k lb/day &middot; supply '+
       fmt(r.tankerOffload/1000,0)+'k &rarr; <span class="'+(r.support>=0.999?"cool":"hot")+'">'+fmt(r.support*100,0)+'% reach '+st.rng+' nm</span>'+tail;}
     el("cost").innerHTML='<span class="k">Fleet cost</span> <b>$'+fmt(r.cost/1000,1)+'B</b> for the wing &rarr; <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b> effect index per $B';
-    // Tier-3 attrition: loss/sortie = 1 - survivability; cheap/uncrewed high-surv wings sustain far longer under fire
+    // Tier-3 attrition (multi-day campaign teaching, not per-sortie realism): loss/sortie = 0.30 x (1 - survivability)
     if(r.strikeSorties<=0.05){el("atr").innerHTML='<span class="k">Under fire</span> no strike sorties &mdash; nothing exposed to attrition.';}
-    else{var pLoss=Math.max(0.005,1-r.meanSurv), lost=r.strikeSorties*pLoss, effSort=r.strikeSorties*(1-pLoss),
+    else{var pLoss=Math.max(0.005,0.30*(1-r.meanSurv)), lost=r.strikeSorties*pLoss, effSort=r.strikeSorties*(1-pLoss),
       sustain=Math.min(30,POOL/Math.max(0.1,lost)), col=pLoss>=0.15?'var(--over)':(pLoss>=0.06?'var(--foul)':'var(--good)');
       el("atr").innerHTML='<span class="k">Under fire</span> <b style="color:'+col+'">'+fmt(pLoss*100,1)+'%</b> loss/sortie &rarr; <b>'+fmt(lost,1)+
         '</b> lost/day, <b>'+fmt(effSort,0)+'</b> effective strike sorties &middot; deck sustains <b>'+(sustain>=30?'30+':fmt(sustain,0))+'</b> days';}
