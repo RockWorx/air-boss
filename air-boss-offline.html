@@ -1015,5 +1015,12 @@ footer b{color:var(--ink-dim)}
   }
   tipsInit();
   applyModes();
+  // Additive, behavior-neutral test export: a no-op global handle that lets an
+  // out-of-browser regression harness drive the SHIPPED model (evalWing/objVal)
+  // directly. Creates one window property; changes no model or DOM behavior.
+  if(typeof window!=="undefined"){window.__airbossTest={evalWing:evalWing,objVal:objVal,st:st,
+    WEAPONS:WEAPONS,STRIKES:STRIKES,CAT:CAT,DECKS:DECKS,
+    setDeck:function(d){DECK=d;POOL=DECKS[d].spots;},setPool:function(p){POOL=p;},
+    getDeck:function(){return DECK;},getPool:function(){return POOL;}};}
 })();
 </script>
