@@ -466,10 +466,10 @@ footer b{color:var(--ink-dim)}
         var a=CAT[k], n=st.alloc[k]||0, atMax=used()>=POOL;
         var row=document.createElement("div"); row.className="ac";
         row.innerHTML='<div class="ac-nm">'+a.name+(a.custom?' <span class="tag ghost">CUSTOM</span>':(a.concept?' <span class="tag">CONCEPT</span>':''))+
-          ' <button type="button" class="info" aria-label="About '+a.name+'" aria-expanded="'+(st.open[k]?'true':'false')+'">i</button></div>'+
-          '<div class="stepper"><button type="button" aria-label="less '+a.name+'"'+(n<=0?' disabled':'')+'>&minus;</button>'+
+          ' <button type="button" class="info" title="About '+a.name+'" aria-label="About '+a.name+'" aria-expanded="'+(st.open[k]?'true':'false')+'">i</button></div>'+
+          '<div class="stepper"><button type="button" title="Remove a deck spot from '+a.name+'" aria-label="less '+a.name+'"'+(n<=0?' disabled':'')+'>&minus;</button>'+
           '<span class="n'+(n<=0?' zero':'')+'">'+n+'</span>'+
-          '<button type="button" aria-label="more '+a.name+'"'+(atMax?' disabled':'')+'>+</button></div>'+
+          '<button type="button" title="Add a deck spot to '+a.name+'" aria-label="more '+a.name+'"'+(atMax?' disabled':'')+'>+</button></div>'+
           '<div class="ac-note">'+a.note+'</div>';
         var bs=row.querySelectorAll(".stepper button");
         bs[0].addEventListener("click",function(){if((st.alloc[k]||0)>0){st.alloc[k]--;buildRoster();render();}});
@@ -763,7 +763,7 @@ footer b{color:var(--ink-dim)}
       var total=r.strikeSorties+r.tankerSorties+r.capSorties+r.isrSorties;
       var aria='Load rank '+(i+1)+' wing: '+activeKeys().filter(function(k){return (a[k]||0)>0;}).map(function(k){return a[k]+' '+CAT[k].name;}).join(", ");
       html+='<div class="lb-row"><div class="lb-top"><span class="lb-rank">'+(i+1)+'</span><span class="lb-metric">'+metric+
-        '</span><button class="lb-load" data-i="'+i+'" aria-label="'+aria.replace(/"/g,"")+'">Load wing &#9654;</button></div><div class="lb-mix">'+chips+'</div>'+
+        '</span><button class="lb-load" data-i="'+i+'" title="Load this wing into the Planner" aria-label="'+aria.replace(/"/g,"")+'">Load wing &#9654;</button></div><div class="lb-mix">'+chips+'</div>'+
         '<div class="lb-stats"><span>effect <b>'+fmt(r.effects,0)+'</b></span><span>sorties/day <b>'+fmt(total,0)+
         '</b></span><span>reach <b>'+fmt(r.support*100,0)+'%</b></span><span>surv <b>'+fmt(r.meanSurv*100,0)+
         '%</b></span><span>gas <b>'+fmt(r.gasDemand/1000,0)+'k</b></span><span>cost <b>$'+fmt(r.cost/1000,1)+'B</b></span><span>eff/$B <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b></span><span>spots <b>'+t.spots+'/'+POOL+'</b></span></div></div>';
@@ -820,6 +820,28 @@ footer b{color:var(--ink-dim)}
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fail);else fail();
   });
   window.addEventListener("resize",function(){drawCurve(); if(st.play===1 && !running)drawDeckFrame(0);});
+
+  function tipsInit(){   // hover descriptions on every control
+    var T={
+      w:{0:"Skirmish: strike + tankers only — the lean package",1:"Standard: adds CAP fighters for air defense",2:"Full Wing: adds ISR/EW — the complete toolkit"},
+      p:{0:"Planner: build & tune your wing, read effects at range",1:"Run the Day: watch cyclic ops + a 24-hour sortie tally",2:"Auto-Boss: let the computer search wing mixes and rank them"},
+      d:{nimitz:"Nimitz-class — about 44 flight-deck spots",ford:"Ford-class — a larger, faster-cycling deck"},
+      o:{0:"Sustained: a pace-yourself flying day (~1.5 sorties/jet)",1:"Surge: a max-effort day (~2.6 sorties/jet)"},
+      m:{amraam:"AMRAAM (AIM-120): medium-range, big magazine — best raw effect",gunslinger:"GUNSLINGER (AIM-174B): long-range SM-6 — survivability at range",malice:"MALICE (AIM-424): very-long-range LRAAM — deepest standoff"},
+      s:{direct:"Direct Attack (JDAM/SDB II): many aimpoints, but you overfly the target",mixed:"Mixed: balanced bombs + standoff",standoff:"Standoff (JASSM-ER/LRASM): launch outside the defenses, survive to reach"},
+      r:{effect:"Rank by total effect index",perspot:"Rank by effect per deck spot (efficiency)",surv:"Rank by how much of the strike survives",gas:"Rank by least tanker gas per unit effect",dollar:"Rank by effect per illustrative flyaway dollar"}
+    };
+    Object.keys(T).forEach(function(a){document.querySelectorAll("[data-"+a+"]").forEach(function(b){
+      var v=b.getAttribute("data-"+a); if(T[a][v]!=null)b.title=T[a][v];});});
+    var byId={autoselect:"Search thousands of wing mixes and rank the best by your objective",
+      share:"Copy a shareable text summary of this wing",launch:"Run the 24-hour cyclic-ops animation and day tally",
+      "s-spots":"How many aircraft the deck can spot at once",
+      "s-rng":"Distance to the target — farther = longer cycles + more gas",
+      "s-target":"Minimum effect index a wing must deliver to make the leaderboard",
+      "s-cf35":"F-35C unit cost (adjust ±15%)","s-ccustom":"Your custom jet's unit cost"};
+    Object.keys(byId).forEach(function(id){var e=el(id);if(e)e.title=byId[id];});
+  }
+  tipsInit();
   applyModes();
 })();
 </script>
