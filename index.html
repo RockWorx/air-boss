@@ -586,6 +586,7 @@ footer b{color:var(--ink-dim)}
     else if(r.tankerOffload>r.gasDemand*1.7 && r.deficit>0)t+="Over-tanked &mdash; convert a tanker spot to a striker.";
     else t+="effect index "+fmt(r.effects,0)+" at "+st.rng+" nm, "+fmt(r.support*100,0)+"% of strikers reaching. Nudge the mix and watch the range curve.";
     el("trade").innerHTML=t;
+    el("deckleg").textContent=deckLegendText();
     deckPreview();
   }
 
@@ -675,6 +676,7 @@ footer b{color:var(--ink-dim)}
       fmt(st.tempo?0.78:0.62,2)+' availability), while CAP / tanker / ISR cycle faster on their own shorter tempos. '+
       fmt(r.support*100,0)+'% of strikers reach '+st.rng+' nm. Illustrative model.</div></div>';
   }
+  function deckLegendText(){return "Strike: "+(STRIKES[st.strike]||STRIKES.mixed).name+" · A2A: "+(WEAPONS[st.weapon]||WEAPONS.amraam).name;}
   function deckPreview(){ if(st.play===1 && !running){ el("daytally").classList.add("hide"); buildDeckAgents(); if(!reduce)drawDeckFrame(0); } }
 
   var running=false;
@@ -682,7 +684,7 @@ footer b{color:var(--ink-dim)}
     if(running)return;running=true;
     buildDeckAgents(); el("daytally").classList.add("hide");
     var r=evalWing(st.rng),target=r.effects,cpd=r.events,launch=el("launch");
-    launch.disabled=true;launch.textContent="Cycling…";el("deckleg").textContent="flight ops underway…";
+    launch.disabled=true;launch.textContent="Cycling…";el("deckleg").textContent=deckLegendText();
     var start=performance.now(),dur=reduce?1:7000;
     function step(t){var k=Math.min(1,(t-start)/dur),gp=(t-start)/2000,hours=k*24,cyc=Math.floor(k*cpd);
       if(!reduce)drawDeckFrame(gp);
@@ -690,7 +692,7 @@ footer b{color:var(--ink-dim)}
       el("score").textContent=fmt(target*k,0);
       if(k<1)requestAnimationFrame(step);
       else{running=false;launch.disabled=false;launch.textContent="Re-run the day ▶";el("score").textContent=fmt(target,0);animFrom=target;
-        el("clock").textContent="T+24:00 — "+fmt(cpd,0)+" cycles complete";el("deckleg").textContent="day complete — "+fmt(cpd,0)+" cycles";
+        el("clock").textContent="T+24:00 — "+fmt(cpd,0)+" cycles complete";el("deckleg").textContent=deckLegendText();
         if(!reduce)drawDeckFrame(dur/2000);
         el("daytally").innerHTML=buildTally(r); el("daytally").classList.remove("hide");}}
     requestAnimationFrame(step);
@@ -784,7 +786,7 @@ footer b{color:var(--ink-dim)}
     el("launch").classList.toggle("hide",!isRun); el("clock").classList.toggle("hide",!isRun);
     el("herocap").textContent=isRun?"Effect index (24h run)":"Effect index";
     el("planchart").classList.toggle("hide",isRun); el("deckwrap").classList.toggle("hide",!isRun);
-    if(isRun)el("deckleg").textContent="press Launch the day";
+    if(isRun)el("deckleg").textContent=deckLegendText();
     trimToPool(); buildRoster(); refresh();
   }
   document.querySelectorAll("#wingmode button").forEach(function(b){b.addEventListener("click",function(){st.wing=+b.dataset.w;applyModes();});});
