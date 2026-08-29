@@ -448,15 +448,16 @@ footer b{color:var(--ink-dim)}
   // Tier-2 (agy #181): type-specific clean radius (unrefueled combat radius, nm) + burn (lb fuel / extra nm round-trip)
   CAT.f35c.clean=650; CAT.f35c.burn=13.5; CAT.fa18.clean=420; CAT.fa18.burn=16.5;
   CAT.kf1.clean=550;  CAT.kf1.burn=8.0;   CAT.ccap.clean=720; CAT.ccap.burn=9.5;
+  CAT.f35c.internal=1; CAT.kf1.internal=1; CAT.ccap.internal=1;  // LO internal-bay carriage (F-35C carries 2 MALICE internally); Super Hornet carries externally
   // Air-to-air weapon loadout -- real Navy AAMs. Trade: AMRAAM = magazine depth (more shots -> raw effect);
   // the long-range AAMs carry fewer/bigger rounds but kill the archer at range -> higher striker survivability.
   var WEAPONS={
-    amraam:{name:"AMRAAM",dsg:"AIM-120",leth:1.06,surv:0.00,
-      desc:"AIM-120 AMRAAM &mdash; the proven medium-range workhorse. A jet carries many, so more shots per sortie: best raw effect, no long-range standoff. (Illustrative model.)"},
-    gunslinger:{name:"GUNSLINGER",dsg:"AIM-174B",leth:1.00,surv:0.08,
-      desc:"AIM-174B &lsquo;Gunslinger&rsquo; &mdash; an air-launched SM-6 on the F/A-18E/F, the Navy's first dedicated long-range AAM since the Phoenix (published range is classified). Fewer, bigger rounds, but killing the archer at range means more strikers survive. (Illustrative model.)"},
-    malice:{name:"MALICE",dsg:"AIM-424",leth:0.94,surv:0.14,
-      desc:"AIM-424 &lsquo;Malice&rsquo; &mdash; a very-long-range LRAAM revealed at Tailhook 2026 (specifics not yet public). Modeled as the deepest standoff and best survivability at range, at the fewest rounds. (Illustrative archetype.)"}
+    amraam:{name:"AMRAAM",dsg:"AIM-120",leth:1.06,surv:0.00,wezK:0,gasFrac:0.05,bayFits:1,
+      desc:"AIM-120D AMRAAM &mdash; the proven medium-BVR workhorse (~355 lb, R_max ~90 nm). A jet carries many, so more shots per sortie: best raw effect, shortest reach, lightest gas load. (Illustrative model; A2A-STD-001.)"},
+    gunslinger:{name:"GUNSLINGER",dsg:"AIM-174B",leth:0.94,surv:0.06,wezK:2.2,gasFrac:0.22,
+      desc:"AIM-174B &lsquo;Gunslinger&rsquo; &mdash; an air-launched SM-6 (~3,300 lb, R_max ~200-250 nm), the Navy's first dedicated long-range AAM since the Phoenix. Kills the archer far out (strong survivability that grows with range), but the heavy 2-spot round is the biggest gas hog on the deck &mdash; bring tankers. Fewest shots, and external-only (too big for any internal bay, so even a stealth jet pays the drag). (Illustrative model; A2A-STD-001.)"},
+    malice:{name:"MALICE",dsg:"AIM-424",leth:0.98,surv:0.08,wezK:2.7,gasFrac:0.12,bayFits:1,
+      desc:"AIM-424 &lsquo;Malice&rsquo; &mdash; a dedicated very-long-range LRAAM (revealed Tailhook 2026; specifics notional). The biggest WEZ: its survivability edge climbs the deeper / more-defended the target, at the fewest rounds. Lighter than the SM-6, so a moderate gas cost &mdash; the deep-strike survivability specialist. Fits the F-35C bay (2 internal): stealth jets carry it with almost no drag penalty; a Super Hornet hangs it externally and pays the gas. (Illustrative archetype; A2A-STD-001.)"}
   };
   // Air-to-GROUND strike ordnance -- a mass-vs-standoff trade (parallel to the A2A loadout).
   // sleth = strike throughput (aimpoints/pounds delivered); ssurv = survivability from NOT overflying the target.
@@ -514,6 +515,18 @@ footer b{color:var(--ink-dim)}
     if(type==="direct")  return base*(1+0.50*deep);       // direct penalty deepens: -0.10 -> -0.15 at 900
     return base;                                           // mixed: flat
   }
+  function weaponSurvBonus(weapon,range){                // A2A weapon survivability, now WEZ/range-textured
+    var W=WEAPONS[weapon]||WEAPONS.amraam;                // a bigger-WEZ weapon kills the archer farther out,
+    var deep=Math.max(0,range-400)/500;                   // so it protects the strike more the deeper it goes
+    return W.surv*(1+(W.wezK||0)*deep);                   // AMRAAM flat; GUNSLINGER +0.08->0.13; MALICE +0.14->0.27 at 900
+  }
+  function weaponGasFrac(weapon){                        // A2A weapon weight/drag -> fractional clean-radius cut
+    return (WEAPONS[weapon]||WEAPONS.amraam).gasFrac||0;  // A2A-STD-001: AMRAAM 0.05, MALICE 0.12, GUNSLINGER 0.22 (SM-6)
+  }
+  function weaponGasFor(acKey,weapon){                   // internal (LO bay) carriage cancels most of the drag penalty
+    var f=weaponGasFrac(weapon), a=CAT[acKey]||{}, W=WEAPONS[weapon]||WEAPONS.amraam;
+    return (a.internal && W.bayFits) ? f*0.2 : f;         // F-35C/CCA carry AMRAAM+MALICE internally -> ~no drag; SM-6 is external-only
+  }
   function trimToPool(){var g=0;while(used()>POOL && g++<800){var ks=activeKeys(),big=ks[0];
     ks.forEach(function(k){if((st.alloc[k]||0)>(st.alloc[big]||0))big=k;});
     if((st.alloc[big]||0)>0)st.alloc[big]--; else break;}}
@@ -547,10 +560,10 @@ footer b{color:var(--ink-dim)}
       else if(a.role==="cap"){nCAP+=n;} else if(a.role==="isr"){nISR+=n;}
     });
     var gasDemand=0;                                     // per-type: each striker's own clean radius + burn
-    byType.forEach(function(x){gasDemand+=x.ss*Math.max(0,range-cleanFor(x.key))*burnFor(x.key);});
+    byType.forEach(function(x){gasDemand+=x.ss*Math.max(0,range-cleanFor(x.key)*(1-weaponGasFor(x.key,st.weapon)))*burnFor(x.key);});
     var support=gasDemand>0?Math.min(1,tankerOffload/gasDemand):1;
     var W=WEAPONS[st.weapon]||WEAPONS.amraam, SW=STRIKES[st.strike]||STRIKES.mixed;
-    var survBonus=calcSurvBonus(nCAP,nISR,W.surv+strikeStandoffBonus(st.strike,range)), effects=0, survNum=0, survDen=0;
+    var survBonus=calcSurvBonus(nCAP,nISR,weaponSurvBonus(st.weapon,range)+strikeStandoffBonus(st.strike,range)), effects=0, survNum=0, survDen=0;
     byType.forEach(function(x){var surv=Math.min(0.98,x.s.surv/100+survBonus);
       effects += x.ss*support*(x.s.pay/1000)*(0.35+0.65*surv)*x.pen;
       survNum+=x.ss*x.s.pay*surv; survDen+=x.ss*x.s.pay;});
