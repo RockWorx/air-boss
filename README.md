@@ -12,11 +12,14 @@ It is a **reduced-order operations-analysis model**, deliberately abstracted for
 coefficient is illustrative and not calibrated to real platforms. **Not operational analysis and not for
 planning.** A RockWorx give-away.
 
-## Play offline
+## Play offline (no analytics)
 
-`index.html` is a single self-contained file — no server, no internet, no external assets. Download it
-and open it in any browser; it runs fully offline. Copy it to a thumb drive or an air-gapped machine and
-it just works.
+Download **[`air-boss-offline.html`](air-boss-offline.html)** — a single self-contained file with no
+server, no internet, and no external assets or trackers. Open it in any browser; it runs fully offline.
+Copy it to a thumb drive or an air-gapped machine and it just works.
+
+The hosted page above includes privacy-first, cookieless **Cloudflare Web Analytics** (aggregate visit
+counts only — no personal data, no consent banner needed). The offline file has none of that.
 
 ## What's modeled
 
