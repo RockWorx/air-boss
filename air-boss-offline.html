@@ -373,6 +373,7 @@ footer b{color:var(--ink-dim)}
       </div>
       <div class="readline" id="cost"></div>
       <div class="readline" id="atr"></div>
+      <div class="readline" id="mag"></div>
       <div class="stack">
         <div class="chart-cap"><span class="t">Sorties generated / day</span><span class="leg" id="sortietot"></span></div>
         <div class="stackbar" id="stackbar"></div>
@@ -416,8 +417,9 @@ footer b{color:var(--ink-dim)}
 (function(){
   "use strict";
   var CRUISE=480, STATION=0.5, CLEAN=450, BURN=14, BUDGET=100;
-  var DECKS={nimitz:{name:"Nimitz-class",spots:44,turnAdj:0},
-             ford:{name:"Ford-class",spots:48,turnAdj:-3}};
+  var KFEED=160, A2A_SHOTS_PER_SORTIE=2;   // A2A sustainment: illustrative deck ordnance-move cap (rounds/day, K_feed) + admitted shots per threatened sortie
+  var DECKS={nimitz:{name:"Nimitz-class",spots:44,turnAdj:0,ordMult:1.0},
+             ford:{name:"Ford-class",spots:48,turnAdj:-3,ordMult:2.2}};   // Ford AWE ~2.2x weapons throughput (agy #194)
   var DECK="nimitz", POOL=DECKS[DECK].spots;
   var REFWING={f35c:4,fa18:14,mq25:6,cap:6,isr:2};
   var REFDESC="Reference wing (fixed): 4 F-35C, 14 Super Hornet, 6 MQ-25, 6 CAP, 2 ISR/EW.";
@@ -452,12 +454,12 @@ footer b{color:var(--ink-dim)}
   // Air-to-air weapon loadout -- real Navy AAMs. Trade: AMRAAM = magazine depth (more shots -> raw effect);
   // the long-range AAMs carry fewer/bigger rounds but kill the archer at range -> higher striker survivability.
   var WEAPONS={
-    amraam:{name:"AMRAAM",dsg:"AIM-120",leth:1.06,surv:0.00,wezK:0,gasFrac:0.05,bayFits:1,
-      desc:"AIM-120D AMRAAM &mdash; the proven medium-BVR workhorse (~355 lb, R_max ~90 nm). A jet carries many, so more shots per sortie: best raw effect, shortest reach, lightest gas load. (Illustrative model; A2A-STD-001.)"},
-    gunslinger:{name:"GUNSLINGER",dsg:"AIM-174B",leth:0.94,surv:0.06,wezK:2.2,gasFrac:0.22,
-      desc:"AIM-174B &lsquo;Gunslinger&rsquo; &mdash; an air-launched SM-6 (~3,300 lb, R_max ~200-250 nm), the Navy's first dedicated long-range AAM since the Phoenix. Kills the archer far out (strong survivability that grows with range), but the heavy 2-spot round is the biggest gas hog on the deck &mdash; bring tankers. Fewest shots, and external-only (too big for any internal bay, so even a stealth jet pays the drag). (Illustrative model; A2A-STD-001.)"},
-    malice:{name:"MALICE",dsg:"AIM-424",leth:0.98,surv:0.08,wezK:2.7,gasFrac:0.12,bayFits:1,
-      desc:"AIM-424 &lsquo;Malice&rsquo; &mdash; a dedicated very-long-range LRAAM (revealed Tailhook 2026; specifics notional). The biggest WEZ: its survivability edge climbs the deeper / more-defended the target, at the fewest rounds. Lighter than the SM-6, so a moderate gas cost &mdash; the deep-strike survivability specialist. Fits the F-35C bay (2 internal): stealth jets carry it with almost no drag penalty; a Super Hornet hangs it externally and pays the gas. (Illustrative archetype; A2A-STD-001.)"}
+    amraam:{name:"AMRAAM",dsg:"AIM-120",leth:1.06,surv:0.00,wezK:0,gasFrac:0.05,bayFits:1,burden:1.0,mag:200,
+      desc:"AIM-120D AMRAAM &mdash; the proven medium-BVR workhorse (~355 lb). A jet carries many and the deck moves them fast, so a <b>deep, sustainable magazine</b> (~200 rounds): best raw effect, shortest reach, lightest gas, and it never runs dry. The volume shooter. (Illustrative; A2A-STD-001. `leth` is an escort-throughput proxy, not literal lethality.)"},
+    gunslinger:{name:"GUNSLINGER",dsg:"AIM-174B",leth:0.94,surv:0.10,wezK:3.0,gasFrac:0.22,burden:7.0,mag:20,
+      desc:"AIM-174B &lsquo;Gunslinger&rsquo; &mdash; an air-launched SM-6 (~3,300 lb), the Navy's first dedicated long-range AAM since the Phoenix. The <b>longest reach / best single shot</b> &mdash; kills the archer farthest out. But it's a scarce, exquisite sniper round: ~20 in the magazine, a <b>7&times; deck-handling burden</b> (one per heavy skid, crane, blocks taxiways), external-only, and the biggest gas hog. <b>You Winchester it fast</b> &mdash; it wins a small, deep, high-value strike, not a wing-wide fight. (Illustrative; A2A-STD-001 + agy deck-ordnance brief.)"},
+    malice:{name:"MALICE",dsg:"AIM-424",leth:0.98,surv:0.06,wezK:1.8,gasFrac:0.12,bayFits:1,burden:1.4,mag:64,
+      desc:"AIM-424 &lsquo;Malice&rsquo; &mdash; a notional dedicated LRAAM archetype (revealed Tailhook 2026; specifics notional). The <b>bay-compatible middle</b>: good reach that grows with range, a moderate magazine (~64), moderate deck burden and gas &mdash; and a stealth jet can carry it <b>internally</b> with almost no drag penalty (a Super Hornet hangs it externally and pays). The deep-strike option that still sustains. (Illustrative archetype; A2A-STD-001.)"}
   };
   // Air-to-GROUND strike ordnance -- a mass-vs-standoff trade (parallel to the A2A loadout).
   // sleth = strike throughput (aimpoints/pounds delivered); ssurv = survivability from NOT overflying the target.
@@ -527,6 +529,9 @@ footer b{color:var(--ink-dim)}
     var f=weaponGasFrac(weapon), a=CAT[acKey]||{}, W=WEAPONS[weapon]||WEAPONS.amraam;
     return (a.internal && W.bayFits) ? f*0.2 : f;         // F-35C/CCA carry AMRAAM+MALICE internally -> ~no drag; SM-6 is external-only
   }
+  function threatFactor(range){                          // admitted air-opposition proxy: fraction of strike sorties threatened
+    return Math.max(0.30,Math.min(0.85,0.30+0.55*(range-200)/700));  // range is a WEAK stand-in for contest level, bounded 0.30-0.85
+  }
   function trimToPool(){var g=0;while(used()>POOL && g++<800){var ks=activeKeys(),big=ks[0];
     ks.forEach(function(k){if((st.alloc[k]||0)>(st.alloc[big]||0))big=k;});
     if((st.alloc[big]||0)>0)st.alloc[big]--; else break;}}
@@ -563,8 +568,19 @@ footer b{color:var(--ink-dim)}
     byType.forEach(function(x){gasDemand+=x.ss*Math.max(0,range-cleanFor(x.key)*(1-weaponGasFor(x.key,st.weapon)))*burnFor(x.key);});
     var support=gasDemand>0?Math.min(1,tankerOffload/gasDemand):1;
     var W=WEAPONS[st.weapon]||WEAPONS.amraam, SW=STRIKES[st.strike]||STRIKES.mixed;
-    var survBonus=calcSurvBonus(nCAP,nISR,weaponSurvBonus(st.weapon,range)+strikeStandoffBonus(st.strike,range)), effects=0, survNum=0, survDen=0;
-    byType.forEach(function(x){var surv=Math.min(0.98,x.s.surv/100+survBonus);
+    // Tier-4 A2A sustainment (magazine depth x deck throughput): finite rounds + a finite deck feed cap how much
+    // of the force gets the weapon's archer-denial; a scarce/bulky round (SM-6) Winchesters fast, so its best-
+    // single-shot value is force-limited (agy #194 deck-ordnance brief + A2A-STD-001; codex-hardened spec v2).
+    var feedCapDay=KFEED*(DECKS[DECK].ordMult||1)/(W.burden||1);   // rounds/day the deck can move+build for A2A
+    var a2aAvail=Math.min(W.mag||9999, feedCapDay);               // 1-day horizon: min(inventory, deck feed)
+    var a2aDemand=strikeSorties*threatFactor(range)*A2A_SHOTS_PER_SORTIE;  // threatened sorties x admitted shots/sortie
+    var coverage=a2aDemand>0.001?Math.min(1,a2aAvail/a2aDemand):1;         // fraction covered before Winchester
+    // survivability -- MULTIPLICATIVE threat channels (air x surface); neither is erased by a hard cap
+    var escortMit=0.22*(1-Math.exp(-0.35*nCAP))+0.28*(1-Math.exp(-0.55*nISR));       // CAP/ISR air-threat mitigation
+    var airMit=Math.min(0.95,escortMit+weaponSurvBonus(st.weapon,range)*coverage);   // + A2A weapon, coverage-limited
+    var surfMit=strikeStandoffBonus(st.strike,range);             // strike standoff lowers surface vuln; direct attack raises it (<0)
+    var effects=0, survNum=0, survDen=0;
+    byType.forEach(function(x){var surv=Math.max(0.02,Math.min(0.995,1-(1-x.s.surv/100)*(1-airMit)*(1-surfMit)));
       effects += x.ss*support*(x.s.pay/1000)*(0.35+0.65*surv)*x.pen;
       survNum+=x.ss*x.s.pay*surv; survDen+=x.ss*x.s.pay;});
     effects*=W.leth*SW.sleth;
@@ -574,6 +590,7 @@ footer b{color:var(--ink-dim)}
     return {cyc:cyc,airborne:airborne,rateStrike:baseStrike,events:events,sps:baseStrike,
       strikeSorties:strikeSorties,tankerSorties:tankerSorties,capSorties:capSorties,isrSorties:isrSorties,
       support:support,gasDemand:gasDemand,tankerOffload:tankerOffload,effects:effects,
+      coverage:coverage,a2aAvail:a2aAvail,a2aDemand:a2aDemand,
       meanSurv:meanSurv,survScore:survScore,cost:cost,byKey:byKey};
   }
 
@@ -692,6 +709,12 @@ footer b{color:var(--ink-dim)}
       sustain=Math.min(30,POOL/Math.max(0.1,lost)), col=pLoss>=0.15?'var(--over)':(pLoss>=0.06?'var(--foul)':'var(--good)');
       el("atr").innerHTML='<span class="k">Under fire</span> <b style="color:'+col+'">'+fmt(pLoss*100,1)+'%</b> loss/sortie &rarr; <b>'+fmt(lost,1)+
         '</b> lost/day, <b>'+fmt(effSort,0)+'</b> effective strike sorties &middot; deck sustains <b>'+(sustain>=30?'30+':fmt(sustain,0))+'</b> days';}
+    // Tier-4 A2A magazine / Winchester: how much of the force the chosen A2A round can actually sustain
+    var cov=(r.coverage!=null?r.coverage:1), wn=(WEAPONS[st.weapon]||WEAPONS.amraam).name;
+    if(r.a2aDemand<=0.01){el("mag").innerHTML='<span class="k">A2A magazine</span> no threatened sorties &mdash; no rounds committed.';}
+    else if(cov>=0.995){el("mag").innerHTML='<span class="k">A2A magazine</span> '+wn+' <b style="color:var(--good)">fully sustained</b> &mdash; covers every threatened sortie; no Winchester.';}
+    else{var mcol=cov<0.4?'var(--over)':'var(--foul)';
+      el("mag").innerHTML='<span class="k">A2A magazine</span> '+wn+' covers <b style="color:'+mcol+'">'+fmt(cov*100,0)+'%</b> of threatened sorties (<b>'+fmt(r.a2aAvail,0)+'</b> rounds vs <b>'+fmt(r.a2aDemand,0)+'</b> needed) &mdash; goes <b>Winchester</b> mid-fight; spend it on the deep shots.';}
 
     var series=[["strike","#e5484d","Strike",r.strikeSorties],["tanker","#9a7bec","Tanker",r.tankerSorties],
       ["cap","#4a90d9","CAP",r.capSorties],["isr","#41c46a","ISR/EW",r.isrSorties]].filter(function(p){return activeRoles().indexOf(p[0])>=0;});
