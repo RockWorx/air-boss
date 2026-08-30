@@ -264,8 +264,8 @@ for (var okk = 0; okk < ordSizes.length; okk++) {
   var spots = 0; for (var kk in a) spots += a[kk];
   var rr = T.evalWing(ordRanges[oi], a);
   cands.push({
-    display: rr.gasDemand / Math.max(1, rr.effects),   // exactly what the leaderboard prints
-    obj: T.objVal(rr, spots)                            // exactly what the optimizer ranks by
+    display: T.gasPerEffect(rr),   // the SHIPPED gas metric (same helper the leaderboard headline + objVal call)
+    obj: T.objVal(rr, spots)       // exactly what the optimizer ranks by
   });
 }
 var orderFailures = 0;
@@ -278,6 +278,21 @@ for (var q = p + 1; q < cands.length; q++) {
 }
 console.log("  candidates = " + cands.length + "   ordering failures = " + orderFailures);
 ok(orderFailures === 0, "gas-order: displayed metric ordering == objVal ordering (0 failures)");
+
+// FAIL-CLOSED wiring: the leaderboard headline AND objVal must both route through the shipped gasPerEffect()
+// helper. If a UI-only or objective-only regression swaps in raw gas (gasDemand/1000 or gasDemand/effects
+// inline), the branch stops calling gasPerEffect and these assertions fail -- catching what a recomputed
+// numeric check cannot (codex #126).
+var SRC = fs.readFileSync(HTML_PATH, "utf8");
+var dispLine = SRC.split("\n").filter(function (l) { return l.indexOf("lb gas / effect") >= 0; })[0] || "";
+ok(/gasPerEffect\s*\(/.test(dispLine) && !/gasDemand\s*\/\s*1000/.test(dispLine),
+   "gas-wiring: leaderboard headline formats gasPerEffect(r), not raw gas");
+var objGasBranch = (SRC.match(/rankBy\s*===\s*"gas"\s*\)\s*return[^;\n]*/) || [""])[0];
+ok(/gasPerEffect\s*\(/.test(objGasBranch),
+   "gas-wiring: objVal gas branch ranks by gasPerEffect(r)");
+console.log("  leaderboard branch: " + dispLine.trim().slice(0, 70));
+console.log("  objVal gas branch : " + objGasBranch.trim().slice(0, 70));
+
 T.st.rankBy = "effect";
 console.log("");
 
