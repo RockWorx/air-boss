@@ -9,6 +9,18 @@ the cyclic-ops "ballet" run the day, read the sortie tally, see who survives und
 **▶ Play it: https://rockworx.github.io/air-boss/**
 **▶ The Gouge — animated field guide: https://rockworx.github.io/air-boss/gouge.html**
 
+## New in v3
+
+- **Three scenarios:** *War at Sea* (moving targets: speed matters), *Deep Strike Inland* (hardened
+  targets: warhead matters) and *Contested Strait Defense* (severe air opposition: protect the wing).
+- **Blackbeard / MACE** hypersonic strike option alongside heavy standoff, direct attack and mixed loads.
+- **Tanker tactics:** yo-yo, strike tanker, tanker-to-tanker consolidation (it pays only beyond a single
+  tanker's reach) and recovery tanker.
+- **The organic cliff:** how far your wing reaches with carrier gas alone, versus requesting a theater tanker.
+- **Watch mode:** press *Watch the Air Boss* (or open `#watch`) to see a scenario set up and play out --
+  then answer the question: *do you want to see the air wing surge?*
+- Help bubbles on every control, and an updated **Gouge**.
+
 It is a **reduced-order operations-analysis model**, deliberately abstracted for teaching — every
 coefficient is illustrative and not calibrated to real platforms. **Not operational analysis and not for
 planning.** A RockWorx give-away; contains no protected IP.

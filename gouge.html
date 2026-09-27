@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <title>The Gouge — Air Boss field guide — RockWorx</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -26,24 +30,26 @@ h1{font-family:var(--stencil);text-transform:uppercase;letter-spacing:.05em;font
 .brand{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-dim);font-weight:700;text-align:right}
 .brand b{color:var(--amber)}
 /* stage */
-.stage{flex:1;position:relative;margin:16px 0;min-height:400px;
+.stage{flex:1;position:relative;margin:16px 0;min-height:480px;
   background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--rule);border-radius:14px;
   box-shadow:inset 0 1px 0 #ffffff08,0 22px 50px -34px #000;overflow:hidden}
-.scene{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;gap:14px;padding:26px 30px}
-.scene.on{display:flex;animation:fade .5s ease both}
+.scene{position:absolute;inset:0;display:none;flex-direction:column;justify-content:flex-start;gap:12px;padding:24px 28px;
+  overflow-y:auto;overflow-x:hidden}
+.scene.on{display:flex;animation:fade .4s ease both}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .ev{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--ink-faint);font-weight:700}
 .ev b{color:var(--amber)}
-.sc-h{font-family:var(--stencil);text-transform:uppercase;letter-spacing:.05em;font-weight:800;font-size:clamp(22px,4.5vw,38px);
+.sc-h{font-family:var(--stencil);text-transform:uppercase;letter-spacing:.05em;font-weight:800;font-size:clamp(22px,4.5vw,36px);
   color:#fff;margin:0;line-height:1;text-wrap:balance}
-.sc-p{color:var(--ink-dim);font-size:14px;max-width:56ch;line-height:1.5} .sc-p b{color:var(--ink)} .sc-p .k{color:var(--amber);font-weight:700}
-.demo{margin-top:6px}
+.sc-p{color:var(--ink-dim);font-size:13.5px;max-width:68ch;line-height:1.5;margin:0}
+.sc-p b{color:var(--ink)} .sc-p .k{color:var(--amber);font-weight:700}
+.demo{margin-top:4px}
 /* generic bits */
-.chip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:650;color:var(--ink);background:#0b1220;
-  border:1px solid var(--rule);border-radius:8px;padding:6px 11px;margin:0 6px 6px 0}
-.chip .d{width:10px;height:10px;border-radius:2px;flex:none}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:650;color:var(--ink);background:#0b1220;
+  border:1px solid var(--rule);border-radius:8px;padding:5px 10px;margin:0 5px 5px 0}
+.chip .d{width:9px;height:9px;border-radius:2px;flex:none}
 .chip .n{font-family:var(--mono);font-weight:800;color:var(--amber);min-width:16px;text-align:right}
-.spotbar{display:flex;height:20px;border-radius:6px;overflow:hidden;border:1px solid var(--rule);background:#0b1220;max-width:520px}
+.spotbar{display:flex;height:20px;border-radius:6px;overflow:hidden;border:1px solid var(--rule);background:#0b1220;max-width:540px}
 .spotbar i{display:block;height:100%;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
 .scene.on .spotbar i{width:var(--w)}
 .big{font-family:var(--mono);font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(46px,10vw,86px);color:var(--amber);
@@ -58,12 +64,44 @@ h1{font-family:var(--stencil);text-transform:uppercase;letter-spacing:.05em;font
 @keyframes ball{0%,18%{top:50%;background:var(--meatball);box-shadow:0 0 13px var(--meatball)}
   46%,58%{top:84%;background:var(--strike);box-shadow:0 0 15px var(--strike)}88%,100%{top:50%;background:var(--meatball);box-shadow:0 0 13px var(--meatball)}}
 /* trade bars */
-.tb{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12px;color:var(--ink-dim)}
-.tb .lab{width:120px;flex:none;font-weight:600;color:var(--ink)}
-.tb .track{flex:1;max-width:360px;height:12px;border-radius:6px;background:#0b1220;border:1px solid var(--rule);overflow:hidden}
-.tb .track i{display:block;height:100%;border-radius:6px}
-.tb .track i{width:0;transition:width 1s ease}
+.tb{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:12px;color:var(--ink-dim)}
+.tb .lab{width:130px;flex:none;font-weight:600;color:var(--ink)}
+.tb .track{flex:1;max-width:360px;height:11px;border-radius:6px;background:#0b1220;border:1px solid var(--rule);overflow:hidden}
+.tb .track i{display:block;height:100%;border-radius:6px;width:0;transition:width 1s ease}
 .scene.on .tb .track i{width:var(--w)}
+/* scenarios grid */
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:4px;max-width:850px}
+.sc-card{background:#0c1420;border:1px solid var(--rule);border-radius:9px;padding:10px 12px}
+.sc-card-h{font-family:var(--stencil);font-size:13px;color:var(--amber);letter-spacing:.06em;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between}
+.sc-card-tag{font-family:var(--mono);font-size:9.5px;padding:2px 5px;border-radius:4px;background:#142030;color:var(--ink-dim);font-weight:700}
+.sc-row{font-size:11.5px;line-height:1.4;color:var(--ink-dim);margin-bottom:5px}
+.sc-row:last-child{margin-bottom:0}
+.sc-row b{color:var(--ink)}
+.sc-row.q b{color:var(--cap)}
+.sc-row.hint b{color:var(--good)}
+.sc-row.trap b{color:var(--strike)}
+/* tactics grid */
+.tac-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;max-width:740px}
+@media(max-width:640px){.tac-grid{grid-template-columns:1fr}}
+.tac-card{background:#0c1420;border:1px solid var(--rule);border-radius:8px;padding:10px 12px}
+.tac-h{font-family:var(--stencil);font-size:13px;letter-spacing:.06em;color:var(--amber);display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.tac-tag{font-family:var(--mono);font-size:10px;color:var(--tanker);font-weight:700}
+.tac-p{font-size:11.5px;line-height:1.4;color:var(--ink-dim);margin:0}
+.tac-p b{color:var(--ink)}
+/* reach box */
+.reach-box{background:#0c1420;border:1px solid var(--rule);border-radius:9px;padding:12px 14px;max-width:680px;margin-top:4px}
+.reach-row{display:flex;align-items:center;gap:12px;margin:8px 0;font-size:12px}
+.reach-lbl{width:145px;flex:none;font-weight:600;color:var(--ink)}
+.reach-track{flex:1;height:12px;border-radius:6px;background:#080d16;border:1px solid var(--rule);overflow:hidden}
+.reach-track i{display:block;height:100%;border-radius:6px;width:0;transition:width 1s ease}
+.scene.on .reach-track i{width:var(--w)}
+.reach-val{font-family:var(--mono);font-weight:800;color:var(--amber);width:65px;text-align:right;flex:none}
+/* cliff metrics */
+.cliff-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;max-width:740px}
+.cliff-card{flex:1;min-width:180px;background:#0c1420;border:1px solid var(--rule);border-radius:8px;padding:10px 12px}
+.cliff-num{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--amber);line-height:1}
+.cliff-cap{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);font-weight:700;margin-top:4px}
+.cliff-p{font-size:11px;color:var(--ink-faint);line-height:1.35;margin-top:4px}
 /* leaderboard rows */
 .lb{max-width:560px}
 .lb-row{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,#0e1826,#0c1420);border:1px solid var(--rule);
@@ -90,9 +128,11 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
 .ctl:hover{border-color:#33455e}
 .play-cta{font-size:12px;font-weight:700;color:#0a0e16;background:var(--amber);border:0;border-radius:8px;padding:8px 14px;text-decoration:none}
 .foot{color:var(--ink-faint);font-size:10.5px;text-align:center;margin-top:12px}
-@media(max-width:600px){.stage{min-height:440px}.scene{padding:20px 18px}.hl img{width:56px;height:56px}}
+@media(max-width:600px){.stage{min-height:500px}.scene{padding:18px 16px}.hl img{width:56px;height:56px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001s!important;transition:none!important}}
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <header>
@@ -107,98 +147,216 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
   </header>
 
   <div class="stage" id="stage">
-    <!-- 01 -->
+    <!-- 01: THE BRIEF -->
     <section class="scene" data-ev="01">
       <div class="ev">EVENT <b>01</b> &middot; THE BRIEF</div>
       <h2 class="sc-h">You run the air wing.</h2>
-      <p class="sc-p">A carrier deck has a <b>finite number of spots</b>. Every one you give a tanker or a fighter is a spot <span class="k">not on target</span>. Your job as <b>Air Boss</b>: turn steel into <span class="k">effect delivered at range</span>.</p>
+      <p class="sc-p">A carrier flight deck has a <b>finite number of spots</b> (44 on a Nimitz, 48 on a Ford). Every spot assigned to a dedicated tanker, fighter escort, or sensor craft is a spot <span class="k">not carrying strike ordnance</span>. Your job as <b>Air Boss</b>: balance the air wing, allocate tanker gas across mission profiles, and turn catapult steel into <span class="k">maximum combat effect delivered at range</span>.</p>
+      <div class="demo" style="margin-top:10px">
+        <span class="chip"><span class="d" style="background:var(--strike)"></span>Strike Strikers<span class="n">Ordnance</span></span>
+        <span class="chip"><span class="d" style="background:var(--tanker)"></span>Tankers<span class="n">Gas</span></span>
+        <span class="chip"><span class="d" style="background:var(--cap)"></span>CAP Escorts<span class="n">Defense</span></span>
+        <span class="chip"><span class="d" style="background:var(--isr)"></span>ISR / EW<span class="n">Sensors</span></span>
+        <div class="cap" style="margin-top:10px">Nimitz (44 spots) &middot; Ford (48 spots) &middot; 8 cyclic events / day</div>
+      </div>
     </section>
-    <!-- 02 -->
+
+    <!-- 02: SPOT THE DECK -->
     <section class="scene" data-ev="02">
       <div class="ev">EVENT <b>02</b> &middot; SPOT THE DECK</div>
       <h2 class="sc-h">Build your mix.</h2>
-      <p class="sc-p">Allocate spots across strike, tankers, CAP and ISR/EW. Stealth jets, workhorses, or small uncrewed CCAs &mdash; the mix <b>is</b> the wing.</p>
+      <p class="sc-p">Allocate spots across strike, tankers, CAP escorts, and ISR/EW. Stealth strike-fighters bring long unrefueled legs and deep survivability; workhorses turn fast on the catapults with heavy bomb loads; uncrewed CCAs offer low-cost tempo. Every airframe trades <span class="k">payload, unrefueled combat radius, survivability, and deck turn time</span>.</p>
       <div class="demo">
         <div style="margin-bottom:10px">
           <span class="chip"><span class="d" style="background:var(--strike)"></span>F-35C<span class="n">6</span></span>
           <span class="chip"><span class="d" style="background:var(--strike)"></span>Super Hornet<span class="n">14</span></span>
           <span class="chip"><span class="d" style="background:var(--tanker)"></span>MQ-25<span class="n">5</span></span>
           <span class="chip"><span class="d" style="background:var(--cap)"></span>CAP<span class="n">6</span></span>
+          <span class="chip"><span class="d" style="background:var(--isr)"></span>ISR/EW<span class="n">3</span></span>
         </div>
         <div class="spotbar">
           <i style="--w:34%;background:var(--strike)"></i><i style="--w:12%;background:var(--tanker)"></i>
-          <i style="--w:14%;background:var(--cap)"></i><i style="--w:8%;background:var(--isr)"></i><i style="--w:32%;background:#141f2e"></i>
+          <i style="--w:14%;background:var(--cap)"></i><i style="--w:7%;background:var(--isr)"></i><i style="--w:33%;background:#141f2e"></i>
         </div>
-        <div class="cap" style="margin-top:8px">Nimitz-class &middot; 44 spots</div>
+        <div class="cap" style="margin-top:8px">Nimitz-class &middot; 44 spots total &middot; 10 spots open</div>
       </div>
     </section>
-    <!-- 03 -->
+
+    <!-- 03: STRIKE ORDNANCE -->
     <section class="scene" data-ev="03">
-      <div class="ev">EVENT <b>03</b> &middot; GAS IN THE AIR</div>
-      <h2 class="sc-h">Call the ball.</h2>
-      <p class="sc-p">Strikers past their clean radius need <span class="k">tanker gas</span>, pooled across the wing. The <b>meatball</b> shows how many make it: centered &amp; green = supplied; drop &amp; red = <span class="k">gas-starved</span>. An all-strike wing delivers <b>zero</b> at long range.</p>
-      <div class="demo" style="display:flex;align-items:center;gap:22px">
-        <div class="lens"><div class="datum"></div><div class="ball"></div></div>
-        <div>
-          <div class="big" id="ballpct" style="font-size:44px">100%</div>
-          <div class="cap">strikers reaching</div>
-        </div>
-      </div>
-    </section>
-    <!-- 04 -->
-    <section class="scene" data-ev="04">
-      <div class="ev">EVENT <b>04</b> &middot; LOAD OUT</div>
-      <h2 class="sc-h">Every loadout is a trade.</h2>
-      <p class="sc-p"><b>A2A:</b> AMRAAM (magazine) vs long-range GUNSLINGER / MALICE (kill the archer, survive). <b>Strike:</b> Direct-attack JDAM (volume, overfly the target) vs Standoff JASSM-ER (fewer shots, launch outside the defenses).</p>
+      <div class="ev">EVENT <b>03</b> &middot; STRIKE ORDNANCE</div>
+      <h2 class="sc-h">Speed vs. warhead: know your target.</h2>
+      <p class="sc-p">Air-to-ground ordnance is a strict trade between <b>flight speed, warhead mass, and magazine depth</b>. The target posture dictates the weapon:</p>
       <div class="demo">
-        <div class="tb"><span class="lab">Throughput</span><span class="track"><i style="--w:82%;background:var(--strike)"></i></span></div>
-        <div class="tb"><span class="lab">Standoff / survive</span><span class="track"><i style="--w:44%;background:var(--isr)"></i></span></div>
-        <div class="cap" style="margin-top:4px">Direct Attack &mdash; volume up close</div>
-        <div class="tb" style="margin-top:14px"><span class="lab">Throughput</span><span class="track"><i style="--w:50%;background:var(--strike)"></i></span></div>
-        <div class="tb"><span class="lab">Standoff / survive</span><span class="track"><i style="--w:90%;background:var(--isr)"></i></span></div>
-        <div class="cap" style="margin-top:4px">Standoff &mdash; reach a defended target</div>
+        <div class="tb"><span class="lab">Blackbeard / MACE</span><span class="track"><i style="--w:95%;background:var(--strike)"></i></span><span class="cap" style="margin-left:8px">Mach 5+ prompt &middot; 250 lb &middot; 120 mag</span></div>
+        <div class="tb"><span class="lab">Heavy Standoff</span><span class="track"><i style="--w:35%;background:var(--tanker)"></i></span><span class="cap" style="margin-left:8px">Subsonic &middot; 1,000 lb penetrator &middot; 36 mag</span></div>
+        <div class="tb"><span class="lab">Direct Attack</span><span class="track"><i style="--w:70%;background:var(--good)"></i></span><span class="cap" style="margin-left:8px">Volume JDAM/SDB &middot; 500 lb &middot; 360 mag</span></div>
+        <p class="sc-p" style="font-size:12px;margin-top:8px">
+          <b>Time-sensitive targets:</b> Mach 5+ Blackbeard/MACE kills fleeting coordinates before they move. <b>Hardened bunkers:</b> Heavy Standoff (AGM-158) cracks concrete where small warheads fail (defeat factor 1.0 vs 0.40).
+        </p>
       </div>
     </section>
-    <!-- 05 -->
-    <section class="scene" data-ev="05">
-      <div class="ev">EVENT <b>05</b> &middot; FLY THE DAY</div>
-      <h2 class="sc-h">Run the cyclic ops.</h2>
-      <p class="sc-p">Watch the day play out: a full deck launches off the bow cats, flies the mission, recovers up the <b>port-canted angle</b>, and respots &mdash; the ballet of carrier flight ops.</p>
-      <div class="demo"><canvas id="deck" width="640" height="270" role="img" aria-label="Animated carrier flight deck: aircraft launching, recovering, respotting"></canvas></div>
-    </section>
-    <!-- 06 -->
-    <section class="scene" data-ev="06">
-      <div class="ev">EVENT <b>06</b> &middot; THE TALLY</div>
-      <h2 class="sc-h">Read the day.</h2>
-      <p class="sc-p">Sorties generated, per event, per aircraft type &mdash; and the day's <span class="k">effect index</span>. Anchored to real carrier surge/sustained rates (~1.5&ndash;2.6 sorties/jet/day), not fantasy.</p>
-      <div class="demo" style="display:flex;align-items:flex-end;gap:26px">
-        <div><div class="big" id="tallyn">0</div><div class="cap">effect index</div></div>
-        <div style="flex:1;max-width:360px">
-          <div class="tb"><span class="lab">Strike</span><span class="track"><i style="--w:60%;background:var(--strike)"></i></span></div>
-          <div class="tb"><span class="lab">Tanker</span><span class="track"><i style="--w:20%;background:var(--tanker)"></i></span></div>
-          <div class="tb"><span class="lab">CAP</span><span class="track"><i style="--w:17%;background:var(--cap)"></i></span></div>
-          <div class="cap" style="margin-top:2px">~48 sorties / day &middot; 8 cyclic events</div>
+
+    <!-- 04: TANKER TACTICS -->
+    <section class="scene" data-ev="04">
+      <div class="ev">EVENT <b>04</b> &middot; TANKER TACTICS</div>
+      <h2 class="sc-h">Beyond the single curve: four profiles.</h2>
+      <p class="sc-p">You don't just "buy gas"; you allocate tankers across <span class="k">four distinct tactical profiles</span> across the cyclic day:</p>
+      <div class="tac-grid">
+        <div class="tac-card">
+          <div class="tac-h">Yo-Yo Tanker <span class="tac-tag">~18 min mission</span></div>
+          <div class="tac-p">Launches off the bow cat, tops off outbound strikers overhead to replace climb fuel, and recovers immediately with the incoming event. Minimal deck time; near-boat fuel only.</div>
+        </div>
+        <div class="tac-card">
+          <div class="tac-h">Strike Tanker <span class="tac-tag">Enroute push</span></div>
+          <div class="tac-p">Escorts the strike package to an enroute orbit (e.g. 150–350 nm). Bridges enroute fuel deficits beyond clean combat radius, but is committed for the entire cyclic event.</div>
+        </div>
+        <div class="tac-card">
+          <div class="tac-h">Consolidation Relay <span class="tac-tag">2-ship team</span></div>
+          <div class="tac-p">Two same-type tankers launch. At 150 nm, the donor transfers fuel to the receiver and returns to recover; the receiver presses deep to hold extended orbits.</div>
+        </div>
+        <div class="tac-card">
+          <div class="tac-h">Recovery Tanker <span class="tac-tag">Safety net</span></div>
+          <div class="tac-p">Sits overhead during the recovery window for low-fuel returners and bolters. Prevents mission losses and diverts; cannot be spent on outbound strikes.</div>
         </div>
       </div>
     </section>
-    <!-- 07 -->
-    <section class="scene" data-ev="07">
-      <div class="ev">EVENT <b>07</b> &middot; ASK THE BOSS</div>
-      <h2 class="sc-h">Let Auto-Boss optimize.</h2>
-      <p class="sc-p">Don't want to hand-tune? Auto-Boss searches thousands of wing mixes and ranks the best by <b>your</b> objective &mdash; most effect, effect-per-spot, survivability, least gas, or <span class="k">effect-per-dollar</span>.</p>
-      <div class="demo lb">
-        <div class="lb-row"><span class="lb-rank">1</span><span class="lb-mx"><b>16&times; CCA-Strike</b> &middot; 8&times; CCA-Pen &middot; 4&times; MQ-25</span><span class="lb-sc">1,190</span></div>
-        <div class="lb-row"><span class="lb-rank">2</span><span class="lb-mx"><b>10&times; F-35C</b> &middot; 6&times; MQ-25 &middot; 6&times; CAP</span><span class="lb-sc">1,040</span></div>
-        <div class="lb-row"><span class="lb-rank">3</span><span class="lb-mx"><b>24&times; Super Hornet</b> &middot; 4&times; MQ-25</span><span class="lb-sc">910</span></div>
-        <div class="cap" style="margin-top:2px">ranked by effect index &middot; a heuristic search</div>
+
+    <!-- 05: WHY CONSOLIDATE? -->
+    <section class="scene" data-ev="05">
+      <div class="ev">EVENT <b>05</b> &middot; REACH IS THE TRADE</div>
+      <h2 class="sc-h">Why consolidate? Reach is the trade.</h2>
+      <p class="sc-p">Why burn two tankers to push one forward? <span class="k">Reach.</span> A tanker can only push as far as its fuel capacity minus round-trip burn and terminal recovery reserve allows:</p>
+      <div class="reach-box">
+        <div class="reach-row">
+          <span class="reach-lbl">F/A-18 5-Wet Single</span>
+          <span class="reach-track"><i style="--w:24%;background:var(--foul)"></i></span>
+          <span class="reach-val">212 nm</span>
+        </div>
+        <div class="reach-row">
+          <span class="reach-lbl">F/A-18 5-Wet Relay</span>
+          <span class="reach-track"><i style="--w:31%;background:var(--amber)"></i></span>
+          <span class="reach-val">274 nm</span>
+        </div>
+        <div class="reach-row">
+          <span class="reach-lbl">MQ-25 Stingray</span>
+          <span class="reach-track"><i style="--w:100%;background:var(--tanker)"></i></span>
+          <span class="reach-val">1,400 nm</span>
+        </div>
+        <p class="sc-p" style="font-size:12px;margin-top:8px">
+          <b>Inside single reach (&le;212 nm):</b> Consolidation <i>loses</i> &mdash; two singles deliver more total fuel (3,075 lb/day vs 2,050 lb at 150 nm).<br>
+          <b>Beyond single reach (>212 nm):</b> A single tanker cannot return with reserve (infeasible!). Consolidation is the <i>only</i> way to pass gas at 250 nm.<br>
+          <b>MQ-25:</b> Single reach (1,400 nm) already spans the theater map; buddy relay is the primary tactical trade.
+        </p>
       </div>
     </section>
-    <!-- 08 -->
-    <section class="scene cta" data-ev="08" style="align-items:flex-start">
-      <div class="ev">EVENT <b>08</b> &middot; MAN UP</div>
+
+    <!-- 06: THE ORGANIC CLIFF -->
+    <section class="scene" data-ev="06">
+      <div class="ev">EVENT <b>06</b> &middot; THE ORGANIC CLIFF</div>
+      <h2 class="sc-h">The Organic Cliff: range without the big tanker.</h2>
+      <p class="sc-p"><b>How far can the carrier strike without land-based Air Force tankers (KC-135 / KC-46)?</b></p>
+      <div class="cliff-row">
+        <div class="cliff-card">
+          <div class="cliff-num">90%</div>
+          <div class="cliff-cap">Support Floor</div>
+          <div class="cliff-p">The organic cliff marks the range where organic fuel coverage drops below 90%, or effect drops below 50% of peak.</div>
+        </div>
+        <div class="cliff-card">
+          <div class="cliff-num">-10%</div>
+          <div class="cliff-cap">Theater Dogleg Penalty</div>
+          <div class="cliff-p">Air Force tanker tracks won't come to the boat. Standoff routing imposes a 10% delivered-yield penalty on accepted gas.</div>
+        </div>
+        <div class="cliff-card">
+          <div class="cliff-num">-18%</div>
+          <div class="cliff-cap">Joint Dependency Charge</div>
+          <div class="cliff-p">Relying on external theater gas levies an additional 18% score charge on your final operational readout.</div>
+        </div>
+      </div>
+      <p class="sc-p" style="font-size:12px;margin-top:6px">
+        True operational autonomy is <b>organic</b>: carrier aviation earns its keep by delivering punch without relying on vulnerable land bases.
+      </p>
+    </section>
+
+    <!-- 07: SCENARIOS -->
+    <section class="scene" data-ev="07">
+      <div class="ev">EVENT <b>07</b> &middot; OPERATIONAL SCENARIOS</div>
+      <h2 class="sc-h">Three operational tests: sea, inland &amp; strait.</h2>
+      <p class="sc-p">Three curated missions test your air wing mix, weapon selection, and tanker doctrine:</p>
+      <div class="sc-grid">
+        <div class="sc-card">
+          <div class="sc-card-h">War at Sea <span class="sc-card-tag">150 nm Orbit</span></div>
+          <div class="sc-row q"><b>Question:</b> Can you kill relocatable naval surface combatants before coordinates go cold?</div>
+          <div class="sc-row hint"><b>Hint:</b> Mach 5+ Blackbeard / MACE prompt strike + forward ISR/EW cueing + strike tankers at 150 nm.</div>
+          <div class="sc-row trap"><b>Trap:</b> Subsonic Heavy Standoff without ISR &mdash; long flight time lets targets move, wasting 1,000-lb warheads on empty water.</div>
+        </div>
+        <div class="sc-card">
+          <div class="sc-card-h">Deep Strike Inland <span class="sc-card-tag">350 nm Orbit</span></div>
+          <div class="sc-row q"><b>Question:</b> Can you penetrate defended airspace to crack hardened command bunkers?</div>
+          <div class="sc-row hint"><b>Hint:</b> Heavy Standoff (1,000 lb penetrator) + F-35C stealth + MQ-25 strike tankers holding 350 nm (buddy relay is limited to 274.2 nm).</div>
+          <div class="sc-row trap"><b>Trap:</b> Lightweight MACE (takes a 60% defeat penalty on hardened concrete) or unrefueled Direct Attack (shot down).</div>
+        </div>
+        <div class="sc-card">
+          <div class="sc-card-h">Contested Strait <span class="sc-card-tag">500 nm &middot; Dense Opp</span></div>
+          <div class="sc-row q"><b>Question:</b> Can you defend the fleet against heavy peer air opposition while delivering strike effect across a 500 nm strait?</div>
+          <div class="sc-row hint"><b>Objective:</b> Survivability prioritizes protecting the wing: fuel support &times; mean survivability, shown out of 100. Auto-Boss retains its minimum-effect filter; this is not a new effect formula.</div>
+          <div class="sc-row trap"><b>Trade:</b> The balanced preset scores 77.0 versus 57.5 for the specified strike-heavy wing on this protection objective, but raw effect is 508.5 versus 865.5. More protection wins this objective; it does not maximize raw output. Illustrative, not for planning.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08: FLY THE DAY -->
+    <section class="scene" data-ev="08">
+      <div class="ev">EVENT <b>08</b> &middot; FLY THE DAY</div>
+      <h2 class="sc-h">Run the cyclic ops.</h2>
+      <p class="sc-p">Watch the day play out: a full deck launches off the bow catapults, flies the mission, recovers up the <b>port-canted angled deck</b>, catches arresting wires 1&ndash;3, and respots &mdash; the ballet of carrier flight ops.</p>
+      <div class="demo"><canvas id="deck" width="640" height="260" role="img" aria-label="Animated carrier flight deck: aircraft launching, recovering, respotting"></canvas></div>
+    </section>
+
+    <!-- 09: READ THE DAY -->
+    <section class="scene" data-ev="09">
+      <div class="ev">EVENT <b>09</b> &middot; READ THE DAY</div>
+      <h2 class="sc-h">Read the day: the tally &amp; the ball.</h2>
+      <p class="sc-p">Sorties generated per event, per aircraft type &mdash; and the day's <span class="k">Effect Index</span>. Anchored to realistic carrier surge/sustained rates (~1.5&ndash;2.6 sorties/jet/day), not fantasy.</p>
+      <div class="demo" style="display:flex;align-items:flex-end;gap:26px">
+        <div style="display:flex;align-items:center;gap:18px">
+          <div class="lens"><div class="datum"></div><div class="ball"></div></div>
+          <div>
+            <div class="big" id="ballpct" style="font-size:38px">100%</div>
+            <div class="cap">fuel coverage</div>
+          </div>
+        </div>
+        <div style="flex:1;max-width:340px">
+          <div class="tb"><span class="lab">Strike Sorties</span><span class="track"><i style="--w:62%;background:var(--strike)"></i></span></div>
+          <div class="tb"><span class="lab">Tanker Sorties</span><span class="track"><i style="--w:22%;background:var(--tanker)"></i></span></div>
+          <div class="tb"><span class="lab">CAP Sorties</span><span class="track"><i style="--w:16%;background:var(--cap)"></i></span></div>
+          <div class="cap" style="margin-top:4px">Effect Index: <span id="tallyn" style="color:var(--amber);font-weight:800">0</span> &middot; 8 cyclic events</div>
+        </div>
+      </div>
+      <p class="sc-p" style="font-size:12px;margin-top:10px">
+        <b>Mass & Reserve Conservation:</b> Strikers past clean radius debit a finite tanker gas pool. Every tanker retains its required landing reserve (1,500 lb for buddy, 2,000 lb for MQ-25).
+      </p>
+    </section>
+
+    <!-- 10: ASK THE BOSS -->
+    <section class="scene" data-ev="10">
+      <div class="ev">EVENT <b>10</b> &middot; ASK THE BOSS</div>
+      <h2 class="sc-h">Let Auto-Boss optimize.</h2>
+      <p class="sc-p">Don't want to hand-tune? Auto-Boss searches thousands of deck mixes and tanker tactic combinations, ranking wings by <b>your</b> objective &mdash; most effect, effect-per-spot, survivability, least gas, effect-per-dollar, or <span class="k">organic cliff range</span>.</p>
+      <div class="demo lb">
+        <div class="lb-row"><span class="lb-rank">1</span><span class="lb-mx"><b>14&times; F-35C</b> &middot; 6&times; MQ-25 &middot; 6&times; CAP &middot; Push Plan</span><span class="lb-sc">1,240</span></div>
+        <div class="lb-row"><span class="lb-rank">2</span><span class="lb-mx"><b>18&times; Super Hornet</b> &middot; 6&times; F/A-18 5-wet &middot; Consolidation Relay</span><span class="lb-sc">1,085</span></div>
+        <div class="lb-row"><span class="lb-rank">3</span><span class="lb-mx"><b>16&times; CCA-Strike</b> &middot; 8&times; CCA-Penetrator &middot; 4&times; MQ-25</span><span class="lb-sc">990</span></div>
+        <div class="cap" style="margin-top:2px">ranked by effect index &middot; heuristic search across deck &amp; tactics</div>
+      </div>
+    </section>
+
+    <!-- 11: MAN UP -->
+    <section class="scene cta" data-ev="11" style="align-items:flex-start">
+      <div class="ev">EVENT <b>11</b> &middot; MAN UP</div>
       <h2 class="sc-h">Now you're the Air Boss.</h2>
-      <p class="sc-p">That's the gouge. Build a wing, run the day, chase the best effect at range &mdash; it runs right in your browser, and works offline. An illustrative RockWorx give-away.</p>
-      <div style="margin-top:6px"><a href="./">Play Air Boss &#9654;</a></div>
+      <p class="sc-p">That's the gouge. Build a wing, pick your weapons, plan your tanker orbits, push the organic cliff, and defeat the operational scenarios &mdash; it runs entirely in your browser offline. An illustrative RockWorx give-away.</p>
+      <div style="margin-top:8px"><a href="./">Play Air Boss &#9654;</a></div>
     </section>
   </div>
 
@@ -208,7 +366,7 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
     <button class="ctl" id="pp" aria-label="Pause or play the tour">&#10073;&#10073; Pause</button>
     <a class="play-cta" href="./">Play &#9654;</a>
   </div>
-  <div class="foot">RockWorx Aerospace &mdash; The Gouge. Illustrative teaching game, not operational analysis. All figures fictional.</div>
+  <div class="foot">RockWorx Aerospace &mdash; The Gouge. Illustrative teaching model, not for planning. All figures fictional.</div>
 </div>
 
 <script>
@@ -217,32 +375,47 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
   var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   var scenes=[].slice.call(document.querySelectorAll(".scene"));
   var dotsHost=document.getElementById("dots"), pp=document.getElementById("pp");
-  var dur=[4200,5200,5200,5600,6000,5200,5600,7000];  // per-event ms
+  var dur=[4800,5200,6000,6200,6500,6000,7000,6000,5500,5600,7000];  // per-event ms
   var i=0, timer=0, paused=false, deckRAF=0;
 
-  scenes.forEach(function(s,k){var b=document.createElement("button");b.className="dot";b.textContent=("0"+(k+1)).slice(-2);
-    b.addEventListener("click",function(){go(k,true);});dotsHost.appendChild(b);});
+  scenes.forEach(function(s,k){
+    var b=document.createElement("button");
+    b.className="dot";
+    b.textContent=("0"+(k+1)).slice(-2);
+    b.addEventListener("click",function(){go(k,true);});
+    dotsHost.appendChild(b);
+  });
   var dots=[].slice.call(dotsHost.children);
 
   function tick(from,to,el,suffix,ms){ // animate a number
+    if(!el) return;
     var start=performance.now();
-    function step(t){var k=Math.min(1,(t-start)/ms);k=1-Math.pow(1-k,3);
+    function step(t){
+      var k=Math.min(1,(t-start)/ms);
+      k=1-Math.pow(1-k,3);
       el.textContent=Math.round(from+(to-from)*k).toLocaleString()+(suffix||"");
-      if(k<1)requestAnimationFrame(step);}
+      if(k<1)requestAnimationFrame(step);
+    }
     requestAnimationFrame(step);
   }
+
   function onScene(k){
     if(deckRAF){cancelAnimationFrame(deckRAF);deckRAF=0;}
-    if(k===2 && !reduce){ // meatball %
+    var sc=scenes[k];
+    if(!sc) return;
+
+    if(sc.querySelector("#ballpct") && !reduce){ // meatball %
       var el=document.getElementById("ballpct"), s=performance.now();
-      (function loop(t){var p=((t-s)%4400)/4400, pct; // mirror the ball keyframes
+      (function loop(t){
+        var p=((t-s)%4400)/4400, pct;
         if(p<0.18)pct=100; else if(p<0.46)pct=100-(p-0.18)/0.28*62; else if(p<0.58)pct=38;
         else if(p<0.88)pct=38+(p-0.58)/0.30*62; else pct=100;
-        el.textContent=Math.round(pct)+"%"; el.style.color=pct<80?"var(--strike)":"var(--amber)";
-        if(scenes[2].classList.contains("on"))deckRAF=requestAnimationFrame(loop);})(s);
+        if(el){el.textContent=Math.round(pct)+"%"; el.style.color=pct<80?"var(--strike)":"var(--amber)";}
+        if(sc.classList.contains("on"))deckRAF=requestAnimationFrame(loop);
+      })(s);
     }
-    if(k===4){ startDeck(); }
-    if(k===5 && !reduce){ tick(0,817,document.getElementById("tallyn"),"",1400); }
+    if(sc.querySelector("#deck")){ startDeck(); }
+    if(sc.querySelector("#tallyn") && !reduce){ tick(0,817,document.getElementById("tallyn"),"",1400); }
   }
 
   function go(n,manual){
@@ -260,47 +433,68 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
   document.addEventListener("keydown",function(e){
     if(e.key===" "){e.preventDefault();setPaused(!paused);}
     else if(e.key==="ArrowRight"){setPaused(true);go(i+1,true);}
-    else if(e.key==="ArrowLeft"){setPaused(true);go(i-1,true);}});
+    else if(e.key==="ArrowLeft"){setPaused(true);go(i-1,true);}
+  });
 
-  /* ---- compact deck ballet (Event 05) ---- */
+  /* ---- compact deck ballet (Event 08) ---- */
   var agents=null;
-  function buildAgents(){agents=[];var cols=["#e5484d","#e5484d","#e5484d","#a06cff","#3d8bff","#e5484d","#22c58a","#e5484d","#a06cff","#e5484d","#3d8bff","#e5484d","#e5484d","#22c58a","#e5484d","#a06cff"];
-    for(var n=0;n<16;n++)agents.push({col:cols[n%cols.length],off:0.86+(n/16)*0.12+(n%3)*0.003,spd:0.85+((n*37)%22)/100,spot:n});}
+  function buildAgents(){
+    agents=[];
+    var cols=["#e5484d","#e5484d","#e5484d","#a06cff","#3d8bff","#e5484d","#22c58a","#e5484d","#a06cff","#e5484d","#3d8bff","#e5484d","#e5484d","#22c58a","#e5484d","#a06cff"];
+    for(var n=0;n<16;n++)agents.push({col:cols[n%cols.length],off:0.86+(n/16)*0.12+(n%3)*0.003,spd:0.85+((n*37)%22)/100,spot:n});
+  }
   function lp(a,b,t){return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};}
-  function geo(W,H){var cx=W*0.55,bowY=20,sternY=H-12,half=Math.min(112,W*0.13);
+  function geo(W,H){
+    var cx=W*0.55,bowY=20,sternY=H-12,half=Math.min(112,W*0.13);
     var cats=[{x:cx-12,y:bowY+32},{x:cx+12,y:bowY+32}],ramp={x:cx-2,y:sternY-6},fwd={x:cx-half*0.62,y:H*0.26};
     var trap=lp(ramp,fwd,0.42),approach=lp(ramp,fwd,-0.22),spots=[];
     for(var k=0;k<14;k++)spots.push({x:cx+half*0.34+((k%3)*12),y:H*0.30+k*((H*0.56)/14)});
-    return{W:W,H:H,cx:cx,bowY:bowY,sternY:sternY,half:half,cats:cats,ramp:ramp,fwd:fwd,trap:trap,approach:approach,spots:spots};}
-  function pos(p,ag,g){var spot=g.spots[ag.spot%g.spots.length],cat=g.cats[ag.spot%2],tip={x:cat.x,y:g.bowY},exit={x:cat.x+15,y:g.bowY-46},o;
-    if(p<0.10){o=lp(spot,cat,p/0.10);o.a=1;}else if(p<0.18){var t=(p-0.10)/0.08;o=lp(cat,tip,t*t);o.a=1;}
-    else if(p<0.30){var t=(p-0.18)/0.12;o=lp(tip,exit,t);o.a=1-t;}else if(p<0.54){o={x:exit.x,y:exit.y,a:0};}
+    return{W:W,H:H,cx:cx,bowY:bowY,sternY:sternY,half:half,cats:cats,ramp:ramp,fwd:fwd,trap:trap,approach:approach,spots:spots};
+  }
+  function pos(p,ag,g){
+    var spot=g.spots[ag.spot%g.spots.length],cat=g.cats[ag.spot%2],tip={x:cat.x,y:g.bowY},exit={x:cat.x+15,y:g.bowY-46},o;
+    if(p<0.10){o=lp(spot,cat,p/0.10);o.a=1;}
+    else if(p<0.18){var t=(p-0.10)/0.08;o=lp(cat,tip,t*t);o.a=1;}
+    else if(p<0.30){var t=(p-0.18)/0.12;o=lp(tip,exit,t);o.a=1-t;}
+    else if(p<0.54){o={x:exit.x,y:exit.y,a:0};}
     else if(p<0.60){var t=(p-0.54)/0.06;o={x:g.approach.x,y:g.approach.y,a:t};}
     else if(p<0.72){var t=(p-0.60)/0.12;o=lp(g.approach,g.trap,t*(2-t));o.a=1;}
-    else if(p<0.85){var t=(p-0.72)/0.13;o=lp(g.trap,spot,t);o.a=1;}else{o={x:spot.x,y:spot.y,a:1};}return o;}
-  function drawBg(x,g){var H=g.H,cx=g.cx,half=g.half;x.fillStyle="#0a1018";x.fillRect(0,0,g.W,H);
+    else if(p<0.85){var t=(p-0.72)/0.13;o=lp(g.trap,spot,t);o.a=1;}
+    else{o={x:spot.x,y:spot.y,a:1};}
+    return o;
+  }
+  function drawBg(x,g){
+    var H=g.H,cx=g.cx,half=g.half;
+    x.fillStyle="#0a1018";x.fillRect(0,0,g.W,H);
     x.fillStyle="#131c28";x.strokeStyle="#26344a";x.lineWidth=1.5;x.beginPath();x.moveTo(cx-half,g.sternY);x.lineTo(cx-half,g.bowY+24);
     x.quadraticCurveTo(cx-half,g.bowY,cx,g.bowY);x.quadraticCurveTo(cx+half,g.bowY,cx+half,g.bowY+24);
     x.lineTo(cx+half,g.sternY);x.quadraticCurveTo(cx,g.sternY+8,cx-half,g.sternY);x.closePath();x.fill();x.stroke();
     var R=g.ramp,F=g.fwd,dx=F.x-R.x,dy=F.y-R.y,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,wd=14;
     x.fillStyle="#182437";x.beginPath();x.moveTo(R.x+nx*wd,R.y+ny*wd);x.lineTo(F.x+nx*wd,F.y+ny*wd);x.lineTo(F.x-nx*wd,F.y-ny*wd);x.lineTo(R.x-nx*wd,R.y-ny*wd);x.closePath();x.fill();
     x.strokeStyle="#3a4c66";x.setLineDash([6,6]);x.lineWidth=1;x.beginPath();x.moveTo(R.x,R.y);x.lineTo(F.x,F.y);x.stroke();x.setLineDash([]);
-    x.strokeStyle="#51678a";x.lineWidth=1.3;for(var m=1;m<=3;m++){var tt=0.10+m*0.06,px=R.x+dx*tt,py=R.y+dy*tt;x.beginPath();x.moveTo(px+nx*wd,py+ny*wd);x.lineTo(px-nx*wd,py-ny*wd);x.stroke();}
+    x.strokeStyle="#51678a";x.lineWidth=1.3;
+    for(var m=1;m<=3;m++){var tt=0.10+m*0.06,px=R.x+dx*tt,py=R.y+dy*tt;x.beginPath();x.moveTo(px+nx*wd,py+ny*wd);x.lineTo(px-nx*wd,py-ny*wd);x.stroke();}
     x.strokeStyle="#3a4c66";x.lineWidth=2;g.cats.forEach(function(c){x.beginPath();x.moveTo(c.x,c.y);x.lineTo(c.x,g.bowY+2);x.stroke();});
-    x.fillStyle="#0e1622";x.strokeStyle="#2a3a52";x.lineWidth=1;x.fillRect(cx+half-12,H*0.44,10,40);x.strokeRect(cx+half-12,H*0.44,10,40);}
+    x.fillStyle="#0e1622";x.strokeStyle="#2a3a52";x.lineWidth=1;x.fillRect(cx+half-12,H*0.44,10,40);x.strokeRect(cx+half-12,H*0.44,10,40);
+  }
   function startDeck(){
     var c=document.getElementById("deck");if(!c)return;if(!agents)buildAgents();
-    if(reduce){var dpr=1,W=c.clientWidth||640,H=270;c.width=W;c.height=H;var xx=c.getContext("2d");drawBg(xx,geo(W,H));return;}
+    if(reduce){var dpr=1,W=c.clientWidth||640,H=260;c.width=W;c.height=H;var xx=c.getContext("2d");drawBg(xx,geo(W,H));return;}
     var s=performance.now();
-    function frame(t){if(!scenes[4].classList.contains("on"))return;
-      var dpr=Math.min(2,window.devicePixelRatio||1),W=c.clientWidth||640,H=270;c.width=W*dpr;c.height=H*dpr;
+    function frame(t){
+      var sc=scenes[i];
+      if(!sc || !sc.querySelector("#deck") || !sc.classList.contains("on"))return;
+      var dpr=Math.min(2,window.devicePixelRatio||1),W=c.clientWidth||640,H=260;c.width=W*dpr;c.height=H*dpr;
       var x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);var g=geo(W,H);drawBg(x,g);var gp=(t-s)/2000;
       g.spots.forEach(function(sp){x.fillStyle="#0f1a28";x.beginPath();x.arc(sp.x,sp.y,4,0,7);x.fill();});
-      agents.forEach(function(ag){var p=(gp*ag.spd+ag.off)%1,o=pos(p,ag,g);if(o.a<=0.03)return;
+      agents.forEach(function(ag){
+        var p=(gp*ag.spd+ag.off)%1,o=pos(p,ag,g);if(o.a<=0.03)return;
         var o2=pos((p+0.006)%1,ag,g),ang=Math.atan2(o2.y-o.y,o2.x-o.x);
         x.save();x.globalAlpha=Math.max(0,Math.min(1,o.a));x.translate(o.x,o.y);x.rotate(ang);x.fillStyle=ag.col;
-        x.beginPath();x.moveTo(6,0);x.lineTo(-4,3);x.lineTo(-4,-3);x.closePath();x.fill();x.restore();});
-      deckRAF=requestAnimationFrame(frame);}
+        x.beginPath();x.moveTo(6,0);x.lineTo(-4,3);x.lineTo(-4,-3);x.closePath();x.fill();x.restore();
+      });
+      deckRAF=requestAnimationFrame(frame);
+    }
     deckRAF=requestAnimationFrame(frame);
   }
 
@@ -311,3 +505,7 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
 <!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d6bb3b90f0bd447a84ced9c7d864c0f2"}'></script>
 <!-- End Cloudflare Web Analytics -->
+</body>
+</html>
+
+<script>if(location.protocol === "file:"){document.querySelectorAll('a[href="./"]').forEach(function(a){a.href="air_boss_public.html";});}</script>

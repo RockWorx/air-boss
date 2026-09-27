@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Air Boss — Effects Per Spot — RockWorx</title>
+<title>Air Boss v3 — Effects Per Spot — RockWorx</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{
@@ -39,6 +39,7 @@ h1{font-family:var(--stencil);font-size:clamp(28px,6vw,50px);margin:8px 0 3px;fo
 .gouge{display:inline-block;margin-top:9px;margin-left:8px;font-family:var(--stencil);text-transform:uppercase;
   font-size:11px;letter-spacing:.07em;font-weight:800;color:#0a0e16;background:var(--amber);border-radius:20px;
   padding:5px 13px;text-decoration:none;box-shadow:0 0 14px #f5b02733}
+.header-guide{display:flex;align-items:center;gap:12px;max-width:850px;margin-top:12px}.header-guide .gouge{flex-shrink:0;margin:0;font-size:14px;padding:10px 18px}.header-guide .illus{margin:0;color:var(--ink-dim)}@media(max-width:600px){.header-guide{flex-direction:column;align-items:flex-start}.header-guide .illus{width:100%}}
 .gouge:hover{background:var(--amber-glow)}
 .hdr-logo{display:flex;flex-direction:column;align-items:center;align-self:flex-start;gap:5px}
 .hdr-logo img{width:132px;height:132px;object-fit:contain;filter:drop-shadow(0 3px 12px #000b)}
@@ -223,6 +224,15 @@ footer b{color:var(--ink-dim)}
 }
 .hide{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+#v3controls select,#v3controls input[type=number]{background:#101b28;color:var(--ink);border:1px solid #41516a;border-radius:5px;padding:8px;max-width:100%;} #v3controls>label{display:block;margin:12px 0 5px;font-size:12px} #v3controls select{width:100%}.tactic-grid{display:flex;gap:8px;margin-top:12px}.tactic-grid label{flex:1;min-width:0;font-size:11px}.tactic-grid input{width:100%} #mission-ledger{font-size:13px;color:#bfd0e4;line-height:1.7;padding:12px;border:1px solid #35475d;border-radius:8px;margin-bottom:12px}
+
+#control-help{position:fixed;z-index:10000;box-sizing:border-box;width:290px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);overflow:auto;padding:12px 14px;background:#15263b;color:#f2f5fa;border:1px solid #f5b027;border-radius:8px;box-shadow:0 6px 24px #0009;font:13px/1.45 system-ui,sans-serif;pointer-events:auto} #control-help[hidden]{display:none}
+.scenario-cards{margin-top:18px}.scenario-cards [aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+#watch-deck{margin:0 0 18px;white-space:normal}#relay-warning{color:#f5b027}button[aria-disabled="true"]{opacity:.45}input[readonly]{opacity:.8}
+#watch-panel{display:block;max-width:100%;overflow-wrap:anywhere}#watch-panel.watching{position:sticky;top:6px;z-index:50;background:#101e30}#watch-panel button{white-space:normal;margin:3px}#watch-panel [hidden]{display:none}#watch-caption{font-size:14px;line-height:1.45;margin:8px 0}#watch-seed{color:var(--ink-dim)}#watch-result{font:12px/1.4 var(--mono)}.watch-highlight{outline:2px solid var(--amber);outline-offset:3px;transition:outline-color .4s}@media(prefers-reduced-motion:reduce){.watch-highlight{transition:none}}
+#watch-boost{margin:6px 0;font-size:13px}#watch-boost button{font-weight:800}#watch-panel.watching{max-height:48vh;overflow-y:auto}
+#watch-explainer{box-sizing:border-box;width:100%;max-width:460px;margin:12px 0;padding:12px 14px;border:1px solid var(--amber);border-left:4px solid var(--amber);border-radius:8px;background:#15263b;color:#f2f5fa;box-shadow:0 4px 16px #0005;font:13px/1.45 system-ui,sans-serif;overflow-wrap:anywhere}#watch-explainer[hidden]{display:none}
+#scenario-objective{margin:8px 0;white-space:normal;text-align:left}#scenario-objective[hidden]{display:none}
 </style>
 
 <div class="wrap">
@@ -232,8 +242,8 @@ footer b{color:var(--ink-dim)}
       <h1>Air Boss</h1>
       <p class="tagline">You run the air wing. Build your mix of aircraft across a finite deck, then maximize the
         <b>effect index delivered at range</b>. Every spot you give a tanker or a fighter is a spot not on target.</p>
-      <span class="illus">Illustrative model &mdash; a teaching game, not operational analysis. All figures fictional.</span>
-      <a class="gouge" href="https://rockworx.github.io/air-boss/gouge.html">The Gouge &mdash; field guide &#9654;</a>
+      <div class="header-guide"><a class="gouge" href="gouge.html">The Gouge &mdash; field guide &#9654;</a>
+      <span class="illus">Illustrative model &mdash; a teaching game, not operational analysis. All figures fictional.</span></div>
     </div>
     <div class="hdr-logo"><img alt="RockWorx Aerospace" src="data:image/webp;base64,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"><div class="brand">CVN&nbsp;/&nbsp;PRI-FLY&nbsp;/&nbsp;AIR&nbsp;OPS</div></div>
   </header>
@@ -262,6 +272,19 @@ footer b{color:var(--ink-dim)}
     <button class="x" id="howtox" type="button" title="Dismiss">Got it &#10005;</button>
   </div>
 
+  <details id="local-guide" class="howto"><summary>Field guide - v3 core</summary><p>Choose a scenario or build a wing. Deck spots are finite. Strike rounds run out into a finite fallback stock. Time-sensitive coordinate targets favor prompt weapons; hardened targets favor heavy warheads.</p><p>Yo-Yo fills climb capacity. Strike tankers supply enroute deficits. Consolidation pairs transfer at 150 nm and extend the receiver's reachable orbit. Beyond single-tanker reach, a feasible pair can deliver fuel where a single tanker cannot; inside that reach, the pair costs two deck spots for less daily offload. Both retain return fuel and reserve. Adjust the receiver orbit to explore this boundary. The MQ-25 single reach is 1,400 nm, beyond the 900-nm UI limit, so MQ-25 consolidation cannot win by reach in play. Buddy relay is the teaching case: single reach 212.1 nm versus relay reach 274.2 nm; try a 250-nm orbit. Recovery fuel protects the returning force and cannot supply outbound strikes. Unreachable tracks supply no gas.</p><p>The organic cliff is the first 10-nm grid point with less than 90% fuel support, less than half peak effect, or effect below 100. Auto-Boss requires peak effect of 400. Theater fuel incurs a 10% yield penalty and 18% score charge only when accepted. This is an illustrative teaching game, not for planning. Coordinate-delay proxies do not describe real maritime terminal seekers.</p></details>
+        <div class="presets scenario-cards" id="scenarios"><button class="preset" type="button" aria-pressed="false" data-scenario="strait_defense">Contested Strait Defense<small>Severe air opposition: protect the wing</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="war_at_sea">War at Sea<small>Moving targets: speed matters</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="deep_strike">Deep Strike Inland<small>Hardened targets: warhead matters</small></button></div>
+        <p id="scenario-note" class="opt-note">Free play</p>
+  <button id="scenario-objective" class="btn" type="button" hidden aria-pressed="false">Strait objective: Survivability</button>
+  <section id="watch-panel" aria-label="Watch a scenario" class="howto">
+    <div><button class="btn primary" id="watch-start" type="button" aria-pressed="false">Watch the Air Boss</button>
+    <button class="btn" id="watch-stop" type="button" hidden>Stop / take over</button>
+    <button class="btn" id="watch-replay" type="button">Replay this seed</button></div>
+    <div id="watch-boost" hidden><span id="watch-teaser">Do you want to see the air wing surge?</span> <button class="btn primary" id="watch-surge" type="button" aria-pressed="false">SURGE</button></div>
+    <small id="watch-seed">A fresh seed each time</small> <b id="watch-status">You have control</b>
+    <p id="watch-caption" aria-live="polite">Watch a scenario get set and played. Deck and tempo changes apply next cycle; other inputs take over. Illustrative, not for planning.</p>
+    <p id="watch-result"></p>
+  </section>
   <div class="presets">
     <span class="pl">Quick start</span>
     <button class="preset" data-preset="legacy" type="button" title="Load a Super-Hornet-heavy legacy wing">Legacy Wing<small>heavy bomb load &mdash; starves at long range</small></button>
@@ -269,6 +292,7 @@ footer b{color:var(--ink-dim)}
     <button class="preset" data-preset="cca" type="button" title="Load a distributed uncrewed CCA wing">Distributed CCA<small>uncrewed &mdash; wins effect-per-spot</small></button>
   </div>
 
+  <button class="btn" id="watch-deck" type="button">Watch cyclic ops on the flight deck (Simulate Day)</button>
   <div class="console">
     <section class="panel" aria-label="Air wing roster">
       <h2>Mission &amp; Air Wing</h2>
@@ -299,7 +323,7 @@ footer b{color:var(--ink-dim)}
           </div>
         </div>
       </div>
-      <div class="mgroup">
+      <div class="mgroup" id="watch-loadout">
         <div class="mg-h">2 &middot; Loadout</div>
         <div class="mission" style="margin:0;padding:0;border:0">
           <div class="field">
@@ -316,11 +340,26 @@ footer b{color:var(--ink-dim)}
             <div class="picker" id="strikepick">
               <button type="button" data-s="direct" aria-pressed="false">Direct Attack</button>
               <button type="button" data-s="mixed" aria-pressed="true">Mixed</button>
+              <button type="button" data-s="mace" aria-pressed="false">Blackbeard / MACE</button>
               <button type="button" data-s="standoff" aria-pressed="false">Standoff</button>
             </div>
             <div class="opt-note" id="strikedesc"></div>
           </div>
         </div>
+      </div>
+      <div class="mgroup" id="v3controls">
+        <div class="mg-h">Mission &amp; tanker plan</div>
+        <p class="opt-note">Illustrative, not for planning. A single operational day; coordinate-target latency is not a real seeker capability model.</p>
+
+        <label for="target-posture">Target posture</label><select id="target-posture"><option value="integrated">Defended enclave</option><option value="fleeting">Time-sensitive coordinates</option><option value="hardened">Hardened bunker</option></select>
+        <label for="threat-level">Threat (automatic follows range)</label><select id="threat-level"><option value="auto">Automatic</option><option value="0.3">Low</option><option value="0.65">Contested</option><option value="0.7">Dense</option><option value="0.85">Severe</option></select>
+        <label for="tanker-mode">Fuel source</label><select id="tanker-mode"><option value="organic">Organic only</option><option value="theater">Request theater support</option></select>
+        <label for="tanker-plan">Tanker plan preset</label><select id="tanker-plan"><option value="balanced">Balanced</option><option value="yoyo">Yo-Yo top-off</option><option value="strike">Strike push</option><option value="consolidation">Consolidation relay</option><option value="recovery">Recovery safety</option><option value="custom">Custom percentages</option></select>
+        <div class="tactic-grid"><label>Strike % <input id="tactic-strike" type="number" readonly value="60" aria-label="Strike percentage (remainder)"></label><label>Yo-Yo % <input id="tactic-yoyo" type="number" min="0" max="100" step="5" value="20"></label><label>Consolidation % <input id="tactic-consolidation" type="number" min="0" max="100" step="5" value="0"></label><label>Recovery % <input id="tactic-recovery" type="number" min="0" max="100" step="5" value="20"></label></div>
+        <p class="opt-note" id="tactic-balance">Strike receives the remainder. Same-type consolidation pairs form first.</p>
+        <label for="strike-orbit">Strike tanker orbit (nm)</label><input id="strike-orbit" type="range" min="50" max="900" step="25" value="350"><output id="orbit-value">350 nm</output>
+        <label for="relay-orbit">Consolidation receiver orbit (nm)</label><input id="relay-orbit" type="range" min="150" max="900" step="25" value="500"><output id="relay-value">500 nm</output>
+        <p class="opt-note" id="tanker-reach"></p><p class="opt-note" id="relay-warning" role="status"></p>
       </div>
       <div id="manualalloc">
         <div class="mg-h">3 &middot; Air Wing &mdash; allocate the deck</div>
@@ -337,6 +376,7 @@ footer b{color:var(--ink-dim)}
           <button type="button" data-r="perspot" aria-pressed="false">Effect / spot</button>
           <button type="button" data-r="surv" aria-pressed="false">Survivability</button>
           <button type="button" data-r="gas" aria-pressed="false">Least gas</button>
+          <button type="button" data-r="cliff" aria-pressed="false">Organic cliff</button>
           <button type="button" data-r="dollar" aria-pressed="false">Effect / $</button>
         </div>
         <div class="field" style="margin-top:13px">
@@ -350,13 +390,14 @@ footer b{color:var(--ink-dim)}
           <input type="range" id="s-ccustom" min="10" max="250" step="5" value="90" aria-label="Custom jet unit cost in millions"></div>
         <div class="opt-note">F-35C ~$102M contract-lot flyaway; the &plusmn;15% is a what-if control, not a sourced uncertainty. F/A-18E/F fixed $67M (FY23 was the last E/F buy; line shutdown funded). MQ-25 ~$184M (FY25). Your design's price is floored by its capability. Effect/$ uses illustrative flyaway cost only &mdash; not full life-cycle value.</div>
         <button class="btn primary" id="autoselect" style="width:100%;margin-top:14px">Auto-select best wings &#9654;</button>
-        <div class="opt-note">Searches the current deck, range, tempo &amp; wing mode. The design-your-own jet is excluded.</div>
+        <div class="opt-note">Searches the current deck, range, tempo &amp; wing mode. Includes your design; cliff search also samples tanker plans and requires peak effect of at least 400.</div>
       </div>
 
     </section>
 
     <section class="panel" aria-label="Air operations readout">
       <h2>Air Ops Readout</h2>
+      <div id="mission-ledger" class="opt-note" aria-live="polite"></div>
       <div id="readout-normal">
       <div class="subhead" id="wingsum"></div>
       <div class="hero">
@@ -400,23 +441,15 @@ footer b{color:var(--ink-dim)}
     </section>
   </div>
 
-  <footer>
-    <b>How the index works (an abstraction, on purpose).</b> Over the day's cyclic events each jet re-flies once per its own
-    cycle <span style="font-family:var(--mono)">(airborne out-and-back + deck turnaround)</span>, knocked down by availability
-    and a per-jet cap &mdash; about 1.2&ndash;1.6 sorties/jet sustained, ~2.6 surge (anchored to the 1997 USS Nimitz surge).
-    Strikers past ~450 nm need tanker gas
-    <span style="font-family:var(--mono)">(deficit &divide; offload)</span> pooled across the wing &mdash; unsupplied strikers
-    don't reach. CAP and ISR/EW spend spots to raise survivability; <b>standoff ordnance's survivability edge widens past 400 nm</b>, and the <b>"under fire"</b> line applies attrition (loss/sortie scales with 1 &minus; survivability) to show daily losses and how long the deck sustains. <b>Effect index = strikes that reach &times; payload
-    &times; an illustrative survivability response (0.35 + 0.65 &times; survivability &mdash; a 35% floor so a fragile option isn't zeroed)</b>, summed across the mix, compared to a fixed reference wing; the <b>&ldquo;under fire&rdquo;</b> losses above are a separate campaign readout and do not feed this index. Every coefficient here is fictional
-    and chosen for teaching, not calibrated to real platforms &mdash; treat named aircraft as archetypes, not specifications.
-    <b>Not operational analysis and not for planning.</b> RockWorx Aerospace &mdash; a give-away.
-  </footer>
+  <footer><b>How the index works (an abstraction, on purpose).</b> A finite cyclic day sets nominal sorties at mission range. Primary strike rounds are assigned first, then a finite fallback bomb stock. Each segment flies to its weapon release distance. Departure top-off is capacity-bounded; primary and fallback deficits debit one enroute gas pool. Recovery gas is separate.
+    <p>Effect combines supported sorties, illustrative payload and survival response, air-to-air throughput, strike throughput, target defeat, coordinate validity and recovery service. Theater support changes raw effect by a 10% dogleg yield penalty only when fuel is accepted; an additional 18% dependency charge is displayed separately as score. The attrition line is a separate teaching readout, not a multi-day campaign simulation.</p>
+    <b>Illustrative, not for planning.</b> Named aircraft and weapons are teaching archetypes. Coordinate latency does not model real maritime seekers. RockWorx Aerospace.</footer>
 </div>
 
 <script>
 (function(){
   "use strict";
-  var CRUISE=480, STATION=0.5, CLEAN=450, BURN=14, BUDGET=100;
+  var CRUISE=480, STATION=0.5, BUDGET=100;
   var KFEED=160, A2A_SHOTS_PER_SORTIE=2;   // A2A sustainment: illustrative deck ordnance-move cap (rounds/day, K_feed) + admitted shots per threatened sortie
   var DECKS={nimitz:{name:"Nimitz-class",spots:44,turnAdj:0,ordMult:1.0},
              ford:{name:"Ford-class",spots:48,turnAdj:-3,ordMult:2.2}};   // Ford AWE ~2.2x weapons throughput (agy #194)
@@ -464,13 +497,15 @@ footer b{color:var(--ink-dim)}
   // Air-to-GROUND strike ordnance -- a mass-vs-standoff trade (parallel to the A2A loadout).
   // sleth = strike throughput (aimpoints/pounds delivered); ssurv = survivability from NOT overflying the target.
   var STRIKES={
-    direct:{name:"Direct Attack",dsg:"JDAM / SDB II",sleth:1.12,ssurv:-0.10,
+    direct:{mag:360,burden:1,tof_min:3,standoff_nm:25,warheadMass:500,shotsPerSortie:2,name:"Direct Attack",dsg:"JDAM / SDB II",sleth:1.12,ssurv:-0.10,
       desc:"JDAM + GBU-53 SDB II StormBreaker &mdash; many aimpoints per jet (4+ SDBs per station, moving-target capable) and cheap, but only ~15-70 nm standoff, so you fly into the defenses. Max throughput where you can survive the run (stealth, close, or permissive). (Illustrative model.)"},
-    mixed:{name:"Mixed",dsg:"bombs + standoff",sleth:1.00,ssurv:0.00,
+    mixed:{mag:240,burden:1.5,tof_min:12,standoff_nm:100,warheadMass:750,shotsPerSortie:2,name:"Mixed",dsg:"bombs + standoff",sleth:1.00,ssurv:0.00,
       desc:"A balanced strike package &mdash; direct-attack bombs for volume plus a few standoff missiles for the defended aimpoints. The all-rounder. (Illustrative model.)"},
-    standoff:{name:"Standoff",dsg:"JASSM-ER / LRASM",sleth:0.88,ssurv:0.20,
+    standoff:{mag:36,burden:3.5,tof_min:45,standoff_nm:500,warheadMass:1000,shotsPerSortie:1,name:"Standoff",dsg:"JASSM-ER / LRASM",sleth:0.88,ssurv:0.20,
       desc:"AGM-158B JASSM-ER (500+ mi, low-observable) / AGM-158C LRASM &mdash; fewer, pricier cruise missiles launched far outside the defenses. Fewer aimpoints per jet, but even a non-stealth striker survives and reaches a defended target. (Illustrative model.)"}
   };
+  STRIKES.mace={name:'Blackbeard (MACE)',dsg:'Prompt strike archetype',sleth:1.04,ssurv:.12,mag:120,burden:1.3,tof_min:3.5,standoff_nm:200,warheadMass:250,shotsPerSortie:2,
+    desc:'Illustrative prompt coordinate-strike archetype: short flight time, deep magazine, smaller warhead. Target relocation is a teaching proxy, not a claim about real maritime seekers. Not for planning.'};
   var GROUPS=[
     {role:"strike",chip:"c-strike",col:"#e5484d",label:"Strike — ordnance on target",keys:["f35c","fa18","kf1","ccap","custom"]},
     {role:"tanker",chip:"c-tanker",col:"#9a7bec",label:"Tanker — gas in the air",keys:["mq25","horn5"]},
@@ -478,7 +513,7 @@ footer b{color:var(--ink-dim)}
     {role:"isr",chip:"c-isr",col:"#41c46a",label:"ISR / EW",keys:["isr"]}
   ];
   var WINGROLES=[["strike","tanker"],["strike","tanker","cap"],["strike","tanker","cap","isr"]];
-  var st={wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102,custom:90}, weapon:"amraam", strike:"mixed",
+  var st={targetPosture:"integrated",threat:null,tankerMode:"organic",strikeOrbit:350,relayOrbit:500,tankerTactics:{yoyo:20,strike:60,consolidation:0,recovery:20},wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102,custom:90}, weapon:"amraam", strike:"mixed",
           custom:{pay:6000,surv:60,size:55},
           alloc:{f35c:6,fa18:14,kf1:0,ccap:0,custom:0,mq25:5,horn5:0,cap:6,isr:3}};
 
@@ -502,20 +537,8 @@ footer b{color:var(--ink-dim)}
   function customBurn(){return 9.0+(st.custom.size/100)*8.0;}
   function cleanFor(k){return k==="custom"?customClean():(CAT[k].clean||450);}
   function burnFor(k){return k==="custom"?customBurn():(CAT[k].burn||14);}
-  function tankerOffloadFor(k,range){                    // offload falls as the orbit pushes out from the CVN
-    if(k==="mq25")return 15000*Math.max(0.20,1-Math.max(0,range-350)/750);   // turbofan tanker: 15k <=350nm -> 3k floor
-    if(k==="horn5")return 3500*Math.max(0.28,1-Math.max(0,range-200)/350);   // departure tanking decays with range, but a RECOVERY-tanking floor stays (overhead the boat / yo-yo) -- always some value near the boat
-    return CAT[k].offload||0;
-  }
   function calcSurvBonus(nCAP,nISR,wsurv){               // saturating escort value -- first units buy the most
     return 0.22*(1-Math.exp(-0.35*nCAP))+0.28*(1-Math.exp(-0.55*nISR))+(wsurv||0);
-  }
-  function strikeStandoffBonus(type,range){              // strike-ordnance survivability, now range-textured
-    var base=(STRIKES[type]||STRIKES.mixed).ssurv;        // direct -0.10, mixed 0.00, standoff +0.20 (close-in)
-    var deep=Math.max(0,range-400)/500;                   // 0 at <=400 nm, 1.0 at 900 nm
-    if(type==="standoff")return base*(1+0.40*deep);       // standoff edge widens deep: +0.20 -> +0.28 at 900
-    if(type==="direct")  return base*(1+0.50*deep);       // direct penalty deepens: -0.10 -> -0.15 at 900
-    return base;                                           // mixed: flat
   }
   function weaponSurvBonus(weapon,range){                // A2A weapon survivability, now WEZ/range-textured
     var W=WEAPONS[weapon]||WEAPONS.amraam;                // a bigger-WEZ weapon kills the archer farther out,
@@ -536,62 +559,137 @@ footer b{color:var(--ink-dim)}
     ks.forEach(function(k){if((st.alloc[k]||0)>(st.alloc[big]||0))big=k;});
     if((st.alloc[big]||0)>0)st.alloc[big]--; else break;}}
 
-  function evalWing(range,alloc){
-    alloc=alloc||st.alloc;
-    // Sortie generation on defensible terms: a jet flies (flying-day window / its own sortie cycle),
-    // knocked down by a duty factor (maintenance, crew, it doesn't launch every event) and hard-capped
-    // per aircraft per day. Sustained ~1-1.6 sorties/jet, surge ~2-2.8 -- not 24/cycle.
-    // Sortie generation, deck-cycle-BASED (still abstract -- no catapult/recovery throughput, package
-    // timing, or deck congestion): over an EVENTS-cycle day a jet re-flies once per its own (airborne +
-    // deck-turnaround) span, knocked down by availability + a per-jet cap. Anchored to the 1997 Nimitz
-    // surge (~2.6 sorties/strike-jet/day) and Desert Storm/OIF sustained (~1.2-1.55) -- agy #181.
-    var WINDOW=st.tempo?16:12;              // flight-ops hours in the day (surge / sustained)
-    var eventLen=st.tempo?1.3:1.5;          // deck event spacing (hours)
-    var events=WINDOW/eventLen;             // cyclic events flown in the day (~8 sustained, ~12 surge)
-    var AVAIL=0.85;                         // fraction of the fleet mission-capable
-    var TURNC=(st.tempo?0.7:0.8)+DECKS[DECK].turnAdj/60/eventLen; // deck turnaround, in cycles
-    var CAPS=st.tempo?4.5:3.5;              // per-aircraft single-day sortie cap
-    function rateFor(airborneH){return Math.min(CAPS, events*AVAIL/(airborneH/eventLen+TURNC));}
-    var airborne=2*range/CRUISE+STATION;    // strike airborne: out-and-back + station
-    var baseStrike=rateFor(airborne);
-    var rateTank=rateFor(2*(range*0.62)/CRUISE+0.4);
-    var rateCap=rateFor(2.0), rateISR=rateFor(3.0);
-    var cyc=airborne+TURNC*eventLen;        // per-aircraft sortie cycle (hours), for display
-    var strikeSorties=0, tankerSorties=0, tankerOffload=0, nCAP=0, nISR=0, byType=[], byKey={}, cost=0;
-    activeKeys().forEach(function(k){
-      var a=CAT[k], n=alloc[k]||0; if(n<=0)return; var s=statsFor(k); cost+=n*costFor(k);
-      if(a.role==="strike"){var ss=n*Math.min(CAPS,baseStrike*s.rate); strikeSorties+=ss; byType.push({key:k,s:s,ss:ss,pen:a.custom?designPenalty():1}); byKey[k]=ss;}
-      else if(a.role==="tanker"){var ts=n*rateTank; tankerSorties+=ts; tankerOffload+=ts*tankerOffloadFor(k,range); byKey[k]=ts;}
-      else if(a.role==="cap"){nCAP+=n;} else if(a.role==="isr"){nISR+=n;}
+  // v3 core: all coefficients below are illustrative teaching proxies, not planning data.
+  var TARGET_POSTURES={
+    hardened:{name:'Hardened',defeat:{direct:.80,mace:.40,mixed:.70,standoff:1},decay:0},
+    fleeting:{name:'Time-sensitive',defeat:{direct:.90,mace:1,mixed:.95,standoff:1},decay:.035},
+    integrated:{name:'Defended',defeat:{direct:.75,mace:1,mixed:.85,standoff:.95},decay:.010}
+  };
+  var TANKERS={mq25:{capacity:16000,burn:10,reserve:2000,near:14000,recovery:12000},
+    horn5:{capacity:5000,burn:16.5,reserve:1500,near:3500,recovery:3000}};
+  var FALLBACK={sleth:.80,ssurv:-.10,standoff_nm:25,tof_min:3};
+  var TACTIC_PLANS={balanced:{yoyo:20,strike:60,consolidation:0,recovery:20},
+    yoyo:{yoyo:100,strike:0,consolidation:0,recovery:0},strike:{yoyo:0,strike:100,consolidation:0,recovery:0},
+    consolidation:{yoyo:0,strike:0,consolidation:100,recovery:0},recovery:{yoyo:0,strike:0,consolidation:0,recovery:100}};
+  function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+  function resolveTankerTacticsByType(alloc,tactics){
+    var res={yoyo:{},strike:{},consolidation:{},recovery:{}};
+    ['mq25','horn5'].forEach(function(t){
+      var n=Math.max(0,Math.floor(alloc[t]||0));
+      res.consolidation[t]=Math.min(n,2*Math.floor(n*clamp(tactics.consolidation||0,0,100)/200));
+      var rem=n-res.consolidation[t];
+      res.recovery[t]=Math.min(rem,Math.round(n*clamp(tactics.recovery||0,0,100)/100));rem-=res.recovery[t];
+      res.yoyo[t]=Math.min(rem,Math.round(n*clamp(tactics.yoyo||0,0,100)/100));rem-=res.yoyo[t];
+      res.strike[t]=rem;
+    });return res;
+  }
+  function tankerLedger(type,orbit,relay){
+    var t=TANKERS[type],transfer=0,post=t.capacity,required=orbit*t.burn+t.reserve,donorFinal=null;
+    if(relay){var free=150*t.burn/2,donor=Math.max(0,t.capacity-150*t.burn-t.reserve);
+      transfer=Math.min(free,donor);post=t.capacity-free+transfer;required=(2*orbit-150)*t.burn/2+t.reserve;
+      donorFinal=t.capacity-150*t.burn-transfer;}
+    var maxReach=relay?((post-t.reserve)/t.burn+75):(t.capacity-t.reserve)/t.burn;
+    var valid=Number.isFinite(orbit)&&orbit>=(relay?150:0);
+    var feasible=valid&&orbit<=maxReach&&post>=required&&(donorFinal===null||donorFinal>=t.reserve);
+    var offload=feasible?Math.max(0,post-required):0;
+    return {feasible:feasible,offload:offload,transfer:transfer,post:post,required:required,maxReach:maxReach,
+      donorFinal:donorFinal,receiverFinal:feasible?post-(required-t.reserve)-offload:null,
+      reserve:t.reserve,returnFuel:orbit*t.burn/2,capacity:t.capacity};
+  }
+  function debitGas(primary,fallback,available){
+    var p=Math.min(available,primary),f=Math.min(Math.max(0,available-p),fallback);
+    return {primary:p,fallback:f,total:p+f,primarySupport:primary>0?p/primary:1,
+      fallbackSupport:fallback>0?f/fallback:1,support:primary+fallback>0?(p+f)/(primary+fallback):1};
+  }
+  function targetValidity(weapon,posture,range,hasISR){
+    var w=weapon==='fallback'?FALLBACK:STRIKES[weapon],p=TARGET_POSTURES[posture];
+    return Math.max(.10,1-p.decay*(w.tof_min+(hasISR?0:Math.max(0,range-w.standoff_nm)/8)));
+  }
+  function evalWing(range,alloc,options){
+    alloc=alloc||st.alloc;options=options||{};
+    var tactics=options.tankerTactics||st.tankerTactics,mode=options.tankerMode||st.tankerMode;
+    var plan=resolveTankerTacticsByType(alloc,tactics),orbit=options.strikeOrbit!=null?options.strikeOrbit:st.strikeOrbit;
+    var relayOrbit=options.relayOrbit!=null?options.relayOrbit:st.relayOrbit;
+    var WINDOW=st.tempo?16:12,eventLen=st.tempo?1.3:1.5,events=WINDOW/eventLen,CAPS=st.tempo?4.5:3.5;
+    var TURNC=(st.tempo?.7:.8)+DECKS[DECK].turnAdj/60/eventLen;
+    function rateFor(h){return Math.min(CAPS,events*.85/(h/eventLen+TURNC));}
+    var airborne=2*range/CRUISE+STATION,baseStrike=rateFor(airborne),byType=[],byKey={},cost=0;
+    var strikeSorties=0,tankerSorties=0,nCAP=0,nISR=0,topoffAvail=0,enroute=0,recoveryGas=0,infeasible=[];
+    activeKeys().forEach(function(k){var n=alloc[k]||0,a=CAT[k],s=statsFor(k);if(n<=0)return;cost+=n*costFor(k);
+      if(a.role==='strike'){var ss=n*Math.min(CAPS,baseStrike*s.rate);strikeSorties+=ss;
+        byType.push({key:k,s:s,ss:ss,pen:a.custom?designPenalty():1});byKey[k]=ss;}
+      else if(a.role==='cap')nCAP+=n;else if(a.role==='isr')nISR+=n;
     });
-    var gasDemand=0;                                     // per-type: each striker's own clean radius + burn
-    byType.forEach(function(x){gasDemand+=x.ss*Math.max(0,range-cleanFor(x.key)*(1-weaponGasFor(x.key,st.weapon)))*burnFor(x.key);});
-    var support=gasDemand>0?Math.min(1,tankerOffload/gasDemand):1;
-    var W=WEAPONS[st.weapon]||WEAPONS.amraam, SW=STRIKES[st.strike]||STRIKES.mixed;
-    // Tier-4 A2A sustainment (magazine depth x deck throughput): finite rounds + a finite deck feed cap how much
-    // of the force gets the weapon's archer-denial; a scarce/bulky round (SM-6) Winchesters fast, so its best-
-    // single-shot value is force-limited (agy #194 deck-ordnance brief + A2A-STD-001; codex-hardened spec v2).
-    var feedCapDay=KFEED*(DECKS[DECK].ordMult||1)/(W.burden||1);   // rounds/day the deck can move+build for A2A
-    var a2aAvail=Math.min(W.mag||9999, feedCapDay);               // 1-day horizon: min(inventory, deck feed)
-    var a2aDemand=strikeSorties*threatFactor(range)*A2A_SHOTS_PER_SORTIE;  // threatened sorties x admitted shots/sortie
-    var coverage=a2aDemand>0.001?Math.min(1,a2aAvail/a2aDemand):1;         // fraction covered before Winchester
-    // survivability -- MULTIPLICATIVE threat channels (air x surface); neither is erased by a hard cap
-    var escortMit=0.22*(1-Math.exp(-0.35*nCAP))+0.28*(1-Math.exp(-0.55*nISR));       // CAP/ISR air-threat mitigation
-    var airMit=Math.min(0.95,escortMit+weaponSurvBonus(st.weapon,range)*coverage);   // + A2A weapon, coverage-limited
-    var surfMit=strikeStandoffBonus(st.strike,range);             // strike standoff lowers surface vuln; direct attack raises it (<0)
-    var effects=0, survNum=0, survDen=0;
-    byType.forEach(function(x){var surv=Math.max(0.02,Math.min(0.995,1-(1-x.s.surv/100)*(1-airMit)*(1-surfMit)));
-      effects += x.ss*support*(x.s.pay/1000)*(0.35+0.65*surv)*x.pen;
-      survNum+=x.ss*x.s.pay*surv; survDen+=x.ss*x.s.pay;});
-    effects*=W.leth*SW.sleth;
-    var meanSurv=survDen>0?survNum/survDen:0, survScore=support*meanSurv;
-    var capSorties=nCAP*rateCap, isrSorties=nISR*rateISR;
-    if(nCAP>0)byKey.cap=capSorties; if(nISR>0)byKey.isr=isrSorties;
-    return {cyc:cyc,airborne:airborne,rateStrike:baseStrike,events:events,sps:baseStrike,
+    Object.keys(TANKERS).forEach(function(k){var t=TANKERS[k],single=tankerLedger(k,orbit,false),deep=tankerLedger(k,relayOrbit,true);
+      topoffAvail+=plan.yoyo[k]*3.5*t.near;recoveryGas+=plan.recovery[k]*1.5*t.recovery;
+      enroute+=plan.strike[k]*1.5*single.offload+plan.consolidation[k]/2*deep.offload;
+      if(plan.strike[k]&&!single.feasible)infeasible.push(CAT[k].name+' strike orbit');
+      if(plan.consolidation[k]&&!deep.feasible)infeasible.push(CAT[k].name+' deep relay');
+      var ts=plan.yoyo[k]*3.5+plan.recovery[k]*1.5+(single.feasible?plan.strike[k]*1.5:0)+(deep.feasible?plan.consolidation[k]:0);
+      tankerSorties+=ts;byKey[k]=ts;
+    });
+    var W=WEAPONS[st.weapon]||WEAPONS.amraam,SW=STRIKES[st.strike]||STRIKES.mixed;
+    var primaryAvail=Math.min(SW.mag,180*DECKS[DECK].ordMult/SW.burden),fallbackAvail=Math.min(200,200*DECKS[DECK].ordMult);
+    var primaryRem=primaryAvail,fallbackRem=fallbackAvail,climbDemand=0;
+    var priority=['f35c','fa18','custom'];
+    byType.sort(function(a,b){var ai=priority.indexOf(a.key),bi=priority.indexOf(b.key);return (ai<0?3:ai)-(bi<0?3:bi)||a.key.localeCompare(b.key);});
+    byType.forEach(function(x){x.climbCap=x.key==='f35c'?1300:x.key==='fa18'?1000:Math.round(.15*cleanFor(x.key)*burnFor(x.key)/2);climbDemand+=x.ss*x.climbCap;});
+    var alpha=climbDemand>0?Math.min(1,topoffAvail/climbDemand):0,dp=0,df=0;
+    byType.forEach(function(x){x.primary=Math.min(x.ss,Math.floor(primaryRem/SW.shotsPerSortie));primaryRem-=x.primary*SW.shotsPerSortie;
+      x.fallback=Math.min(x.ss-x.primary,Math.floor(fallbackRem/2));fallbackRem-=x.fallback*2;x.unarmed=x.ss-x.primary-x.fallback;
+      x.topoff=alpha*x.climbCap;x.clean=cleanFor(x.key)*(1-weaponGasFor(x.key,st.weapon))+x.topoff/burnFor(x.key);
+      x.dp=x.primary*Math.max(0,range-SW.standoff_nm-x.clean)*burnFor(x.key);
+      x.df=x.fallback*Math.max(0,range-FALLBACK.standoff_nm-x.clean)*burnFor(x.key);dp+=x.dp;df+=x.df;
+    });
+    // Theater supply is accepted only for unmet organic demand. Fixed 10% dogleg throughput
+    // and 18% score charge are explicit illustrative terms, separate from raw mission effect.
+    var theaterAccepted=mode==='theater'?Math.min(150000,Math.max(0,dp+df-enroute)):0;
+    var gas=debitGas(dp,df,enroute+theaterAccepted),dogleg=theaterAccepted>0?.9:1;
+    var threat=st.threat==null?threatFactor(range):clamp(st.threat,0,1);
+    var a2aAvail=Math.min(W.mag, KFEED*DECKS[DECK].ordMult/W.burden),a2aDemand=strikeSorties*threat*A2A_SHOTS_PER_SORTIE;
+    var coverage=a2aDemand>0?Math.min(1,a2aAvail/a2aDemand):1;
+    var escortMit=.22*(1-Math.exp(-.35*nCAP))+.28*(1-Math.exp(-.55*nISR));
+    var airMit=Math.min(.95,escortMit+weaponSurvBonus(st.weapon,range)*coverage);
+    var capSorties=nCAP*rateFor(2),isrSorties=nISR*rateFor(3);
+    var recoveryDemand=(strikeSorties+tankerSorties+capSorties+isrSorties)*50;
+    var recoveryCoverage=recoveryDemand>0?Math.min(1,recoveryGas/recoveryDemand):1;
+    var recoveryMult=1-.15*(1-recoveryCoverage),effects=0,survNum=0,survDen=0;
+    var posture=TARGET_POSTURES[st.targetPosture],hasISR=nISR>=1;
+    byType.forEach(function(x){
+      function eff(w,key,count,support){var surf=w.ssurv-.20*(threat-.50);
+        var surv=clamp(1-(1-x.s.surv/100)*(1-airMit)*(1-surf),.02,.995);
+        survNum+=count*x.s.pay*surv;survDen+=count*x.s.pay;
+        return count*support*(x.s.pay/1000)*(.35+.65*surv)*x.pen*W.leth*w.sleth*
+          posture.defeat[key==='fallback'?'direct':key]*targetValidity(key,st.targetPosture,range,hasISR)*recoveryMult*dogleg;
+      }
+      x.primaryEffect=eff(SW,st.strike,x.primary,gas.primarySupport);
+      x.fallbackEffect=eff(FALLBACK,'fallback',x.fallback,gas.fallbackSupport);effects+=x.primaryEffect+x.fallbackEffect;
+    });
+    var meanSurv=survDen>0?survNum/survDen:0;
+    byKey.cap=capSorties;byKey.isr=isrSorties;
+    return {cyc:airborne+TURNC*eventLen,airborne:airborne,rateStrike:baseStrike,events:events,sps:baseStrike,
       strikeSorties:strikeSorties,tankerSorties:tankerSorties,capSorties:capSorties,isrSorties:isrSorties,
-      support:support,gasDemand:gasDemand,tankerOffload:tankerOffload,effects:effects,
-      coverage:coverage,a2aAvail:a2aAvail,a2aDemand:a2aDemand,
-      meanSurv:meanSurv,survScore:survScore,cost:cost,byKey:byKey};
+      support:gas.support,gasDemand:dp+df,tankerOffload:enroute+theaterAccepted,effects:effects,score:effects*(theaterAccepted>0?.82:1),
+      coverage:coverage,a2aAvail:a2aAvail,a2aDemand:a2aDemand,meanSurv:meanSurv,survScore:gas.support*meanSurv,cost:cost,byKey:byKey,
+      byType:byType,plan:plan,gas:gas,primaryDemand:dp,fallbackDemand:df,primaryAvail:primaryAvail,fallbackAvail:fallbackAvail,
+      primaryUsed:primaryAvail-primaryRem,fallbackUsed:fallbackAvail-fallbackRem,topoffAvailable:topoffAvail,topoffDelivered:alpha*climbDemand,
+      organicOffload:enroute,theaterAccepted:theaterAccepted,dogleg:dogleg,recoveryGas:recoveryGas,recoveryDemand:recoveryDemand,
+      recoveryCoverage:recoveryCoverage,recoveryMult:recoveryMult,infeasible:infeasible,threat:threat,
+      fuelBurned:byType.reduce(function(s,x){return s+x.ss*range*burnFor(x.key);},0)};
+  }
+  function organicCliff(alloc,options){
+    var rows=[],peak=0,fuel=0;options=Object.assign({},options||{},{tankerMode:'organic'});
+    for(var r=300;r<=900;r+=10){var e=evalWing(r,alloc,options);rows.push({range:r,effect:e.effects,support:e.support});peak=Math.max(peak,e.effects);fuel+=e.fuelBurned;}
+    if(peak<100)return {range:0,effect:0,support:0,peak:peak,eligible:false,fuel:fuel,rows:rows};
+    var ec=null,gc=null;rows.forEach(function(x){if(ec===null&&(x.effect<.5*peak||x.effect<100))ec=x.range;if(gc===null&&x.support<.90)gc=x.range;});
+    return {range:ec===null?gc:gc===null?ec:Math.min(ec,gc),effect:ec,support:gc,peak:peak,eligible:peak>=400,fuel:fuel,rows:rows};
+  }
+  function cliffLabel(c){return c.range===null?'> 900 nm (censored)':c.range===0?'Ineligible (<100 peak)':c.range+' nm';}
+  function compareCliffs(a,b){var ar=a.range===null?910:a.range,br=b.range===null?910:b.range;return br-ar||b.peak-a.peak||a.fuel-b.fuel;}
+  // Linear return-leg audit: terminal reserve is a boundary, not entry fuel.
+  function returnLegAudit(empty,bringback,reserve,range,burnRT){
+    var returnBurn=range*burnRT/2,entryFuel=reserve+returnBurn;
+    return {entryFuel:entryFuel,burn:returnBurn,finalFuel:entryFuel-returnBurn,landedWeight:empty+bringback+entryFuel-returnBurn};
   }
 
   function buildRoster(){
@@ -605,9 +703,9 @@ footer b{color:var(--ink-dim)}
         var row=document.createElement("div"); row.className="ac";
         row.innerHTML='<div class="ac-nm">'+a.name+(a.custom?' <span class="tag ghost">CUSTOM</span>':(a.concept?' <span class="tag">CONCEPT</span>':''))+
           ' <button type="button" class="info" title="About '+a.name+'" aria-label="About '+a.name+'" aria-expanded="'+(st.open[k]?'true':'false')+'">i</button></div>'+
-          '<div class="stepper"><button type="button" title="Remove a deck spot from '+a.name+'" aria-label="less '+a.name+'"'+(n<=0?' disabled':'')+'>&minus;</button>'+
+          '<div class="stepper"><button type="button" title="Remove a deck spot from '+a.name+'" aria-label="less '+a.name+'"'+(n<=0?' aria-disabled="true"':'')+'>&minus;</button>'+
           '<span class="n'+(n<=0?' zero':'')+'">'+n+'</span>'+
-          '<button type="button" title="Add a deck spot to '+a.name+'" aria-label="more '+a.name+'"'+(atMax?' disabled':'')+'>+</button></div>'+
+          '<button type="button" title="Add a deck spot to '+a.name+'" aria-label="more '+a.name+'"'+(atMax?' aria-disabled="true"':'')+'>+</button></div>'+
           '<div class="ac-note">'+a.note+'</div>';
         var bs=row.querySelectorAll(".stepper button");
         bs[0].addEventListener("click",function(){if((st.alloc[k]||0)>0){st.alloc[k]--;buildRoster();render();}});
@@ -641,8 +739,9 @@ footer b{color:var(--ink-dim)}
     var maxE=10;pts.forEach(function(p){if(p[1]>maxE)maxE=p[1];});maxE*=1.12;
     var X=function(r){return padL+(r-200)/700*gw;},Y=function(e){return padT+gh-(e/maxE)*gh;};
     x.strokeStyle="#12203050";x.lineWidth=1;[300,400,500,600,700,800].forEach(function(r){x.beginPath();x.moveTo(X(r),padT);x.lineTo(X(r),padT+gh);x.stroke();});
-    x.strokeStyle="#2a3a52";x.setLineDash([3,4]);x.beginPath();x.moveTo(X(CLEAN),padT);x.lineTo(X(CLEAN),padT+gh);x.stroke();x.setLineDash([]);
-    x.fillStyle="#556072";x.font="10px ui-monospace,monospace";x.fillText("clean ~450",X(CLEAN)+4,padT+10);
+    var cliffMark=organicCliff(st.alloc).range;
+    if(cliffMark>=300){x.strokeStyle="#647a94";x.setLineDash([3,4]);x.beginPath();x.moveTo(X(cliffMark),padT);x.lineTo(X(cliffMark),padT+gh);x.stroke();x.setLineDash([]);
+      x.fillStyle="#a8bbd0";x.font="10px ui-monospace,monospace";x.fillText("organic cliff",Math.min(X(cliffMark)+4,padL+gw-90),padT+10);}
     x.beginPath();pts.forEach(function(p,i){var xx=X(p[0]),yy=Y(p[1]);i?x.lineTo(xx,yy):x.moveTo(xx,yy);});
     x.lineTo(X(900),padT+gh);x.lineTo(X(200),padT+gh);x.closePath();
     var g=x.createLinearGradient(0,padT,0,padT+gh);g.addColorStop(0,"#f5b02733");g.addColorStop(1,"#f5b02703");x.fillStyle=g;x.fill();
@@ -655,17 +754,16 @@ footer b{color:var(--ink-dim)}
     x.fillStyle="#556072";x.fillText("200",padL,H-6);x.fillText("900 nm",W-padR-42,H-6);
   }
 
-  var animFrom=0, animId=0, prevEff=null;
-  function animateScore(to){var node=el("score");
-    if(reduce){node.textContent=fmt(to,0);animFrom=to;return;}
-    if(animId)cancelAnimationFrame(animId);
-    var start=performance.now(),from=animFrom;
-    function step(t){var k=Math.min(1,(t-start)/500);k=1-Math.pow(1-k,3);node.textContent=fmt(from+(to-from)*k,0);
-      if(k<1)animId=requestAnimationFrame(step);else animId=0;}
-    animId=requestAnimationFrame(step);animFrom=to;}
+  var prevEff=null;
 
   function render(){
+    el("tactic-strike").value=st.tankerTactics.strike;
+    var buddyReach=tankerLedger("horn5",st.relayOrbit,true).maxReach;
+    el("relay-warning").textContent=st.tankerTactics.consolidation>0&&(st.alloc.horn5||0)>=2&&st.relayOrbit>buddyReach?"Buddy relay cannot reach this orbit (limit "+fmt(buddyReach,1)+" nm). Drag the receiver orbit to 250 nm to try a feasible relay.":"";
+    document.querySelectorAll("[data-scenario]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.scenario===st.scenario?"true":"false");});
     var u=used(), r=evalWing(st.rng);
+    var defenseScenario=st.scenario==='strait_defense',objective=el('scenario-objective');objective.hidden=!defenseScenario;
+    objective.textContent=(st.rankBy==='surv'?'Strait objective: Survivability':'Use Strait objective: Survivability')+' - '+fmt(r.survScore*100,1)+' / 100';objective.setAttribute('aria-pressed',st.rankBy==='surv'?'true':'false');
     el("v-spots").textContent=POOL+" / "+DECKS[DECK].spots;
     el("s-spots").max=DECKS[DECK].spots; el("s-spots").value=POOL;
     el("pool").innerHTML='<b>'+DECKS[DECK].name+' &mdash; '+POOL+' spots</b>: '+u+' assigned '+(POOL-u>0?'('+(POOL-u)+' idle)':'(full)');
@@ -688,7 +786,7 @@ footer b{color:var(--ink-dim)}
       if(Math.abs(dd)<0.5){de.textContent="";de.className="delta z";}
       else{de.textContent=(dd>0?"+":"")+fmt(dd,0)+" ("+(dd>0?"+":"")+fmt(dpp,0)+"%)";de.className="delta "+(dd>0?"up":"dn");}}
     prevEff=r.effects;
-    animateScore(r.effects);
+    el("score").textContent=fmt(r.effects,0);
     var bt=50+(1-r.support)*38; el("ball").style.top=bt+"%"; el("ball").classList.toggle("low",r.support<0.9);
     var rf=POOL/32, ref={}; Object.keys(REFWING).forEach(function(k){ref[k]=Math.round(REFWING[k]*rf);});
     var bench=evalWing(st.rng,ref).effects;
@@ -698,10 +796,10 @@ footer b{color:var(--ink-dim)}
     el("cyc").innerHTML='<span class="k">Sortie cycle</span> <b>'+fmt(r.cyc,1)+' h</b> = airborne '+fmt(r.airborne,1)+
       ' h <span style="color:var(--ink-faint)">(out-and-back '+st.rng+' nm + station)</span> + deck turnaround &rarr; <b>'+
       fmt(r.rateStrike,1)+'</b> sorties/day per strike aircraft';
-    if(r.gasDemand<=0.5){el("gas").innerHTML='<span class="k">Ball &mdash; strikers supported</span> <span class="cool">Organic reach</span> at '+st.rng+' nm &mdash; strikers reach unrefueled; no tanking needed.';}
+    if(r.gasDemand<=0.5){el("gas").innerHTML='<span class="k">Fuel-demand coverage</span> <span class="cool">Organic reach</span> at '+st.rng+' nm &mdash; no enroute gas needed; departure top-off may still be used.';}
     else{var head=r.tankerOffload>r.gasDemand*1.05, tail=r.support>=0.999?(head?' &mdash; <b>fully supplied; more tankers add nothing.</b>':' &mdash; supply just meets demand.'):' &mdash; <b>gas-starved</b>: add tankers or pull the range in.';
       el("gas").innerHTML='<span class="k">Ball &mdash; strikers supported</span> demand '+fmt(r.gasDemand/1000,0)+'k lb/day &middot; supply '+
-      fmt(r.tankerOffload/1000,0)+'k &rarr; <span class="'+(r.support>=0.999?"cool":"hot")+'">'+fmt(r.support*100,0)+'% reach '+st.rng+' nm</span>'+tail;}
+      fmt(r.tankerOffload/1000,0)+'k &rarr; <span class="'+(r.support>=0.999?"cool":"hot")+'">'+fmt(r.support*100,0)+'% fuel-demand coverage at '+st.rng+' nm</span>'+tail;}
     el("cost").innerHTML='<span class="k">Fleet cost</span> <b>$'+fmt(r.cost/1000,1)+'B</b> for the wing &rarr; <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b> effect index per $B';
     // Tier-3 attrition (multi-day campaign teaching, not per-sortie realism): loss/sortie = 0.30 x (1 - survivability)
     if(r.strikeSorties<=0.05){el("atr").innerHTML='<span class="k">Under fire</span> no strike sorties &mdash; nothing exposed to attrition.';}
@@ -731,17 +829,18 @@ footer b{color:var(--ink-dim)}
     el("v-cf35").textContent="$"+st.cost.f35c+"M"; el("v-ccustom").textContent="$"+st.cost.custom+"M";
     el("weapdesc").innerHTML=(WEAPONS[st.weapon]||WEAPONS.amraam).desc;
     el("strikedesc").innerHTML=(STRIKES[st.strike]||STRIKES.mixed).desc;
+    missionReadout(r);
     drawCurve();
     el("curve").setAttribute("aria-label","Effect index vs target range for your wing: "+fmt(evalWing(200).effects,0)+
       " at 200 nm, "+fmt(evalWing(500).effects,0)+" at 500 nm, "+fmt(evalWing(900).effects,0)+" at 900 nm. Current target "+
       st.rng+" nm: "+fmt(r.effects,0)+".");
 
-    var t="<b>Air Boss read.</b> ";
+    var t="<b>Air Boss read.</b> effect index "+fmt(r.effects,0)+" at "+st.rng+" nm. ";
     if(u===0)t+="Empty deck &mdash; start adding aircraft.";
     else if(r.strikeSorties===0)t+="No strikers spotted &mdash; sorties, but nothing on target.";
-    else if(r.support<0.7 && r.gasDemand>0)t+="Strikers gas-starved &mdash; only "+fmt(r.support*100,0)+"% reach. Add tankers (a dedicated tanker offloads far more than a buddy pod) or pull the range in.";
+    else if(r.support<0.7 && r.gasDemand>0)t+="Fuel-starved segments &mdash; "+fmt(r.support*100,0)+"% of fuel demand supplied. Add tankers (a dedicated tanker offloads far more than a buddy pod) or pull the range in.";
     else if(r.tankerOffload>r.gasDemand*1.7 && r.gasDemand>0)t+="Over-tanked &mdash; convert a tanker spot to a striker.";
-    else t+="effect index "+fmt(r.effects,0)+" at "+st.rng+" nm, "+fmt(r.support*100,0)+"% of strikers reaching. Nudge the mix and watch the range curve.";
+    else t+=fmt(r.support*100,0)+"% fuel-demand coverage. Nudge the mix and watch the range curve.";
     el("trade").innerHTML=t;
     el("deckleg").textContent=deckLegendText();
     deckPreview();
@@ -762,15 +861,18 @@ footer b{color:var(--ink-dim)}
   }
   function deckGeo(W,H){
     var cx=W*0.55,bowY=24,sternY=H-14,half=Math.min(118,W*0.13);
-    var cats=[{x:cx-13,y:bowY+36},{x:cx+13,y:bowY+36}];
+    var cats=[{x:cx-13,y:bowY+64,end:{x:cx-13,y:bowY+8}},
+      {x:cx+13,y:bowY+64,end:{x:cx+13,y:bowY+8}},
+      {x:cx-half*.65,y:H*.57,end:{x:cx-half*1.05,y:H*.31}},
+      {x:cx-half*.28,y:H*.57,end:{x:cx-half*.68,y:H*.31}}];
     var ramp={x:cx-2,y:sternY-6},fwd={x:cx-half*0.62,y:H*0.26};   // angled deck canted to PORT: aft round-down -> forward end out over the port side
     var trap=lp(ramp,fwd,0.42),approach=lp(ramp,fwd,-0.22);        // touchdown on the deck; approach on the extended groove astern
-    var spots=[];for(var i=0;i<14;i++)spots.push({x:cx+half*0.34+((i%3)*13),y:H*0.30+i*((H*0.56)/14)});
+    var spots=[];for(var i=0;i<14;i++)spots.push({x:cx+half*(0.18+(i%3)*0.16),y:H*0.30+i*((H*0.56)/14)});
     return {W:W,H:H,cx:cx,bowY:bowY,sternY:sternY,half:half,cats:cats,ramp:ramp,fwd:fwd,trap:trap,approach:approach,spots:spots};
   }
   function lp(a,b,t){return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};}
   function agentPos(p,ag,g){
-    var spot=g.spots[ag.spot%g.spots.length],cat=g.cats[ag.spot%2],tip={x:cat.x,y:g.bowY},exit={x:cat.x+16,y:g.bowY-50},o;
+    var spot=g.spots[ag.spot%g.spots.length],cat=g.cats[ag.spot%4],tip=cat.end,exit={x:cat.x+16,y:g.bowY-50},o;
     if(p<0.10){o=lp(spot,cat,p/0.10);o.a=1;}
     else if(p<0.18){var t=(p-0.10)/0.08;o=lp(cat,tip,t*t);o.a=1;}
     else if(p<0.30){var t=(p-0.18)/0.12;o=lp(tip,exit,t);o.a=1-t;}
@@ -785,9 +887,11 @@ footer b{color:var(--ink-dim)}
     var H=g.H,cx=g.cx,half=g.half;
     x.fillStyle="#0a1018";x.fillRect(0,0,g.W,H);
     x.fillStyle="#131c28";x.strokeStyle="#26344a";x.lineWidth=1.5;
-    x.beginPath();x.moveTo(cx-half,g.sternY);x.lineTo(cx-half,g.bowY+26);
-    x.quadraticCurveTo(cx-half,g.bowY,cx,g.bowY);x.quadraticCurveTo(cx+half,g.bowY,cx+half,g.bowY+26);
-    x.lineTo(cx+half,g.sternY);x.quadraticCurveTo(cx,g.sternY+9,cx-half,g.sternY);x.closePath();x.fill();x.stroke();
+    // Stylized Nimitz outline: port waist sponson, tapered bow and starboard island.
+    x.beginPath();x.moveTo(cx-half*.65,g.sternY);x.lineTo(cx-half*1.12,H*.64);
+    x.lineTo(cx-half*1.38,H*.38);x.lineTo(cx-half*.82,H*.22);x.lineTo(cx-half*.48,g.bowY);
+    x.lineTo(cx+half*.42,g.bowY);x.lineTo(cx+half*.82,H*.23);x.lineTo(cx+half,H*.38);
+    x.lineTo(cx+half,H*.82);x.lineTo(cx+half*.65,g.sternY);x.closePath();x.fill();x.stroke();
     // angled landing deck -- canted to PORT (aft round-down -> forward end out over the port side)
     var R=g.ramp,F=g.fwd,dx=F.x-R.x,dy=F.y-R.y,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,wd=15;
     x.fillStyle="#182437";
@@ -795,16 +899,31 @@ footer b{color:var(--ink-dim)}
     x.lineTo(F.x-nx*wd,F.y-ny*wd);x.lineTo(R.x-nx*wd,R.y-ny*wd);x.closePath();x.fill();
     x.strokeStyle="#3a4c66";x.setLineDash([6,6]);x.lineWidth=1;
     x.beginPath();x.moveTo(R.x,R.y);x.lineTo(F.x,F.y);x.stroke();x.setLineDash([]);
+    // Red/white foul lines parallel the landing corridor.
+    [1,-1].forEach(function(side){x.lineWidth=2;x.setLineDash([5,5]);x.strokeStyle='#e7e8ed';
+      x.beginPath();x.moveTo(R.x+side*nx*wd,R.y+side*ny*wd);x.lineTo(F.x+side*nx*wd,F.y+side*ny*wd);x.stroke();
+      x.lineDashOffset=5;x.strokeStyle='#d34f55';x.stroke();x.lineDashOffset=0;x.setLineDash([]);});
     x.strokeStyle="#51678a";x.lineWidth=1.4;                       // arresting wires, across the deck near the ramp
-    for(var i=1;i<=3;i++){var t=0.10+i*0.06,px=R.x+dx*t,py=R.y+dy*t;
+    for(var i=1;i<=4;i++){var t=0.10+i*0.06,px=R.x+dx*t,py=R.y+dy*t;
       x.beginPath();x.moveTo(px+nx*wd,py+ny*wd);x.lineTo(px-nx*wd,py-ny*wd);x.stroke();}
-    x.strokeStyle="#3a4c66";x.lineWidth=2;g.cats.forEach(function(c){x.beginPath();x.moveTo(c.x,c.y);x.lineTo(c.x,g.bowY+2);x.stroke();});
+    x.strokeStyle="#3a4c66";x.lineWidth=2;g.cats.forEach(function(c){x.beginPath();x.moveTo(c.x,c.y);x.lineTo(c.end.x,c.end.y);x.stroke();});
     x.fillStyle="#0e1622";x.strokeStyle="#2a3a52";x.lineWidth=1;x.fillRect(cx+half-13,H*0.44,10,42);x.strokeRect(cx+half-13,H*0.44,10,42);
+  }
+  var JERSEYS=[['#ffd84d','Directors'],['#549eff','Handlers'],['#48c982','Cat/trap'],['#b58ae8','Fuel'],['#f15a65','Ordnance'],['#b98054','Plane captains'],['#edf4ff','Safety']];
+  function drawCrew(x,g,gp){
+    var sites=[[g.cx-10,g.bowY+65],[g.cx+g.half*.6,g.H*.68],[g.cx-g.half*.55,g.H*.59],
+      [g.cx+g.half*.6,g.H*.52],[g.cx+g.half*.55,g.H*.36],[g.cx+g.half*.45,g.H*.78],[g.cx-g.half*.5,g.H*.88]];
+    sites.forEach(function(p,i){x.fillStyle=JERSEYS[i][0];x.strokeStyle='#07101b';x.lineWidth=1;
+      x.beginPath();x.arc(p[0]+Math.sin(gp*3+i)*2,p[1],3,0,Math.PI*2);x.fill();x.stroke();});
+    // Four deck-edge elevator outlines, distinct from the landing lane.
+    [[.78,.27],[.91,.42],[.88,.73],[-.88,.70]].forEach(function(p){x.strokeStyle='#77869a';x.strokeRect(g.cx+g.half*p[0]-5,g.H*p[1],10,16);});
+    x.font='10px sans-serif';x.fillStyle='#afbdd0';x.fillText('STYLIZED - NOT TO SCALE',8,16);
+    JERSEYS.forEach(function(j,i){x.fillStyle=j[0];x.fillRect(8,36+i*18,6,6);x.fillText(j[1],20,43+i*18);});
   }
   function drawDeckFrame(gp){
     var c=el("deck");if(!c)return;var dpr=Math.min(2,window.devicePixelRatio||1),W=c.clientWidth||640,H=300;
     c.width=W*dpr;c.height=H*dpr;var x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);
-    var g=deckGeo(W,H);drawDeckBg(x,g);
+    var g=deckGeo(W,H);drawDeckBg(x,g);drawCrew(x,g,gp);
     g.spots.forEach(function(s){x.fillStyle="#0f1a28";x.beginPath();x.arc(s.x,s.y,5,0,7);x.fill();});
     deckAgents.forEach(function(ag){var p=(gp*ag.spd+ag.off)%1;var o=agentPos(p,ag,g);if(o.a<=0.03)return;
       var o2=agentPos((p+0.006)%1,ag,g);var ang=Math.atan2(o2.y-o.y,o2.x-o.x);
@@ -821,7 +940,7 @@ footer b{color:var(--ink-dim)}
         '<span class="nm">'+CAT[k].name+'</span>'+
         '<span class="tbar"><i style="width:'+(c/maxc*100)+'%;background:'+col+'"></i></span>'+
         '<span class="ct">'+fmt(c,0)+'</span></div>';}).join("");
-    return '<div class="tally-h">Day tally &mdash; T+24:00 at '+st.rng+' nm</div>'+
+    return '<div class="opt-note">'+straitObjectiveText(r)+'</div><div class="tally-h">Day tally &mdash; T+24:00 at '+st.rng+' nm</div>'+
       '<div class="tally-grid">'+
         '<div class="tstat"><div class="tv">'+fmt(total,0)+'</div><div class="tk">sorties / day</div></div>'+
         '<div class="tstat"><div class="tv">'+fmt(events,0)+'</div><div class="tk">events (cycles)</div></div>'+
@@ -831,28 +950,29 @@ footer b{color:var(--ink-dim)}
       '<div class="tally-types"><div class="tt-cap">Sorties generated by aircraft type</div>'+rows+
       '<div class="tt-note">A day is flown as '+fmt(events,0)+' cyclic events; strike spots fly ~once per event (~'+
       fmt(st.tempo?0.78:0.62,2)+' availability), while CAP / tanker / ISR cycle faster on their own shorter tempos. '+
-      fmt(r.support*100,0)+'% of strikers reach '+st.rng+' nm. Illustrative model.</div></div>';
+      fmt(r.support*100,0)+'% aggregate fuel support at '+st.rng+' nm. Illustrative model.</div></div>';
   }
-  function deckLegendText(){return "Strike: "+(STRIKES[st.strike]||STRIKES.mixed).name+" · A2A: "+(WEAPONS[st.weapon]||WEAPONS.amraam).name;}
-  function deckPreview(){ if(st.play===1 && !running){ el("daytally").classList.add("hide"); buildDeckAgents(); if(!reduce)drawDeckFrame(0); } }
+  function deckLegendText(){return "Aircraft colors: red strike, purple tankers, blue CAP, green ISR. Crew jerseys shown on deck. Strike: "+(STRIKES[st.strike]||STRIKES.mixed).name+" · A2A: "+(WEAPONS[st.weapon]||WEAPONS.amraam).name;}
+  function deckPreview(){ if(st.play===1 && !running){ el("daytally").classList.add("hide"); buildDeckAgents(); drawDeckFrame(0); } }
 
-  var running=false;
-  function runDay(){
-    if(running)return;running=true;
+  var running=false,dayFrame=0,dayGeneration=0;
+  function stopDay(){dayGeneration++;if(dayFrame)cancelAnimationFrame(dayFrame);dayFrame=0;running=false;el("launch").disabled=false;el("launch").textContent="Launch the day";}
+  function runDay(onComplete){
+    if(running)return;running=true;var generation=++dayGeneration;
     buildDeckAgents(); el("daytally").classList.add("hide");
-    var r=evalWing(st.rng),target=r.effects,cpd=r.events,launch=el("launch");
+    var r=evalWing(st.rng),cpd=r.events,launch=el("launch"),playbackRate=r.events/8;el('deck').dataset.playbackRate=String(playbackRate);
     launch.disabled=true;launch.textContent="Cycling…";el("deckleg").textContent=deckLegendText();
     var start=performance.now(),dur=reduce?1:7000;
-    function step(t){var k=Math.min(1,(t-start)/dur),gp=(t-start)/2000,hours=k*24,cyc=Math.floor(k*cpd);
-      if(!reduce)drawDeckFrame(gp);
+    function step(t){if(generation!==dayGeneration)return;var k=Math.min(1,(t-start)/dur),gp=(t-start)/2000*playbackRate,hours=k*24,cyc=Math.floor(k*cpd);
+      drawDeckFrame(reduce?0:gp);
       el("clock").textContent="T+"+String(Math.floor(hours)).padStart(2,"0")+":"+String(Math.floor((hours%1)*60)).padStart(2,"0")+"  —  cycle "+cyc;
-      el("score").textContent=fmt(target*k,0);
-      if(k<1)requestAnimationFrame(step);
-      else{running=false;launch.disabled=false;launch.textContent="Re-run the day ▶";el("score").textContent=fmt(target,0);animFrom=target;
+      // The headline remains the current evaluated total; the clock shows progress.
+      if(k<1)dayFrame=requestAnimationFrame(step);
+      else{running=false;launch.disabled=false;launch.textContent="Re-run the day ▶";
         el("clock").textContent="T+24:00 — "+fmt(cpd,0)+" cycles complete";el("deckleg").textContent=deckLegendText();
-        if(!reduce)drawDeckFrame(dur/2000);
-        el("daytally").innerHTML=buildTally(r); el("daytally").classList.remove("hide");}}
-    requestAnimationFrame(step);
+        if(!reduce)drawDeckFrame(dur/2000*playbackRate);
+        el("daytally").innerHTML=buildTally(r); el("daytally").classList.remove("hide");if(typeof onComplete==="function")onComplete(r);}}
+    dayFrame=requestAnimationFrame(step);
   }
 
   /* ---- Auto-Boss optimizer ---- */
@@ -877,6 +997,7 @@ footer b{color:var(--ink-dim)}
   // headline call this, so the DISPLAYED number can never diverge from the RANKED number (regression-bound).
   function gasPerEffect(r){return r.gasDemand/Math.max(1,r.effects);}
   function objVal(r,spots){
+    if(st.rankBy==="cliff")return r.cliff?(r.cliff.range===null?910:r.cliff.range):-1;
     if(st.rankBy==="perspot")return r.effects/Math.max(1,spots);
     if(st.rankBy==="dollar")return r.effects/Math.max(1,r.cost);
     if(st.rankBy==="surv")return r.survScore;
@@ -885,35 +1006,37 @@ footer b{color:var(--ink-dim)}
   }
   function autoSearch(){
     var keys=activeKeys();   // includes the player's Your Design jet, priced via its Auto-Boss cost slider
-    var pool=[],SAMP=2500,maxEff=0;
+    var pool=[],SAMP=st.rankBy==="cliff"?160:2500,maxEff=0;
     seedFrom();
     for(var i=0;i<SAMP;i++){
-      var alloc=randomMix(keys), r=evalWing(st.rng,alloc);
+      var alloc=randomMix(keys), plan=st.rankBy==='cliff'?Object.values(TACTIC_PLANS)[i%5]:st.tankerTactics;
+      var r=evalWing(st.rng,alloc,{tankerTactics:plan,tankerMode:st.rankBy==='cliff'?'organic':st.tankerMode});
+      if(st.rankBy==='cliff'){r.cliff=organicCliff(alloc,{tankerTactics:plan});if(!r.cliff.eligible)continue;}
       if(r.effects<st.target || r.strikeSorties<=0)continue;
       if(r.effects>maxEff)maxEff=r.effects;
       var spots=keys.reduce(function(s,k){return s+(alloc[k]||0);},0);
-      pool.push({alloc:alloc,r:r,spots:spots});
+      pool.push({alloc:alloc,r:r,spots:spots,plan:Object.assign({},plan)});
     }
     // gas / survivability are degenerate without an effect floor (a tiny, fully-supported force "wins");
     // require >= 40% of the best effect found so these objectives rank real fighting wings.
     if((st.rankBy==="gas"||st.rankBy==="surv") && st.target<0.4*maxEff){
       var floor=0.4*maxEff; pool=pool.filter(function(p){return p.r.effects>=floor;});
     }
-    pool.sort(function(a,b){var d=objVal(b.r,b.spots)-objVal(a.r,a.spots);return d!==0?d:b.r.effects-a.r.effects;});
+    pool.sort(function(a,b){if(st.rankBy==="cliff")return compareCliffs(a.r.cliff,b.r.cliff);var d=objVal(b.r,b.spots)-objVal(a.r,a.spots);return d!==0?d:b.r.effects-a.r.effects;});
     var seen={},top=[];
     for(var j=0;j<pool.length && top.length<5;j++){
-      var sig=keys.map(function(k){return (pool[j].alloc[k]||0);}).join("-");
+      var sig=keys.map(function(k){return (pool[j].alloc[k]||0);}).join("-")+JSON.stringify(pool[j].plan);
       if(seen[sig])continue; seen[sig]=1; top.push(pool[j]);
     }
     return top;
   }
   function buildLeaderboard(){
     var top=autoSearch(), host=el("leaderboard");
-    var labels={effect:"most effect",perspot:"effect per spot",surv:"survivability",gas:"least gas per effect",dollar:"effect per illustrative $"};
+    var labels={cliff:"organic cliff (peak >=400)",effect:"most effect",perspot:"effect per spot",surv:"survivability",gas:"least gas per effect",dollar:"effect per illustrative $"};
     if(!top.length){host.innerHTML='<div class="lb-h">Auto-Boss &mdash; no wing found</div><div class="lb-empty">No wing on this deck reaches '+fmt(st.target,0)+' effect index at '+st.rng+' nm. Lower the target, pull the range in, or switch to Full Wing for more tools.</div>';autoTop=[];return;}
     var html='<div class="lb-h">Auto-Boss &mdash; top wings by '+labels[st.rankBy]+(st.target>0?' (&ge; '+fmt(st.target,0)+' effect)':'')+'</div>';
     top.forEach(function(t,i){var r=t.r,a=t.alloc;
-      var metric=st.rankBy==="perspot"?fmt(r.effects/Math.max(1,t.spots),1)+' <small>eff / spot</small>'
+      var metric=st.rankBy==="cliff"?cliffLabel(r.cliff)+" <small>organic cliff</small>":st.rankBy==="perspot"?fmt(r.effects/Math.max(1,t.spots),1)+' <small>eff / spot</small>'
         :st.rankBy==="dollar"?fmt(r.effects/Math.max(0.001,r.cost/1000),0)+' <small>eff / $B</small>'
         :st.rankBy==="surv"?fmt(r.survScore*100,0)+' <small>surv score</small>'
         :st.rankBy==="gas"?fmt(gasPerEffect(r),0)+' <small>lb gas / effect</small>'
@@ -932,9 +1055,10 @@ footer b{color:var(--ink-dim)}
     host.querySelectorAll(".lb-load").forEach(function(btn){btn.addEventListener("click",function(){
       var t=autoTop[+btn.dataset.i]; if(!t)return;
       activeKeys().forEach(function(k){st.alloc[k]=t.alloc[k]||0;});
-      st.play=0; applyModes();
+      st.tankerTactics=Object.assign({},t.plan);if(st.rankBy==="cliff")st.tankerMode="organic";el("tanker-plan").value="custom";syncMission();st.play=0; applyModes();
     });});
   }
+  el("watch-deck").addEventListener("click",function(){st.play=1;applyModes();el("deckwrap").scrollIntoView({block:"center",behavior:"smooth"});});
   function refresh(){ render(); if(st.play===2)buildLeaderboard(); }
 
   var PRESETS={   // one-click archetypes so a new player feels the whole thesis in 3 clicks
@@ -942,7 +1066,7 @@ footer b{color:var(--ink-dim)}
     stealth:{wing:2,rng:720,alloc:{f35c:10,mq25:6,cap:6,isr:2}},
     cca:{wing:2,rng:620,alloc:{kf1:16,ccap:8,mq25:4,cap:6,isr:2}}
   };
-  function applyPreset(name){var p=PRESETS[name]; if(!p)return;
+  function applyPreset(name){st.scenario=null;var p=PRESETS[name]; if(!p)return;
     st.wing=p.wing; st.rng=p.rng; st.play=0;
     Object.keys(st.alloc).forEach(function(k){st.alloc[k]=0;});
     Object.keys(p.alloc).forEach(function(k){st.alloc[k]=p.alloc[k];});
@@ -965,10 +1089,12 @@ footer b{color:var(--ink-dim)}
   document.querySelectorAll("#wingmode button").forEach(function(b){b.addEventListener("click",function(){st.wing=+b.dataset.w;applyModes();});});
   document.querySelectorAll("#playmode button").forEach(function(b){b.addEventListener("click",function(){st.play=+b.dataset.p;applyModes();});});
   document.querySelectorAll("#deckpick button").forEach(function(b){b.addEventListener("click",function(){
+    if(watchState.active){queueWatchSetting('deck',b.dataset.d);return;}
     DECK=b.dataset.d; POOL=DECKS[DECK].spots;
     document.querySelectorAll("#deckpick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});
     trimToPool(); buildRoster(); refresh();});});
   document.querySelectorAll("#tempopick button").forEach(function(b){b.addEventListener("click",function(){
+    if(watchState.active){queueWatchSetting('tempo',+b.dataset.o);return;}
     st.tempo=+b.dataset.o;document.querySelectorAll("#tempopick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});refresh();});});
   el("s-spots").addEventListener("input",function(){POOL=+this.value; trimToPool(); buildRoster(); refresh();});
   el("s-rng").addEventListener("input",function(){st.rng=+this.value;refresh();});
@@ -988,7 +1114,7 @@ footer b{color:var(--ink-dim)}
   el("share").addEventListener("click",function(){
     var r=evalWing(st.rng), mix=activeKeys().filter(function(k){return (st.alloc[k]||0)>0;}).map(function(k){return st.alloc[k]+"x "+CAT[k].name;});
     var txt="RockWorx — Air Boss ["+["Skirmish","Standard","Full"][st.wing]+", "+DECKS[DECK].name+"]\nWing: "+mix.join(", ")+
-      " | target "+st.rng+" nm | "+(st.tempo?"surge":"sustained")+"\n→ effect index "+fmt(r.effects,0)+" ("+fmt(r.support*100,0)+"% of strikers reach). Illustrative teaching model.";
+      " | target "+st.rng+" nm | "+(st.tempo?"surge":"sustained")+"\n→ effect index "+fmt(r.effects,0)+" ("+fmt(r.support*100,0)+"% fuel-demand coverage). Illustrative, not for planning.";
     var toast=el("toast");
     function ok(){toast.textContent="Wing copied to clipboard.";toast.style.color="var(--isr)";toast.classList.add("show");setTimeout(function(){toast.classList.remove("show");},2000);}
     function fail(){toast.textContent="Couldn't copy — long-press / select the score to copy.";toast.style.color="var(--over)";toast.classList.add("show");setTimeout(function(){toast.classList.remove("show");},2600);}
@@ -1016,16 +1142,285 @@ footer b{color:var(--ink-dim)}
       "s-cf35":"F-35C unit cost (adjust ±15%)","s-ccustom":"Your custom jet's unit cost"};
     Object.keys(byId).forEach(function(id){var e=el(id);if(e)e.title=byId[id];});
   }
+
+  var SCENARIOS={
+    strait_defense:{name:"Contested Strait Defense",objective:"surv",range:500,posture:"integrated",threat:.85,strike:"standoff",weapon:"amraam",orbit:350,
+      alloc:{f35c:12,fa18:12,mq25:6,horn5:0,cap:10,isr:4},tactics:{yoyo:20,strike:50,consolidation:0,recovery:30}},
+    war_at_sea:{name:'War at Sea',orbit:150,range:600,posture:'fleeting',threat:.65,strike:'mace',weapon:'amraam',
+      alloc:{f35c:16,fa18:12,mq25:6,horn5:2,cap:6,isr:2},tactics:{yoyo:25,strike:70,consolidation:0,recovery:5}},
+    deep_strike:{name:'Deep Strike Inland',orbit:350,range:800,posture:'hardened',threat:.70,strike:'standoff',weapon:'malice',
+      alloc:{f35c:24,fa18:0,mq25:12,horn5:0,cap:6,isr:2},tactics:{yoyo:10,strike:40,consolidation:50,recovery:0}}
+  };
+  function syncMission(){
+    el('target-posture').value=st.targetPosture;el('tanker-mode').value=st.tankerMode;el('threat-level').value=st.threat==null?'auto':String(st.threat);
+    ['yoyo','consolidation','recovery'].forEach(function(k){el('tactic-'+k).value=st.tankerTactics[k];});
+    el('strike-orbit').value=st.strikeOrbit;el('orbit-value').textContent=st.strikeOrbit+' nm';
+    el('relay-orbit').value=st.relayOrbit;el('relay-value').textContent=st.relayOrbit+' nm';
+    el('tanker-reach').textContent=['mq25','horn5'].map(function(k){return CAT[k].name+': single reach '+fmt(tankerLedger(k,150,false).maxReach,1)+' nm; pair reach '+fmt(tankerLedger(k,150,true).maxReach,1)+' nm';}).join(' / ')+'. At the reach limit no fuel remains to offload. Illustrative.';
+    el('tactic-balance').textContent='Strike remainder: '+st.tankerTactics.strike+'%. Rounding is per type; consolidation pairs first.';
+    [['rankpick','r',st.rankBy],['strikepick','s',st.strike],['weappick','m',st.weapon],['deckpick','d',DECK],['tempopick','o',String(st.tempo)]].forEach(function(a){document.querySelectorAll('#'+a[0]+' button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset[a[1]]===a[2]?'true':'false');});});
+  }
+  function applyScenario(key,environment){var p=SCENARIOS[key];if(!p)return;
+    st.rankBy=p.objective||"effect";st.scenario=key;st.wing=2;st.play=0;st.tempo=environment?environment.tempo:0;st.rng=p.range;st.targetPosture=p.posture;st.threat=p.threat;st.strike=p.strike;st.weapon=p.weapon;
+    st.tankerMode='organic';st.strikeOrbit=p.orbit;st.relayOrbit=500;st.tankerTactics=Object.assign({},p.tactics);DECK=environment?environment.deck:'nimitz';POOL=DECKS[DECK].spots;
+    st.alloc=Object.assign({},p.alloc);el('tanker-plan').value='custom';el('scenario-note').textContent=p.name+' - illustrative single-day scenario';
+    syncMission();prevEff=null;applyModes();
+  }
+  function straitObjectiveText(r){return st.scenario==='strait_defense'?'Strait objective: survivability '+fmt(r.survScore*100,1)+' / 100 (fuel support x mean survivability). ':'';}
+  el('scenario-objective').addEventListener('click',function(){st.rankBy='surv';syncMission();refresh();});
+  function missionReadout(r){var c=organicCliff(st.alloc),comparison=evalWing(st.rng,st.alloc,{tankerMode:st.tankerMode==='organic'?'theater':'organic'});
+    el('mission-ledger').innerHTML=straitObjectiveText(r)+'<b>Organic cliff: '+cliffLabel(c)+'</b> (peak '+fmt(c.peak,0)+')<br>Primary / fallback support: '+fmt(100*r.gas.primarySupport,0)+'% / '+fmt(100*r.gas.fallbackSupport,0)+'% &middot; strike rounds used '+fmt(r.primaryUsed,1)+' / '+fmt(r.primaryAvail,1)+'; fallback '+fmt(r.fallbackUsed,1)+' / '+r.fallbackAvail+
+      '<br>Top-off '+fmt(r.topoffDelivered,0)+' lb; enroute debit '+fmt(r.gas.total,0)+' lb; recovery coverage '+fmt(r.recoveryCoverage*100,0)+'%'+
+      '<br>Raw effect '+fmt(r.effects,1)+'; dependency-adjusted score '+fmt(r.score,1)+'; '+(st.tankerMode==='organic'?'theater':'organic')+' comparison '+fmt(comparison.effects,1)+' raw / '+fmt(comparison.score,1)+' score'+
+      '<br>Theater gas accepted '+fmt(r.theaterAccepted,0)+' lb'+(r.theaterAccepted>0?' (10% dogleg yield cost, 18% score charge)':' (no theater charge)')+
+      (r.infeasible.length?'<br><strong>Infeasible: '+r.infeasible.join(', ')+'. No gas or sorties credited for these tracks.</strong>':'');
+  }
+  document.querySelectorAll('[data-scenario]').forEach(function(b){b.addEventListener('click',function(){applyScenario(b.dataset.scenario);});});
+  [['target-posture','targetPosture'],['tanker-mode','tankerMode']].forEach(function(p){el(p[0]).addEventListener('change',function(){st[p[1]]=this.value;refresh();});});
+  el('threat-level').addEventListener('change',function(){st.threat=this.value==='auto'?null:Number(this.value);refresh();});
+  el('tanker-plan').addEventListener('change',function(){if(TACTIC_PLANS[this.value]){st.tankerTactics=Object.assign({},TACTIC_PLANS[this.value]);syncMission();refresh();}});
+  ['yoyo','consolidation','recovery'].forEach(function(k){el('tactic-'+k).addEventListener('change',function(){
+    var other=['yoyo','consolidation','recovery'].filter(function(v){return v!==k;}).reduce(function(s,v){return s+st.tankerTactics[v];},0);
+    st.tankerTactics[k]=clamp(Number(this.value)||0,0,100-other);st.tankerTactics.strike=100-other-st.tankerTactics[k];el('tanker-plan').value='custom';syncMission();refresh();
+  });});
+  el('strike-orbit').addEventListener('input',function(){st.strikeOrbit=Number(this.value);syncMission();refresh();});
+  el('relay-orbit').addEventListener('input',function(){st.relayOrbit=Number(this.value);syncMission();refresh();});
+
+  // Watch varies inputs only. Its sequence is independent of animation timing.
+  var watchState={active:false,seed:'',cycle:0,phase:'idle',timer:0,input:null,settings:null,caption:''};
+  function watchCycle(seed,index,settings){
+    settings=settings||{deck:DECK,tempo:st.tempo};
+    var h=2166136261,text=String(seed)+':'+index;
+    for(var i=0;i<text.length;i++)h=Math.imul(h^text.charCodeAt(i),16777619)>>>0;
+    function random(){h=(Math.imul(h,1664525)+1013904223)>>>0;return h/4294967296;}
+    function pick(a){return a[Math.floor(random()*a.length)];}
+    var key=pick(Object.keys(SCENARIOS)),p=SCENARIOS[key],a=Object.assign({},p.alloc);
+    var shift=pick([-4,-2,0,2,4]);
+    if(shift>0){shift=Math.min(shift,a.f35c||0);a.f35c-=shift;a.fa18=(a.fa18||0)+shift;}
+    else{shift=Math.min(-shift,a.fa18||0);a.fa18-=shift;a.f35c=(a.f35c||0)+shift;}
+    var bands={war_at_sea:[500,700],deep_strike:[700,900],strait_defense:[400,600]},band=bands[key];
+    return {scenario:key,deck:settings.deck,range:band[0]+Math.floor(random()*((band[1]-band[0])/10+1))*10,
+      tempo:settings.tempo,strike:pick(['direct','mixed','mace','standoff']),weapon:pick(['amraam','malice','gunslinger']),
+      plan:pick(['balanced','yoyo','strike','consolidation','recovery']),alloc:a,
+      strikeOrbit:(a.horn5||0)>0?150:p.orbit,relayOrbit:(a.horn5||0)>0?250:500};
+  }
+  function watchOps(q,events){return (q.tempo?'Surge':'Sustained ops')+': '+fmt(events,0)+' cycles a day on '+DECKS[q.deck].name;}
+  function queueWatchSetting(key,value){watchState.settings[key]=value;watchCaption(watchState.phase,watchState.caption);}
+  function watchCaption(phase,text){watchState.phase=phase;watchState.caption=text;
+    var q=watchState.input,p=watchState.settings,prefix='',pending='';
+    if(watchState.active&&q){prefix=watchOps(q,evalWing(st.rng).events)+'. ';
+      if(p.tempo!==q.tempo||p.deck!==q.deck)pending=' Next cycle: '+(p.tempo?'surge':'sustained')+' ops on '+DECKS[p.deck].name+'.';}
+    el('watch-boost').hidden=!watchState.active;el('watch-teaser').hidden=!!st.tempo;el('watch-surge').textContent=st.tempo?'RETURN TO SUSTAINED':'SURGE';el('watch-surge').setAttribute('aria-pressed',st.tempo?'true':'false');
+    el('watch-caption').textContent=prefix+text+pending;el('watch-status').textContent=watchState.active?'Watching cycle '+(watchState.cycle+1):'You have control';}
+
+  function watchExplanation(id){
+    var q=watchState.input,r=evalWing(st.rng),a=st.alloc;
+    if(id==='scenarios')return SCENARIOS[q.scenario].name+': '+({war_at_sea:'Moving targets reward timely delivery before coordinates go stale.',deep_strike:'Hardened targets reward warhead effect, while long range stretches fuel and sortie budgets.',strait_defense:'This defense mission ranks by Survivability: fuel support times mean survivability. Raw effect remains visible because protection costs strike capacity.'})[q.scenario];
+    if(id==='roster'){var tankers=Object.keys(a).filter(function(k){return CAT[k].role==='tanker';}).reduce(function(n,k){return n+a[k];},0);return tankers+' tanker spots support the wing instead of carrying strike aircraft. This mix has '+(a.fa18||0)+' Super Hornets and '+(a.f35c||0)+' F-35Cs to trade volume against survivability.';}
+    if(id==='watch-loadout')return STRIKES[st.strike].name+' sets strike reach and warhead effect; '+WEAPONS[st.weapon].name+' sets the air-defense magazine. Both choices have finite rounds for this day.';
+    if(id==='v3controls'){var p=resolveTankerTacticsByType(a,st.tankerTactics),count=function(k){return Object.values(p[k]).reduce(function(x,y){return x+y;},0);};return count('consolidation')/2+' relay pairs serve '+st.relayOrbit+' nm; '+count('strike')+' single strike tankers serve '+st.strikeOrbit+' nm. '+(count('consolidation')&&a.horn5?'A buddy relay can reach beyond the single buddy tanker limit of 212 nm.':count('recovery')+' recovery tankers protect returning aircraft; their fuel is not outbound strike gas.');}
+    if(id==='deckwrap')return fmt(r.events,0)+' launch-and-recover cycles in this '+(st.tempo?'surge':'sustained')+' day on '+DECKS[DECK].name+'. '+(st.tempo?'Faster turns raise output, but crews cannot keep this pace indefinitely.':'Watch aircraft launch, recover and move back into position for another cycle.');
+    if(st.scenario==='strait_defense')return straitObjectiveText(r)+'Raw effect is '+fmt(r.effects,1)+'; protection and output are separate tradeoffs.';
+    return 'The day delivers an effect index of '+fmt(r.effects,1)+' with '+fmt(r.support*100,0)+'% fuel-demand coverage. '+watchTrade(r);
+  }
+  var watchReveal=0;
+  function watchPosition(){var tip=el('watch-explainer');if(!watchState||!watchState.active||!tip||tip.hidden)return;
+    tip.style.scrollMarginTop=(el('watch-panel').offsetHeight+18)+'px';tip.scrollIntoView({block:'start',behavior:'instant'});
+  }
+  window.addEventListener('resize',watchPosition);
+  function watchHighlight(id){var serial=++watchReveal,prior=el('watch-explainer');
+    function reveal(){if(!watchState.active||serial!==watchReveal)return;
+    document.querySelectorAll('.watch-highlight').forEach(function(n){n.classList.remove('watch-highlight');});
+    var n=el(id),tip=el('watch-explainer');
+    if(!tip){tip=document.createElement('aside');tip.id='watch-explainer';tip.setAttribute('role','note');}
+    tip.textContent=watchExplanation(id);tip.dataset.anchor=id;tip.hidden=false;n.insertAdjacentElement('beforebegin',tip);n.setAttribute('aria-details',tip.id);
+    n.classList.add('watch-highlight');
+    tip.style.scrollMarginTop=(el('watch-panel').offsetHeight+18)+'px';
+    if(tip.scrollIntoView)tip.scrollIntoView({block:'start',behavior:reduce?'instant':'smooth'});
+    if(!reduce&&tip.animate)tip.animate([{opacity:.25,transform:'translateY(4px)'},{opacity:1,transform:'translateY(0)'}],{duration:180});
+    }
+    if(prior&&!prior.hidden&&!reduce&&prior.animate){var fade=prior.animate([{opacity:1},{opacity:0}],{duration:100});fade.onfinish=reveal;}
+    else reveal();
+  }
+  function watchLater(fn,ms){clearTimeout(watchState.timer);watchState.timer=setTimeout(function(){if(watchState.active)fn();},ms);}
+  function stopWatch(){if(!watchState.active)return;
+    watchState.active=false;clearTimeout(watchState.timer);stopDay();
+    el('watch-panel').classList.remove('watching');el('watch-stop').hidden=true;el('watch-start').setAttribute('aria-pressed','false');
+    document.querySelectorAll('.watch-highlight').forEach(function(n){n.classList.remove('watch-highlight');});
+    if(el('watch-explainer'))el('watch-explainer').hidden=true;
+    watchCaption('stopped','Your wing is left exactly here. Adjust a control or launch the day yourself.');
+  }
+  function watchTrade(r){
+    if(r.support<.9)return 'Fuel is limiting the strike: try a different tanker plan or a shorter target range.';
+    if(st.targetPosture==='hardened'&&st.strike==='mace')return 'Prompt delivery trades away warhead effect against hardened targets.';
+    if(st.targetPosture==='fleeting'&&st.strike==='standoff')return 'Long flight time lets coordinates go stale despite the heavier warhead.';
+    return 'Tanker and defense spots support the wing but leave fewer spots for strike aircraft.';
+  }
+  function watchNext(){
+    var q=watchCycle(watchState.seed,watchState.cycle,watchState.settings);watchState.input=q;
+    applyScenario(q.scenario,{deck:q.deck,tempo:q.tempo});watchCaption('scenario',SCENARIOS[q.scenario].name+': setting up one illustrative day.');watchHighlight('scenarios');
+    watchLater(function(){
+      DECK=q.deck;POOL=DECKS[DECK].spots;st.rng=q.range;st.tempo=q.tempo;st.alloc=Object.assign({},q.alloc);
+      syncMission();applyModes();
+      watchCaption('wing','The Air Boss spots the '+DECKS[DECK].name+' deck: '+Object.keys(q.alloc).filter(function(k){return q.alloc[k]>0;}).map(function(k){return q.alloc[k]+' '+CAT[k].name;}).join(', ')+'. Target '+q.range+' nm.');watchHighlight('roster');
+      watchLater(function(){st.strike=q.strike;st.weapon=q.weapon;syncMission();refresh();
+        watchCaption('weapons','Strike: '+STRIKES[q.strike].name+'. Air defense: '+WEAPONS[q.weapon].name+'. Finite magazines make this a trade.');watchHighlight('watch-loadout');
+        watchLater(function(){st.tankerTactics=Object.assign({},TACTIC_PLANS[q.plan]);st.strikeOrbit=q.strikeOrbit;st.relayOrbit=q.relayOrbit;el('tanker-plan').value=q.plan;syncMission();refresh();
+          var plan=resolveTankerTacticsByType(st.alloc,st.tankerTactics),counts={};Object.keys(plan).forEach(function(k){counts[k]=Object.values(plan[k]).reduce(function(a,b){return a+b;},0);});
+          watchCaption('tankers','Tankers: '+counts.yoyo+' on Yo-Yo, '+counts.strike+' on strike duty at '+q.strikeOrbit+' nm, '+(counts.consolidation/2)+' relay pairs at '+q.relayOrbit+' nm, '+counts.recovery+' on recovery.');watchHighlight('v3controls');
+          watchLater(function(){watchFly(q);},2200);
+        },2200);
+      },2600);
+    },2000);
+  }
+  function watchTempoComparison(){var saved=st.tempo;try{st.tempo=0;var sustained=evalWing(st.rng);st.tempo=1;var surge=evalWing(st.rng);return {sustained:sustained,surge:surge};}finally{st.tempo=saved;}}
+  function watchDelta(pair){
+    function sorties(r){return r.strikeSorties+r.tankerSorties+r.capSorties+r.isrSorties;}
+    function delta(a,b){return b>0?((a>=b?'+':'')+fmt((a-b)/b*100,0)+'%'):fmt(a,1)+' vs 0';}
+    return 'SURGE: 12 cycles vs 8 sustained -- '+delta(sorties(pair.surge),sorties(pair.sustained))+' sorties, '+delta(pair.surge.effects,pair.sustained.effects)+' effect; crews and the deck can\'t hold it forever.';
+  }
+  function watchFly(q){st.play=1;applyModes();watchCaption('launch',st.tempo?'Surge! Faster deck cycling uses the existing surge model.':'Launch! Watch the flight deck cycle through the day.');watchHighlight('deckwrap');
+    runDay(function(r){if(!watchState.active)return;var cliff=organicCliff(st.alloc),delta=st.tempo?watchDelta(watchTempoComparison()):watchTrade(r);
+      watchCaption('result',straitObjectiveText(r)+'Effect index '+fmt(r.effects,0)+'. Organic cliff '+cliffLabel(cliff)+'. '+delta);
+      el('watch-result').textContent='Cycle '+(watchState.cycle+1)+' | '+SCENARIOS[q.scenario].name+' | '+watchOps(q,r.events)+' | '+straitObjectiveText(r)+'effect '+fmt(r.effects,1)+' | organic cliff '+cliffLabel(cliff);
+      watchHighlight('daytally');
+      watchLater(function(){watchState.cycle++;watchNext();},8000);
+    });
+  }
+  function toggleWatchSurge(){if(!watchState.active)return;clearTimeout(watchState.timer);stopDay();
+    var q=watchState.input;q.tempo=q.tempo?0:1;watchState.settings.tempo=q.tempo;
+    DECK=q.deck;POOL=DECKS[DECK].spots;Object.assign(st,{rng:q.range,tempo:q.tempo,alloc:Object.assign({},q.alloc),strike:q.strike,weapon:q.weapon,strikeOrbit:q.strikeOrbit,relayOrbit:q.relayOrbit,tankerTactics:Object.assign({},TACTIC_PLANS[q.plan])});
+    el('tanker-plan').value=q.plan;syncMission();watchFly(q);
+  }
+  el('watch-surge').addEventListener('click',toggleWatchSurge);
+  function startWatch(seed){var settings={deck:DECK,tempo:0};stopWatch();stopDay();watchState.settings=settings;
+    watchState.seed=String(seed==null?Date.now():seed);watchState.cycle=0;watchState.active=true;
+    el('watch-seed').textContent='Seed '+watchState.seed;el('watch-result').textContent='';el('watch-stop').hidden=false;el('watch-panel').classList.add('watching');el('watch-start').setAttribute('aria-pressed','true');watchNext();
+  }
+  el('watch-start').addEventListener('click',function(){startWatch();});
+  el('watch-stop').addEventListener('click',stopWatch);
+  el('watch-replay').addEventListener('click',function(){startWatch(watchState.seed||String(Date.now()));});
+  ['pointerdown','click','keydown','input','change'].forEach(function(type){document.addEventListener(type,function(e){if(!watchState.active)return;var choice=e.target.closest&&e.target.closest('#deckpick button,#tempopick button,#watch-surge');if(choice&&(type!=='keydown'||e.key==='Enter'||e.key===' '))return;stopWatch();},true);});
+
   tipsInit();
+  syncMission();
   applyModes();
   // Additive, behavior-neutral test export: a no-op global handle that lets an
   // out-of-browser regression harness drive the SHIPPED model (evalWing/objVal)
   // directly. Creates one window property; changes no model or DOM behavior.
   if(typeof window!=="undefined"){window.__airbossTest={evalWing:evalWing,objVal:objVal,gasPerEffect:gasPerEffect,st:st,
     WEAPONS:WEAPONS,STRIKES:STRIKES,CAT:CAT,DECKS:DECKS,
+    watchTempoComparison:watchTempoComparison,watchCycle:watchCycle,watchState:watchState,startWatch:startWatch,stopWatch:stopWatch,
+    resolveTankerTacticsByType:resolveTankerTacticsByType,tankerLedger:tankerLedger,debitGas:debitGas,
+    targetValidity:targetValidity,organicCliff:organicCliff,compareCliffs:compareCliffs,returnLegAudit:returnLegAudit,
+    TACTIC_PLANS:TACTIC_PLANS,SCENARIOS:SCENARIOS,applyScenario:applyScenario,autoSearch:autoSearch,
     setDeck:function(d){DECK=d;POOL=DECKS[d].spots;},setPool:function(p){POOL=p;},
     getDeck:function(){return DECK;},getPool:function(){return POOL;}};}
+  if(typeof location!=="undefined"&&/^#watch(?:=|$)/.test(location.hash)){startWatch(location.hash.indexOf("=")>=0?decodeURIComponent(location.hash.slice(7)):undefined);}
 })();
+</script>
+
+<script>
+(function(){
+  'use strict';
+  var selector='button,select,input,a[href],summary',seq=0,active=null,touchArmed=null,blockClick=null,timer,openTimer,pending=null,scrollUntil=0,touchUntil=0;
+  var bubble=document.createElement('div');bubble.id='control-help';bubble.setAttribute('role','tooltip');bubble.hidden=true;document.body.appendChild(bubble);
+  var help={
+    'scenario-objective':'Defense prioritizes protecting the wing. Select the existing Survivability objective: fuel support times mean survivability, shown out of 100. Raw effect remains separate; Auto-Boss retains its minimum-effect filter.',
+    'watch-surge':'Push the carrier: more cycles, faster turns -- for a while. Press again to return to Sustained. The current setup is kept.',
+    'watch-start':'Watch a seeded scenario get set and played. Tap again to start. Deck and tempo queue for the next cycle; other input returns control.',
+    'watch-stop':'Stop automatic play and keep the current wing. Try changing one choice yourself.',
+    'watch-replay':'Replay the displayed seed from cycle one. The same seed chooses the same sequence of inputs.',
+    's-spots':'Set the available deck spots. Try fewer spots to see which aircraft you keep.',
+    's-rng':'Set target distance. Drag outward to find where fuel limits effects.',
+    's-target':'Set the minimum effect for optimizer candidates. Start at zero, then raise the floor.',
+    's-cf35':'Set the illustrative F-35C price. Try a higher price when ranking effect per dollar.',
+    's-ccustom':'Set your custom aircraft price. Compare value with the existing aircraft.',
+    'c-pay':'Trade design budget for payload. Try a lighter load to afford more survivability.',
+    'c-surv':'Trade design budget for survivability. Raise it for more defended targets.',
+    'c-size':'Set custom aircraft size. Try smaller aircraft for lower deck and design cost.',
+    'target-posture':'Choose the target type. Try prompt weapons on fleeting coordinates and heavy warheads on bunkers.',
+    'threat-level':'Set enemy pressure. Try Automatic first; it follows target range.',
+    'tanker-mode':'Choose organic fuel or request theater tankers. Compare extra reach with dependency costs.',
+    'tanker-plan':'Assign tankers to a plan. Compare Strike push with Yo-Yo at longer target ranges.',
+    'tactic-yoyo':'Allocate a percentage to departure top-off. Try more near the unrefueled reach limit.',
+    'tactic-consolidation':'Allocate same-type pairs to relay. Try buddy tankers at a 250-nm receiver orbit.',
+    'tactic-recovery':'Reserve tankers for returning aircraft. Try more when the return service is undersupplied.',
+    'tactic-strike':'The unallocated percentage goes to strike tankers. Change the other three percentages to adjust it.',
+    'strike-orbit':'Set the single-tanker station. Try 150 nm so buddy tankers can reach it.',
+    'relay-orbit':'Set the relay receiver station. Try 250 nm with buddy pairs; beyond 274.2 nm they cannot return with reserve.',
+    'autoselect':'Search for strong wing mixes under your objective. Try Organic cliff, then load a candidate.',
+    'launch':'Animate this wing through a day and read its sortie tally. The effect headline remains the evaluated total.',
+    'share':'Copy the current wing and effect summary. Paste it to compare your plan with another player.',
+    'howtox':'Dismiss the quick instructions. The field guide remains available above.',
+    'watch-deck':'Open Simulate Day and show the flight deck. Then select Launch the day.'
+  };
+  function description(n){
+    if(help[n.id])return help[n.id];
+    var d=n.dataset,label=(n.getAttribute('aria-label')||n.getAttribute('title')||Array.from(n.childNodes).map(function(c){return c.textContent;}).join(' ')).trim().replace(/\s+/g,' ');
+    if(d.scenario)return 'Load '+label+'. Try changing one weapon or tanker choice and compare effects.';
+    if(d.preset)return 'Load the '+label+' starting mix. Try changing the target range first.';
+    if(d.w!=null)return 'Choose the '+label+' aircraft roster. Try Standard before adding advanced aircraft.';
+    if(d.p!=null)return ['Build and tune your aircraft mix. Try adding a tanker at longer range.','Show the flight deck and day simulation. Try Launch the day.','Search and rank candidate wings. Try an objective, then Auto-select.'][+d.p];
+    if(d.d)return 'Choose the '+label+' deck capacity and cycle model. Compare the same mission on each carrier. During Watch, this applies next cycle.';
+    if(d.o!=null)return 'Choose '+label+' operating tempo. Compare sustained output with a short surge. During Watch, this applies next cycle.';
+    if(d.m)return 'Choose '+label+' for air defense. Compare magazine coverage as threat rises.';
+    if(d.s)return 'Choose '+label+' strike weapons. Compare fast delivery, warhead size and finite rounds.';
+    if(d.r==='surv')return 'Rank by fuel support times mean survivability. Defense prioritizes wing protection; Auto-Boss still requires meaningful effect, so compare the raw effect too.';
+    if(d.r)return 'Rank candidate wings by '+label+'. Try a minimum effect floor to avoid weak solutions.';
+    if(n.classList.contains('lb-load'))return 'Load this candidate into Build Wing. Inspect its tanker plan and compare the result.';
+    if(n.classList.contains('info'))return label+'. Open the aircraft notes before assigning deck spots.';
+    if(n.closest('.stepper'))return label+'. Trade one spot at a time; remove another aircraft if the deck is full.';
+    if(n.tagName==='SUMMARY')return 'Open the compact field guide. Try the two tanker reach examples.';
+    if(n.tagName==='A')return 'Open '+label+'. Read the illustrated tour, then use Play to return to the game.';
+    return label+'. Try changing this choice and compare the effect readout.';
+  }
+  function install(){document.querySelectorAll(selector).forEach(function(n){
+    if(n.dataset.help)return;
+    var text=description(n),span=document.createElement('span');span.id='help-description-'+(++seq);span.hidden=true;span.textContent=text;
+    n.dataset.help=text;n.setAttribute('aria-describedby',span.id);n.removeAttribute('title');n.insertAdjacentElement('afterend',span);
+  });}
+  function cancelOpen(){clearTimeout(openTimer);pending=null;}
+  function hide(){clearTimeout(timer);cancelOpen();bubble.hidden=true;active=null;touchArmed=null;}
+  function place(){if(!active||!active.isConnected)return hide();
+    var r=active.getBoundingClientRect(),w=bubble.offsetWidth,h=bubble.offsetHeight;
+    bubble.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left))+'px';
+    var y=r.bottom+10;if(y+h>innerHeight-8)y=r.top-h-10;
+    bubble.style.top=Math.max(8,Math.min(innerHeight-h-8,y))+'px';
+  }
+  function show(n){if(!n||!n.dataset.help)return;clearTimeout(timer);cancelOpen();active=n;bubble.textContent=n.dataset.help+' Touch: tap again to use. Tap outside or press Escape to close.';bubble.hidden=false;place();}
+  function leave(){clearTimeout(timer);timer=setTimeout(hide,330);}
+  function control(n){return n&&n.closest?n.closest(selector):null;}
+  document.addEventListener('focusin',function(e){if(Date.now()>=touchUntil)show(control(e.target));});
+  document.addEventListener('focusout',function(){hide();});
+  document.addEventListener('pointerover',function(e){
+    if(e.pointerType==='touch'||Date.now()<scrollUntil)return;
+    if(bubble.contains(e.target)){clearTimeout(timer);cancelOpen();return;}
+    var n=control(e.target);if(!n||n===control(e.relatedTarget))return;
+    clearTimeout(timer);if(n===active){cancelOpen();return;}if(n===pending)return;
+    cancelOpen();pending=n;openTimer=setTimeout(function(){show(n);},350);
+  });
+  document.addEventListener('pointerout',function(e){
+    if(e.pointerType==='touch')return;
+    var from=control(e.target),to=control(e.relatedTarget);
+    if(from&&from===to||bubble.contains(e.target)&&bubble.contains(e.relatedTarget))return;
+    if(bubble.contains(e.relatedTarget)||to===active&&active){clearTimeout(timer);return;}
+    cancelOpen();if(to){clearTimeout(timer);return;}leave();
+  });
+  document.addEventListener('pointerdown',function(e){var n=control(e.target);
+    if(!n){if(!bubble.contains(e.target))hide();return;}
+    if(e.pointerType==='touch'){
+      touchUntil=Date.now()+700;
+      if(touchArmed!==n){touchArmed=n;blockClick=n;e.preventDefault();show(n);}
+      else{blockClick=null;hide();}
+    }
+  },true);
+  document.addEventListener('click',function(e){var n=control(e.target);if(n&&n===blockClick){e.preventDefault();e.stopImmediatePropagation();blockClick=null;}},true);
+  document.addEventListener('keydown',function(e){touchUntil=0;if(e.key==='Escape')hide();});
+  addEventListener('resize',function(){if(active)place();});addEventListener('scroll',function(){scrollUntil=Date.now()+450;hide();},true);
+  install();new MutationObserver(function(){install();if(active&&!active.isConnected)hide();}).observe(document.body,{childList:true,subtree:true});
+})();
+
 </script>
 
 <!-- Cloudflare Web Analytics -->
