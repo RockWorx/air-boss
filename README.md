@@ -9,7 +9,15 @@ the cyclic-ops "ballet" run the day, read the sortie tally, see who survives und
 **▶ Play it: https://rockworx.github.io/air-boss/**
 **▶ The Gouge — animated field guide: https://rockworx.github.io/air-boss/gouge.html**
 
-## New in v3
+## New in v3.1
+
+- Unsupported strike sorties stay on deck when weapons or tanker gas run short.
+- Whole functional-check and qualification flights consume aircraft and deck slots without combat effect.
+- Contested Strait scoring requires useful effect as well as protection, with an illustrative 350-effect requirement.
+- A three-day Strait campaign carries magazines, flight losses and fatigue between days.
+- The illustrative CCX-1 carrier drone trades compact deck footprint against recovery and tanker needs.
+
+## Also included from v3
 
 - **Three scenarios:** *War at Sea* (moving targets: speed matters), *Deep Strike Inland* (hardened
   targets: warhead matters) and *Contested Strait Defense* (severe air opposition: protect the wing).

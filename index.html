@@ -143,7 +143,9 @@ input[type=range]:focus-visible{box-shadow:0 0 0 3px #f5b02744}
 .readline{font-family:var(--mono);font-size:11px;color:var(--ink-dim);background:#0c1420;border:1px solid var(--rule);
   border-radius:8px;padding:8px 11px;margin-bottom:9px;line-height:1.55;font-variant-numeric:tabular-nums}
 .readline .k{color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase;font-size:9px;font-weight:700}
-.readline b{color:var(--ink)} .readline .hot{color:var(--tanker);font-weight:700} .readline .cool{color:var(--isr);font-weight:700}
+.readline b{color:var(--ink)}
+.readline .badge{display:inline-block;margin-left:6px;padding:0 6px;border-radius:8px;border:1px solid var(--rule);font-weight:700}
+.readline .badge.b-none{color:var(--good)}.readline .badge.b-weapons,.readline .badge.b-fuel{color:var(--foul)}.readline .badge.b-deck{color:var(--over)} .readline .hot{color:var(--tanker);font-weight:700} .readline .cool{color:var(--isr);font-weight:700}
 .chart-cap{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 4px}
 .chart-cap .t{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim);font-weight:700}
 .chart-cap .leg{font-size:10px;color:var(--ink-faint);font-family:var(--mono)}
@@ -272,8 +274,8 @@ footer b{color:var(--ink-dim)}
     <button class="x" id="howtox" type="button" title="Dismiss">Got it &#10005;</button>
   </div>
 
-  <details id="local-guide" class="howto"><summary>Field guide - v3 core</summary><p>Choose a scenario or build a wing. Deck spots are finite. Strike rounds run out into a finite fallback stock. Time-sensitive coordinate targets favor prompt weapons; hardened targets favor heavy warheads.</p><p>Yo-Yo fills climb capacity. Strike tankers supply enroute deficits. Consolidation pairs transfer at 150 nm and extend the receiver's reachable orbit. Beyond single-tanker reach, a feasible pair can deliver fuel where a single tanker cannot; inside that reach, the pair costs two deck spots for less daily offload. Both retain return fuel and reserve. Adjust the receiver orbit to explore this boundary. The MQ-25 single reach is 1,400 nm, beyond the 900-nm UI limit, so MQ-25 consolidation cannot win by reach in play. Buddy relay is the teaching case: single reach 212.1 nm versus relay reach 274.2 nm; try a 250-nm orbit. Recovery fuel protects the returning force and cannot supply outbound strikes. Unreachable tracks supply no gas.</p><p>The organic cliff is the first 10-nm grid point with less than 90% fuel support, less than half peak effect, or effect below 100. Auto-Boss requires peak effect of 400. Theater fuel incurs a 10% yield penalty and 18% score charge only when accepted. This is an illustrative teaching game, not for planning. Coordinate-delay proxies do not describe real maritime terminal seekers.</p></details>
-        <div class="presets scenario-cards" id="scenarios"><button class="preset" type="button" aria-pressed="false" data-scenario="strait_defense">Contested Strait Defense<small>Severe air opposition: protect the wing</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="war_at_sea">War at Sea<small>Moving targets: speed matters</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="deep_strike">Deep Strike Inland<small>Hardened targets: warhead matters</small></button></div>
+  <details id="local-guide" class="howto"><summary>Field guide - v3.1</summary><p>v3.1: a strike jet launches only when fuel (its own plus tanker gas it can actually receive) and weapons support the whole sortie; the rest are held on deck and the readout names the binding resource. The deck is limited per recovery window (about 16 traps in a routine 12-minute window, 29 in a surged 22-minute window) times the events flown, not by a daily wall. Functional check flights and aviator quals fly every day and deliver no effect. The 3-day Strait campaign shows the windowed daily average against a routine target of 120.</p><p>Choose a scenario or build a wing. Deck spots are finite. Strike rounds run out into a finite fallback stock. Time-sensitive coordinate targets favor prompt weapons; hardened targets favor heavy warheads.</p><p>Yo-Yo fills climb capacity. Strike tankers supply enroute deficits. Consolidation pairs transfer at 150 nm and extend the receiver's reachable orbit. Beyond single-tanker reach, a feasible pair can deliver fuel where a single tanker cannot; inside that reach, the pair costs two deck spots for less daily offload. Both retain return fuel and reserve. Adjust the receiver orbit to explore this boundary. The MQ-25 single reach is 1,400 nm, beyond the 900-nm UI limit, so MQ-25 consolidation cannot win by reach in play. Buddy relay is the teaching case: single reach 212.1 nm versus relay reach 274.2 nm; try a 250-nm orbit. Recovery fuel protects the returning force and cannot supply outbound strikes. Unreachable tracks supply no gas.</p><p>The organic cliff is the first 10-nm grid point with less than 90% fuel support, less than half peak effect, or effect below 100. Auto-Boss requires peak effect of 400. Theater fuel incurs a 10% yield penalty and 18% score charge only when accepted. This is an illustrative teaching game, not for planning. Coordinate-delay proxies do not describe real maritime terminal seekers.</p></details>
+        <div class="presets scenario-cards" id="scenarios"><button class="preset" type="button" aria-pressed="false" data-scenario="strait_defense">Contested Strait Defense<small>Severe air opposition: protect the wing</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="war_at_sea">War at Sea<small>Moving targets: speed matters</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="deep_strike">Deep Strike Inland<small>Hardened targets: warhead matters</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="strait_defense_3day">Contested Strait (3-Day)<small>Sustained campaign: magazines and crews over time</small></button></div>
         <p id="scenario-note" class="opt-note">Free play</p>
   <button id="scenario-objective" class="btn" type="button" hidden aria-pressed="false">Strait objective: Survivability</button>
   <section id="watch-panel" aria-label="Watch a scenario" class="howto">
@@ -412,6 +414,10 @@ footer b{color:var(--ink-dim)}
         <div class="lens" aria-hidden="true"><span class="src l"></span><span class="src r"></span><span class="datum"></span><span class="ball" id="ball"></span></div>
         <div class="mb-txt" id="gas"></div>
       </div>
+      <div class="readline flight-tempo-metric" id="launchline" title="In real cyclic operations, launching an unsupplied strike jet delivers zero combat damage and wastes airframes. Air Boss holds aircraft on deck until fuel or weapons are replenished."></div>
+      <div class="readline" id="overhead"></div>
+      <div class="readline" id="deckcap"></div>
+      <div class="readline" id="campaign" hidden></div>
       <div class="readline" id="cost"></div>
       <div class="readline" id="atr"></div>
       <div class="readline" id="mag"></div>
@@ -441,8 +447,8 @@ footer b{color:var(--ink-dim)}
     </section>
   </div>
 
-  <footer><b>How the index works (an abstraction, on purpose).</b> A finite cyclic day sets nominal sorties at mission range. Primary strike rounds are assigned first, then a finite fallback bomb stock. Each segment flies to its weapon release distance. Departure top-off is capacity-bounded; primary and fallback deficits debit one enroute gas pool. Recovery gas is separate.
-    <p>Effect combines supported sorties, illustrative payload and survival response, air-to-air throughput, strike throughput, target defeat, coordinate validity and recovery service. Theater support changes raw effect by a 10% dogleg yield penalty only when fuel is accepted; an additional 18% dependency charge is displayed separately as score. The attrition line is a separate teaching readout, not a multi-day campaign simulation.</p>
+  <footer><b>How the index works (an abstraction, on purpose).</b> A finite cyclic day sets scheduled sorties at mission range. A few crewed strike sorties are first reserved for functional check flights and aviator quals (no effect). Each remaining strike sortie launches only if it has a weapon (primary rounds first, then a finite fallback bomb stock), a deck recovery slot, and enough fuel of its own plus whole-sortie tanker gas to reach its release distance; otherwise it is held on deck. Departure top-off is capacity-bounded; only launched sorties debit weapons and the one enroute gas pool. Recovery gas is separate. Deck recoveries are bounded per recovery window times the events flown, never by a daily wall.
+    <p>Effect combines supported sorties, illustrative payload and survival response, air-to-air throughput, strike throughput, target defeat, coordinate validity and recovery service. Theater support changes raw effect by a 10% dogleg yield penalty only when fuel is accepted; an additional 18% dependency charge is displayed separately as score. The attrition line is a separate teaching readout; the 3-day Strait campaign carries magazines, crew fatigue and flight losses from day to day.</p>
     <b>Illustrative, not for planning.</b> Named aircraft and weapons are teaching archetypes. Coordinate latency does not model real maritime seekers. RockWorx Aerospace.</footer>
 </div>
 
@@ -452,7 +458,7 @@ footer b{color:var(--ink-dim)}
   var CRUISE=480, STATION=0.5, BUDGET=100;
   var KFEED=160, A2A_SHOTS_PER_SORTIE=2;   // A2A sustainment: illustrative deck ordnance-move cap (rounds/day, K_feed) + admitted shots per threatened sortie
   var DECKS={nimitz:{name:"Nimitz-class",spots:44,turnAdj:0,ordMult:1.0},
-             ford:{name:"Ford-class",spots:48,turnAdj:-3,ordMult:2.2}};   // Ford AWE ~2.2x weapons throughput (agy #194)
+             ford:{name:"Ford-class",spots:48,turnAdj:-3,ordMult:2.2}};   // Ford AWE ~2.2x weapons throughput [ILLUSTRATIVE]
   var DECK="nimitz", POOL=DECKS[DECK].spots;
   var REFWING={f35c:4,fa18:14,mq25:6,cap:6,isr:2};
   var REFDESC="Reference wing (fixed): 4 F-35C, 14 Super Hornet, 6 MQ-25, 6 CAP, 2 ISR/EW.";
@@ -480,19 +486,26 @@ footer b{color:var(--ink-dim)}
   CAT.f35c.cost=102; CAT.fa18.cost=67; CAT.horn5.cost=67;      // F-35C ~$102M contract-lot flyaway ballpark; F/A-18E/F ~$67M (5-wet is a Super Hornet)
   CAT.mq25.cost=184; CAT.cap.cost=70; CAT.isr.cost=110;         // MQ-25 ~$184M FY25 weapon-system unit; CAP fighter; E-2/EA-18G blend [EST]
   CAT.kf1.cost=28; CAT.ccap.cost=48;                           // notional RockWorx concepts (small/LO uncrewed)
-  // Tier-2 (agy #181): type-specific clean radius (unrefueled combat radius, nm) + burn (lb fuel / extra nm round-trip)
+  // Tier-2: type-specific clean radius (unrefueled combat radius, nm) + burn (lb fuel / extra nm round-trip)
   CAT.f35c.clean=650; CAT.f35c.burn=13.5; CAT.fa18.clean=420; CAT.fa18.burn=16.5;
   CAT.kf1.clean=550;  CAT.kf1.burn=8.0;   CAT.ccap.clean=720; CAT.ccap.burn=9.5;
   CAT.f35c.internal=1; CAT.kf1.internal=1; CAT.ccap.internal=1;  // LO internal-bay carriage (F-35C carries 2 MALICE internally); Super Hornet carries externally
+  // v3.1 S6: generic carrier CCA archetype. Every value is a rounded teaching number [ILLUSTRATIVE]; no program data.
+  CAT.ccx={name:"CCX-1 Carrier CCA",role:"strike",pay:3000,surv:84,rate:1.35,clean:420,burn:8.5,internal:1,spots:0.75,cost:18.5,concept:1,
+    note:"Stealthy strike/sensor carrier drone. High tempo, but carrier gear limits organic reach.",
+    desc:"<b>CCX-1 Carrier CCA</b> &mdash; a notional carrier-suitable Collaborative Combat Aircraft (illustrative teaching archetype). Packs 4 aircraft into 3 deck spots, features clean stealth shaping for survivability, and rapid cyclic turnaround. But carrier suitability is an uncompromising tax: landing gear built for hard carrier arrivals, a catapult launch bar and approach-speed margins eat into internal fuel, capping clean radius at 420 nm. Past that, it depends on tanker gas &mdash; and a jet that brings its weapons back lands heavy, which raises bolter risk unless a recovery tanker is overhead."};
+  // v3.1 S6 recovery squeeze: illustrative empty weight / max arrested-landing weight (lb). CCX-1 values follow
+  // round(1.10 x payload + 40 nm x burn) and empty + 2,000 reserve + round(0.40 x payload).
+  var EMPTY_WT={f35c:34800,fa18:32000,ccx:3640,custom:20000},MALW={f35c:47000,fa18:34000,ccx:6840,custom:25000};
   // Air-to-air weapon loadout -- real Navy AAMs. Trade: AMRAAM = magazine depth (more shots -> raw effect);
   // the long-range AAMs carry fewer/bigger rounds but kill the archer at range -> higher striker survivability.
   var WEAPONS={
     amraam:{name:"AMRAAM",dsg:"AIM-120",leth:1.06,surv:0.00,wezK:0,gasFrac:0.05,bayFits:1,burden:1.0,mag:200,
-      desc:"AIM-120D AMRAAM &mdash; the proven medium-BVR workhorse (~355 lb). A jet carries many and the deck moves them fast, so a <b>deep, sustainable magazine</b> (~200 rounds): best raw effect, shortest reach, lightest gas, and the <b>deepest magazine</b> &mdash; it usually sustains the modeled day, though a full, high-tempo strike can still Winchester it. The volume shooter. (Illustrative; A2A-STD-001. `leth` is an escort-throughput proxy, not literal lethality.)"},
+      desc:"AIM-120D AMRAAM &mdash; the proven medium-BVR workhorse (~355 lb). A jet carries many and the deck moves them fast, so a <b>deep, sustainable magazine</b> (~200 rounds): best raw effect, shortest reach, lightest gas, and the <b>deepest magazine</b> &mdash; it usually sustains the modeled day, though a full, high-tempo strike can still Winchester it. The volume shooter. (Illustrative. `leth` is an escort-throughput proxy, not literal lethality.)"},
     gunslinger:{name:"GUNSLINGER",dsg:"AIM-174B",leth:0.94,surv:0.10,wezK:3.0,gasFrac:0.22,burden:7.0,mag:20,
-      desc:"AIM-174B &lsquo;Gunslinger&rsquo; &mdash; an air-launched SM-6 (~3,300 lb), the Navy's first dedicated long-range AAM since the Phoenix. The <b>longest reach / best single shot</b> &mdash; kills the archer farthest out. But it's a scarce, exquisite sniper round: ~20 in the magazine, a <b>7&times; deck-handling burden</b> (one per heavy skid, crane, blocks taxiways), external-only, and the biggest gas hog. <b>You Winchester it fast</b> &mdash; it wins a small, deep, high-value strike, not a wing-wide fight. (Illustrative; A2A-STD-001 + agy deck-ordnance brief.)"},
+      desc:"AIM-174B &lsquo;Gunslinger&rsquo; &mdash; an air-launched SM-6 (~3,300 lb), the Navy's first dedicated long-range AAM since the Phoenix. The <b>longest reach / best single shot</b> &mdash; kills the archer farthest out. But it's a scarce, exquisite sniper round: ~20 in the magazine, a <b>7&times; deck-handling burden</b> (one per heavy skid, crane, blocks taxiways), external-only, and the biggest gas hog. <b>You Winchester it fast</b> &mdash; it wins a small, deep, high-value strike, not a wing-wide fight. (Illustrative.)"},
     malice:{name:"MALICE",dsg:"AIM-424",leth:0.98,surv:0.06,wezK:1.8,gasFrac:0.12,bayFits:1,burden:1.4,mag:64,
-      desc:"AIM-424 &lsquo;Malice&rsquo; &mdash; a notional dedicated LRAAM archetype (revealed Tailhook 2026; specifics notional). The <b>bay-compatible middle</b>: good reach that grows with range, a moderate magazine (~64), moderate deck burden and gas &mdash; and a stealth jet can carry it <b>internally</b> with almost no drag penalty (a Super Hornet hangs it externally and pays). The deep-strike option that still sustains. (Illustrative archetype; A2A-STD-001.)"}
+      desc:"AIM-424 &lsquo;Malice&rsquo; &mdash; a notional dedicated LRAAM archetype (revealed Tailhook 2026; specifics notional). The <b>bay-compatible middle</b>: good reach that grows with range, a moderate magazine (~64), moderate deck burden and gas &mdash; and a stealth jet can carry it <b>internally</b> with almost no drag penalty (a Super Hornet hangs it externally and pays). The deep-strike option that still sustains. (Illustrative archetype.)"}
   };
   // Air-to-GROUND strike ordnance -- a mass-vs-standoff trade (parallel to the A2A loadout).
   // sleth = strike throughput (aimpoints/pounds delivered); ssurv = survivability from NOT overflying the target.
@@ -507,7 +520,7 @@ footer b{color:var(--ink-dim)}
   STRIKES.mace={name:'Blackbeard (MACE)',dsg:'Prompt strike archetype',sleth:1.04,ssurv:.12,mag:120,burden:1.3,tof_min:3.5,standoff_nm:200,warheadMass:250,shotsPerSortie:2,
     desc:'Illustrative prompt coordinate-strike archetype: short flight time, deep magazine, smaller warhead. Target relocation is a teaching proxy, not a claim about real maritime seekers. Not for planning.'};
   var GROUPS=[
-    {role:"strike",chip:"c-strike",col:"#e5484d",label:"Strike — ordnance on target",keys:["f35c","fa18","kf1","ccap","custom"]},
+    {role:"strike",chip:"c-strike",col:"#e5484d",label:"Strike — ordnance on target",keys:["f35c","fa18","ccx","kf1","ccap","custom"]},
     {role:"tanker",chip:"c-tanker",col:"#9a7bec",label:"Tanker — gas in the air",keys:["mq25","horn5"]},
     {role:"cap",chip:"c-cap",col:"#4a90d9",label:"Defense — CAP",keys:["cap"]},
     {role:"isr",chip:"c-isr",col:"#41c46a",label:"ISR / EW",keys:["isr"]}
@@ -515,14 +528,17 @@ footer b{color:var(--ink-dim)}
   var WINGROLES=[["strike","tanker"],["strike","tanker","cap"],["strike","tanker","cap","isr"]];
   var st={targetPosture:"integrated",threat:null,tankerMode:"organic",strikeOrbit:350,relayOrbit:500,tankerTactics:{yoyo:20,strike:60,consolidation:0,recovery:20},wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102,custom:90}, weapon:"amraam", strike:"mixed",
           custom:{pay:6000,surv:60,size:55},
-          alloc:{f35c:6,fa18:14,kf1:0,ccap:0,custom:0,mq25:5,horn5:0,cap:6,isr:3}};
+          alloc:{f35c:6,fa18:14,ccx:0,kf1:0,ccap:0,custom:0,mq25:5,horn5:0,cap:6,isr:3}};
 
   var el=function(id){return document.getElementById(id);};
   var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   function fmt(n,d){return n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});}
   function activeRoles(){return WINGROLES[st.wing];}
   function activeKeys(){var ar=activeRoles();return Object.keys(CAT).filter(function(k){return ar.indexOf(CAT[k].role)>=0;});}
-  function used(){return activeKeys().reduce(function(s,k){return s+(st.alloc[k]||0);},0);}
+  function spotsOf(k){return (CAT[k]&&CAT[k].spots)||1;}   // v3.1 S6 weighted deck-spot accounting
+  function usedSpots(alloc){alloc=alloc||st.alloc;return activeKeys().reduce(function(s,k){return s+(alloc[k]||0)*spotsOf(k);},0);}
+  function used(){return usedSpots(st.alloc);}
+  function fmtSpots(n){return Math.abs(n-Math.round(n))<1e-9?fmt(Math.round(n),0):fmt(n,2);}
   function sizeRate(sz){return 1.4-(sz-20)/80*0.55;}
   function statsFor(k){var a=CAT[k];return a.custom?{pay:st.custom.pay,surv:st.custom.surv,rate:sizeRate(st.custom.size)}:a;}
   function designCost(){return st.custom.pay/1000*2.5 + st.custom.surv*0.7 + (100-st.custom.size)*0.6;}
@@ -532,7 +548,7 @@ footer b{color:var(--ink-dim)}
     if(k==="f35c")return st.cost.f35c;                   // F-35C still in production -> adjustable +/-15%
     return CAT[k].cost||0;                               // fa18/horn5 fixed $67M (line shutdown funded); others sourced/notional
   }
-  // ---- Tier-2 OA realism (agy #181) ----
+  // ---- Tier-2 OA realism ----
   function customClean(){return Math.max(250, 450+(100-st.custom.size)*2.5-(st.custom.pay/1000)*10);}
   function customBurn(){return 9.0+(st.custom.size/100)*8.0;}
   function cleanFor(k){return k==="custom"?customClean():(CAT[k].clean||450);}
@@ -546,7 +562,7 @@ footer b{color:var(--ink-dim)}
     return W.surv*(1+(W.wezK||0)*deep);                   // AMRAAM flat 0; GUNSLINGER 0.10->0.40 at 900 (longest/deepest); MALICE 0.06->0.168 (bay-compatible middle)
   }
   function weaponGasFrac(weapon){                        // A2A weapon weight/drag -> fractional clean-radius cut
-    return (WEAPONS[weapon]||WEAPONS.amraam).gasFrac||0;  // A2A-STD-001: AMRAAM 0.05, MALICE 0.12, GUNSLINGER 0.22 (SM-6)
+    return (WEAPONS[weapon]||WEAPONS.amraam).gasFrac||0;  // illustrative: AMRAAM 0.05, MALICE 0.12, GUNSLINGER 0.22 (SM-6)
   }
   function weaponGasFor(acKey,weapon){                   // internal (LO bay) carriage cancels most of the drag penalty
     var f=weaponGasFrac(weapon), a=CAT[acKey]||{}, W=WEAPONS[weapon]||WEAPONS.amraam;
@@ -605,77 +621,162 @@ footer b{color:var(--ink-dim)}
     var w=weapon==='fallback'?FALLBACK:STRIKES[weapon],p=TARGET_POSTURES[posture];
     return Math.max(.10,1-p.decay*(w.tof_min+(hasISR?0:Math.max(0,range-w.standoff_nm)/8)));
   }
+  // ---- v3.1 S2: integer cyclic-event schedule and per-event recovery physics. No daily sortie wall. ----
+  var TRAP_MIN=.75, ROUTINE_TARGET=120, FALLBACK_STOCK=200, OVERHEAD_FUEL=800;      // [ILLUSTRATIVE] 45-s trap interval; 8-event routine target
+  var OVERHEAD_TYPES=['fa18','f35c'];                                                // crewed strike fighters fly FCF / qual, Super Hornets first
+  function tempoSchedule(tempo,events){var surge=!!tempo,E=events!=null?Math.max(1,Math.floor(events)):(surge?10:8),win=surge?22:12,rec=Math.floor(win/TRAP_MIN);
+    return {events:E,eventLen:surge?1.6:1.5,recoveryWindow:win,recPerEvent:rec,deckCeiling:rec*E,caps:surge?4.5:3.5,turnBase:surge?.7:.8};}
+  // v3.1 S6 recovery squeeze: trap weight vs max arrested-landing weight -> bolter and recovery-loss risk [ILLUSTRATIVE].
+  function recoveryRisk(k,bringBack,coverage){var empty=EMPTY_WT[k]||25000,malw=MALW[k]||30000,pay=statsFor(k).pay||0;
+    var wTrap=empty+(bringBack?pay:200)+1500,over=Math.max(0,(wTrap-malw)/1000),pBolter=Math.min(.25,.02+.10*over);
+    return {wTrap:wTrap,malw:malw,overweight:Math.max(0,wTrap-malw),vpaRatio:Math.sqrt(wTrap/malw),pBolter:pBolter,pLoss:pBolter*(1-.90*clamp(coverage||0,0,1))};}
   function evalWing(range,alloc,options){
     alloc=alloc||st.alloc;options=options||{};
     var tactics=options.tankerTactics||st.tankerTactics,mode=options.tankerMode||st.tankerMode;
     var plan=resolveTankerTacticsByType(alloc,tactics),orbit=options.strikeOrbit!=null?options.strikeOrbit:st.strikeOrbit;
     var relayOrbit=options.relayOrbit!=null?options.relayOrbit:st.relayOrbit;
-    var WINDOW=st.tempo?16:12,eventLen=st.tempo?1.3:1.5,events=WINDOW/eventLen,CAPS=st.tempo?4.5:3.5;
-    var TURNC=(st.tempo?.7:.8)+DECKS[DECK].turnAdj/60/eventLen;
+    var sch=tempoSchedule(st.tempo,options.events),events=sch.events,eventLen=sch.eventLen,CAPS=sch.caps;
+    var fatigue=options.fatigue||{},turnMult=fatigue.turnMult||1,avail=fatigue.availMult==null?1:fatigue.availMult;
+    var TURNC=(sch.turnBase+DECKS[DECK].turnAdj/60/eventLen)*turnMult;
     function rateFor(h){return Math.min(CAPS,events*.85/(h/eventLen+TURNC));}
-    var airborne=2*range/CRUISE+STATION,baseStrike=rateFor(airborne),byType=[],byKey={},cost=0;
-    var strikeSorties=0,tankerSorties=0,nCAP=0,nISR=0,topoffAvail=0,enroute=0,recoveryGas=0,infeasible=[];
+    var airborne=2*range/CRUISE+STATION,baseStrike=rateFor(airborne),byType=[],byKey={},cost=0,pinned=options.sortiesPerJet!=null;
+    var strikeDemand=0,tankerSorties=0,nCAP=0,nISR=0,topoffAvail=0,enroute=0,recoveryGas=0,infeasible=[];
     activeKeys().forEach(function(k){var n=alloc[k]||0,a=CAT[k],s=statsFor(k);if(n<=0)return;cost+=n*costFor(k);
-      if(a.role==='strike'){var ss=n*Math.min(CAPS,baseStrike*s.rate);strikeSorties+=ss;
-        byType.push({key:k,s:s,ss:ss,pen:a.custom?designPenalty():1});byKey[k]=ss;}
+      if(a.role==='strike'){var ss=(pinned?n*options.sortiesPerJet:n*Math.min(CAPS,baseStrike*s.rate))*avail;strikeDemand+=ss;
+        byType.push({key:k,s:s,n:n,demand:ss,ss:ss,overhead:0,pen:a.custom?designPenalty():1});}
       else if(a.role==='cap')nCAP+=n;else if(a.role==='isr')nISR+=n;
     });
+    var tankerByKey={};
     Object.keys(TANKERS).forEach(function(k){var t=TANKERS[k],single=tankerLedger(k,orbit,false),deep=tankerLedger(k,relayOrbit,true);
-      topoffAvail+=plan.yoyo[k]*3.5*t.near;recoveryGas+=plan.recovery[k]*1.5*t.recovery;
-      enroute+=plan.strike[k]*1.5*single.offload+plan.consolidation[k]/2*deep.offload;
+      topoffAvail+=plan.yoyo[k]*3.5*t.near*avail;recoveryGas+=plan.recovery[k]*1.5*t.recovery*avail;
+      enroute+=(plan.strike[k]*1.5*single.offload+plan.consolidation[k]/2*deep.offload)*avail;
       if(plan.strike[k]&&!single.feasible)infeasible.push(CAT[k].name+' strike orbit');
       if(plan.consolidation[k]&&!deep.feasible)infeasible.push(CAT[k].name+' deep relay');
-      var ts=plan.yoyo[k]*3.5+plan.recovery[k]*1.5+(single.feasible?plan.strike[k]*1.5:0)+(deep.feasible?plan.consolidation[k]:0);
-      tankerSorties+=ts;byKey[k]=ts;
+      var ts=(plan.yoyo[k]*3.5+plan.recovery[k]*1.5+(single.feasible?plan.strike[k]*1.5:0)+(deep.feasible?plan.consolidation[k]:0))*avail;
+      tankerSorties+=ts;tankerByKey[k]=ts;
     });
+    var capSorties=nCAP*rateFor(2)*avail,isrSorties=nISR*rateFor(3)*avail;
+    // ---- v3.1 S3: FCF + qual overhead, reserved from the crewed strike-fighter sortie budget BEFORE combat ----
+    var scheduled=strikeDemand+tankerSorties+capSorties+isrSorties,fcf=0,qual=0;
+    var eligible=byType.reduce(function(s,x){return s+(OVERHEAD_TYPES.indexOf(x.key)>=0?x.ss:0);},0);
+    if(options.overhead!==false&&scheduled>0&&eligible>0){
+      fcf=Math.max(1,Math.round(.03*scheduled));qual=Math.max(1,Math.round(.02*scheduled));
+      var take=Math.min(fcf+qual,Math.floor(eligible+1e-9),sch.deckCeiling);/* whole sorties only: integer crewed budget, FCF first */if(take<fcf+qual){fcf=Math.min(fcf,take);qual=take-fcf;}
+    }
+    var overhead=fcf+qual,left=overhead;
+    OVERHEAD_TYPES.forEach(function(k){byType.forEach(function(x){if(x.key!==k||left<=0)return;var t=Math.min(left,x.ss);x.overhead=t;x.ss-=t;left-=t;});});
+    // ---- v3.1 S2: all returning roles share DeckCap(E); support roles are scaled only when they alone exceed it ----
+    var support=tankerSorties+capSorties+isrSorties,deckScale=support+overhead>sch.deckCeiling&&support>0?Math.max(0,sch.deckCeiling-overhead)/support:1;
+    if(deckScale<1){tankerSorties*=deckScale;capSorties*=deckScale;isrSorties*=deckScale;topoffAvail*=deckScale;enroute*=deckScale;recoveryGas*=deckScale;
+      nCAP*=deckScale;nISR*=deckScale;Object.keys(tankerByKey).forEach(function(k){tankerByKey[k]*=deckScale;});}
+    var strikeDeck=Math.max(0,sch.deckCeiling-overhead-tankerSorties-capSorties-isrSorties);
+    Object.keys(tankerByKey).forEach(function(k){byKey[k]=tankerByKey[k];});
     var W=WEAPONS[st.weapon]||WEAPONS.amraam,SW=STRIKES[st.strike]||STRIKES.mixed;
-    var primaryAvail=Math.min(SW.mag,180*DECKS[DECK].ordMult/SW.burden),fallbackAvail=Math.min(200,200*DECKS[DECK].ordMult);
-    var primaryRem=primaryAvail,fallbackRem=fallbackAvail,climbDemand=0;
-    var priority=['f35c','fa18','custom'];
-    byType.sort(function(a,b){var ai=priority.indexOf(a.key),bi=priority.indexOf(b.key);return (ai<0?3:ai)-(bi<0?3:bi)||a.key.localeCompare(b.key);});
+    var primaryStock=options.primaryStock!=null?Math.max(0,options.primaryStock):SW.mag,fallbackStock=options.fallbackStock!=null?Math.max(0,options.fallbackStock):FALLBACK_STOCK;
+    var primaryAvail=Math.min(primaryStock,180*DECKS[DECK].ordMult/SW.burden),fallbackAvail=Math.min(fallbackStock,200*DECKS[DECK].ordMult),climbDemand=0;
+    var priority=['f35c','fa18','ccx','custom'];
+    byType.sort(function(a,b){var ai=priority.indexOf(a.key),bi=priority.indexOf(b.key);return (ai<0?4:ai)-(bi<0?4:bi)||a.key.localeCompare(b.key);});
     byType.forEach(function(x){x.climbCap=x.key==='f35c'?1300:x.key==='fa18'?1000:Math.round(.15*cleanFor(x.key)*burnFor(x.key)/2);climbDemand+=x.ss*x.climbCap;});
-    var alpha=climbDemand>0?Math.min(1,topoffAvail/climbDemand):0,dp=0,df=0;
-    byType.forEach(function(x){x.primary=Math.min(x.ss,Math.floor(primaryRem/SW.shotsPerSortie));primaryRem-=x.primary*SW.shotsPerSortie;
-      x.fallback=Math.min(x.ss-x.primary,Math.floor(fallbackRem/2));fallbackRem-=x.fallback*2;x.unarmed=x.ss-x.primary-x.fallback;
-      x.topoff=alpha*x.climbCap;x.clean=cleanFor(x.key)*(1-weaponGasFor(x.key,st.weapon))+x.topoff/burnFor(x.key);
-      x.dp=x.primary*Math.max(0,range-SW.standoff_nm-x.clean)*burnFor(x.key);
-      x.df=x.fallback*Math.max(0,range-FALLBACK.standoff_nm-x.clean)*burnFor(x.key);dp+=x.dp;df+=x.df;
-    });
+    var alpha=climbDemand>0?Math.min(1,topoffAvail/climbDemand):0;
+    byType.forEach(function(x){x.topoff=alpha*x.climbCap;x.clean=cleanFor(x.key)*(1-weaponGasFor(x.key,st.weapon))+x.topoff/burnFor(x.key);
+      x.dP=Math.max(0,range-SW.standoff_nm-x.clean)*burnFor(x.key);x.dF=Math.max(0,range-FALLBACK.standoff_nm-x.clean)*burnFor(x.key);});
+    // ---- v3.1 S1: JOINT per-type launch against shared weapons, tanker gas and deck; only launched sorties debit ----
+    function allocate(pool,unlimited){var pRem=primaryAvail,fRem=fallbackAvail,deckRem=strikeDeck,gas=pool,rows=[];
+      function fly(want,per){return unlimited||per<=0?want:Math.max(0,Math.min(want,Math.floor(gas/per)));}
+      byType.forEach(function(x){
+        var pArm=Math.max(0,Math.min(x.ss,Math.floor(pRem/SW.shotsPerSortie))),pDeck=Math.min(pArm,deckRem),p=fly(pDeck,x.dP);
+        pRem-=p*SW.shotsPerSortie;deckRem-=p;if(!unlimited)gas-=p*x.dP;
+        var cand=x.ss-pArm,fArm=Math.max(0,Math.min(cand,Math.floor(fRem/2))),fDeck=Math.min(fArm,deckRem),f=fly(fDeck,x.dF);  // gas-blocked primaries cannot fly the longer-legged fallback
+        fRem-=f*2;deckRem-=f;if(!unlimited)gas-=f*x.dF;
+        rows.push({p:p,f:f,pDeck:pDeck,fDeck:fDeck,deck:(pArm-pDeck)+(fArm-fDeck),fuel:(pDeck-p)+(fDeck-f),weapons:cand-fArm});
+      });return {rows:rows,pRem:pRem,fRem:fRem};}
+    var plannedRun=allocate(0,true),dp=0,df=0;
+    plannedRun.rows.forEach(function(q,i){dp+=q.pDeck*byType[i].dP;df+=q.fDeck*byType[i].dF;});
     // Theater supply is accepted only for unmet organic demand. Fixed 10% dogleg throughput
     // and 18% score charge are explicit illustrative terms, separate from raw mission effect.
-    var theaterAccepted=mode==='theater'?Math.min(150000,Math.max(0,dp+df-enroute)):0;
-    var gas=debitGas(dp,df,enroute+theaterAccepted),dogleg=theaterAccepted>0?.9:1;
+    var theaterAccepted=mode==='theater'?Math.min(150000,Math.max(0,dp+df-enroute)):0,pool=enroute+theaterAccepted;
+    var run=allocate(pool,false),dogleg=theaterAccepted>0?.9:1,gasP=0,gasF=0,heldBy={weapons:0,fuel:0,deck:0},flown=0;
+    byType.forEach(function(x,i){var q=run.rows[i];x.primary=q.p;x.fallback=q.f;x.held=x.ss-q.p-q.f;x.unarmed=x.held;
+      x.heldBy={weapons:q.weapons,fuel:q.fuel,deck:q.deck};heldBy.weapons+=q.weapons;heldBy.fuel+=q.fuel;heldBy.deck+=q.deck;
+      gasP+=q.p*x.dP;gasF+=q.f*x.dF;flown+=q.p+q.f;byKey[x.key]=q.p+q.f;});
+    var gas={primary:gasP,fallback:gasF,total:gasP+gasF,primarySupport:dp>0?Math.min(1,gasP/dp):1,fallbackSupport:df>0?Math.min(1,gasF/df):1,
+      support:dp+df>0?Math.min(1,(gasP+gasF)/(dp+df)):1};
+    // Spec 12.2 ceilings (diagnostic): weapon-armed sorties and fuel-supported sorties, each ignoring the other resource.
+    var weaponCapacity=Math.floor(primaryAvail/SW.shotsPerSortie)+Math.floor(fallbackAvail/2),fuelCapacity=0,fuelPool=pool;
+    byType.forEach(function(x){if(x.dP<=0){fuelCapacity+=x.ss;return;}var n=Math.min(x.ss,Math.floor(fuelPool/x.dP));fuelCapacity+=n;fuelPool-=n*x.dP;});
+    var combatDemand=strikeDemand-overhead,strikeHeld=Math.max(0,combatDemand-flown);if(strikeHeld<1e-6)strikeHeld=0;
+    var binding='none';if(strikeHeld>0){binding='weapons';if(heldBy.fuel>heldBy[binding])binding='fuel';if(heldBy.deck>heldBy[binding])binding='deck';}
     var threat=st.threat==null?threatFactor(range):clamp(st.threat,0,1);
-    var a2aAvail=Math.min(W.mag, KFEED*DECKS[DECK].ordMult/W.burden),a2aDemand=strikeSorties*threat*A2A_SHOTS_PER_SORTIE;
+    var a2aStock=options.a2aStock!=null?Math.max(0,options.a2aStock):W.mag;
+    var a2aAvail=Math.min(a2aStock,KFEED*DECKS[DECK].ordMult/W.burden),a2aDemand=flown*threat*A2A_SHOTS_PER_SORTIE;
     var coverage=a2aDemand>0?Math.min(1,a2aAvail/a2aDemand):1;
     var escortMit=.22*(1-Math.exp(-.35*nCAP))+.28*(1-Math.exp(-.55*nISR));
     var airMit=Math.min(.95,escortMit+weaponSurvBonus(st.weapon,range)*coverage);
-    var capSorties=nCAP*rateFor(2),isrSorties=nISR*rateFor(3);
-    var recoveryDemand=(strikeSorties+tankerSorties+capSorties+isrSorties)*50;
+    var recoveryDemand=(flown+tankerSorties+capSorties+isrSorties)*50;   // local-pattern FCF/qual flights need no recovery-tanker service
     var recoveryCoverage=recoveryDemand>0?Math.min(1,recoveryGas/recoveryDemand):1;
     var recoveryMult=1-.15*(1-recoveryCoverage),effects=0,survNum=0,survDen=0;
     var posture=TARGET_POSTURES[st.targetPosture],hasISR=nISR>=1;
-    byType.forEach(function(x){
-      function eff(w,key,count,support){var surf=w.ssurv-.20*(threat-.50);
+    byType.forEach(function(x){var tn=0,td=0;
+      function eff(w,key,count){var surf=w.ssurv-.20*(threat-.50);
         var surv=clamp(1-(1-x.s.surv/100)*(1-airMit)*(1-surf),.02,.995);
-        survNum+=count*x.s.pay*surv;survDen+=count*x.s.pay;
-        return count*support*(x.s.pay/1000)*(.35+.65*surv)*x.pen*W.leth*w.sleth*
+        survNum+=count*x.s.pay*surv;survDen+=count*x.s.pay;tn+=count*surv;td+=count;
+        return count*(x.s.pay/1000)*(.35+.65*surv)*x.pen*W.leth*w.sleth*
           posture.defeat[key==='fallback'?'direct':key]*targetValidity(key,st.targetPosture,range,hasISR)*recoveryMult*dogleg;
       }
-      x.primaryEffect=eff(SW,st.strike,x.primary,gas.primarySupport);
-      x.fallbackEffect=eff(FALLBACK,'fallback',x.fallback,gas.fallbackSupport);effects+=x.primaryEffect+x.fallbackEffect;
+      x.primaryEffect=eff(SW,st.strike,x.primary);
+      x.fallbackEffect=eff(FALLBACK,'fallback',x.fallback);effects+=x.primaryEffect+x.fallbackEffect;x.surv=td>0?tn/td:0;
     });
-    var meanSurv=survDen>0?survNum/survDen:0;
+    var meanSurv=survDen>0?survNum/survDen:0,survScore=gas.support*meanSurv;
+    // ---- v3.1 S4: Contested Strait multiplicative mission-effect floor ----
+    var scen=SCENARIOS&&SCENARIOS[options.scenario!==undefined?options.scenario:st.scenario],effectFloor=options.effectFloor!=null?options.effectFloor:(scen&&scen.effectFloor)||0;
+    var effFloorFactor=effectFloor>0?Math.min(1,effects/effectFloor):1;
+    var totalLaunches=flown+tankerSorties+capSorties+isrSorties+overhead;
     byKey.cap=capSorties;byKey.isr=isrSorties;
     return {cyc:airborne+TURNC*eventLen,airborne:airborne,rateStrike:baseStrike,events:events,sps:baseStrike,
-      strikeSorties:strikeSorties,tankerSorties:tankerSorties,capSorties:capSorties,isrSorties:isrSorties,
+      strikeSorties:flown,tankerSorties:tankerSorties,capSorties:capSorties,isrSorties:isrSorties,
       support:gas.support,gasDemand:dp+df,tankerOffload:enroute+theaterAccepted,effects:effects,score:effects*(theaterAccepted>0?.82:1),
-      coverage:coverage,a2aAvail:a2aAvail,a2aDemand:a2aDemand,meanSurv:meanSurv,survScore:gas.support*meanSurv,cost:cost,byKey:byKey,
+      coverage:coverage,a2aAvail:a2aAvail,a2aDemand:a2aDemand,a2aUsed:Math.min(a2aAvail,a2aDemand),meanSurv:meanSurv,survScore:survScore,
+      effectFloor:effectFloor,effFloorFactor:effFloorFactor,objScore:survScore*effFloorFactor,cost:cost,byKey:byKey,
       byType:byType,plan:plan,gas:gas,primaryDemand:dp,fallbackDemand:df,primaryAvail:primaryAvail,fallbackAvail:fallbackAvail,
-      primaryUsed:primaryAvail-primaryRem,fallbackUsed:fallbackAvail-fallbackRem,topoffAvailable:topoffAvail,topoffDelivered:alpha*climbDemand,
+      primaryUsed:primaryAvail-run.pRem,fallbackUsed:fallbackAvail-run.fRem,topoffAvailable:topoffAvail,
+      topoffDelivered:byType.reduce(function(s,x){return s+(x.primary+x.fallback)*x.topoff;},0),
       organicOffload:enroute,theaterAccepted:theaterAccepted,dogleg:dogleg,recoveryGas:recoveryGas,recoveryDemand:recoveryDemand,
       recoveryCoverage:recoveryCoverage,recoveryMult:recoveryMult,infeasible:infeasible,threat:threat,
-      fuelBurned:byType.reduce(function(s,x){return s+x.ss*range*burnFor(x.key);},0)};
+      strikeDemand:strikeDemand,combatStrikeDemand:combatDemand,strikeHeld:strikeHeld,heldBy:heldBy,binding:binding,
+      weaponCapacity:weaponCapacity,fuelCapacity:fuelCapacity,scheduledSorties:scheduled,fcfSorties:fcf,qualSorties:qual,
+      overheadSorties:overhead,overheadFuel:overhead*OVERHEAD_FUEL,totalLaunches:totalLaunches,combatSorties:totalLaunches-overhead,
+      deckCeiling:sch.deckCeiling,recPerEvent:sch.recPerEvent,recoveryWindow:sch.recoveryWindow,deckScale:deckScale,
+      fuelBurned:byType.reduce(function(s,x){return s+(x.primary+x.fallback)*range*burnFor(x.key);},0)};
+  }
+  // ---- v3.1 D3: multi-day campaign recurrence (pure; magazines, fatigue and attrition carry day to day) ----
+  function evalCampaign(range,alloc,options){
+    options=options||{};alloc=alloc||st.alloc;
+    var scen=SCENARIOS[options.scenario!==undefined?options.scenario:st.scenario]||{},H=Math.max(1,Math.floor(options.days||scen.days||3));
+    var cur={};Object.keys(alloc).forEach(function(k){cur[k]=Math.max(0,Math.floor(alloc[k]||0));});
+    var SW=STRIKES[st.strike]||STRIKES.mixed,W=WEAPONS[st.weapon]||WEAPONS.amraam;
+    var magStrike=options.primaryStock!=null?Math.max(0,options.primaryStock):SW.mag,magA2A=options.a2aStock!=null?Math.max(0,options.a2aStock):W.mag;
+    var fallback=options.fallbackStock!=null?Math.max(0,options.fallbackStock):FALLBACK_STOCK,totalEffect=0,totalSorties=0,history=[];
+    for(var d=1;d<=H;d++){
+      var fatigue={turnMult:1,availMult:1};   // causal: only completed days 1..d-1 enter the trigger
+      if(d===2&&history[0].sortiesFlown>1.30*ROUTINE_TARGET)fatigue.turnMult=1.02;
+      else if(d===3&&(history[0].sortiesFlown+history[1].sortiesFlown)/2>1.30*ROUTINE_TARGET)fatigue.availMult=.95;
+      var start=Object.assign({},cur);
+      var r=evalWing(range,start,Object.assign({},options,{primaryStock:magStrike,fallbackStock:fallback,a2aStock:magA2A,fatigue:fatigue}));
+      var flownByKey={},losses={},C=r.recoveryCoverage;
+      Object.keys(cur).forEach(function(k){var flownK=r.byKey[k]||0,rate=0;
+        if(CAT[k]&&CAT[k].role==='strike'){var x=r.byType.filter(function(y){return y.key===k;})[0];
+          if(x&&flownK>0)rate=.30*(1-x.surv)+.95*recoveryRisk(k,false,C).pLoss+.05*recoveryRisk(k,true,C).pLoss;}   // combat + 5% abort bring-back
+        else if(flownK>0)rate=.02*(1-.90*C);
+        flownByKey[k]=flownK;losses[k]=flownK>0?Math.min(cur[k],Math.round(flownK*rate)):0;});
+      var day={day:d,sortiesFlown:r.totalLaunches,strikeSorties:r.strikeSorties,strikeHeld:r.strikeHeld,binding:r.binding,effects:r.effects,
+        overheadSorties:r.overheadSorties,deckCeiling:r.deckCeiling,meanSurv:r.meanSurv,objScore:r.objScore,fatigue:fatigue,aircraftStart:start,
+        flownByKey:flownByKey,losses:losses,primaryAvail:r.primaryAvail,strikeExpended:r.primaryUsed,fallbackExpended:r.fallbackUsed,a2aExpended:r.a2aUsed};
+      history.push(day);totalEffect+=r.effects;totalSorties+=r.totalLaunches;
+      magStrike=Math.max(0,magStrike-r.primaryUsed);fallback=Math.max(0,fallback-r.fallbackUsed);magA2A=Math.max(0,magA2A-r.a2aUsed);
+      Object.keys(cur).forEach(function(k){cur[k]=Math.max(0,cur[k]-losses[k]);});
+    }
+    return {days:H,cumulativeEffect:totalEffect,totalSorties:totalSorties,windowedAverageSorties:totalSorties/H,routineTarget:ROUTINE_TARGET,
+      survivingAirframes:cur,finalMagStrike:magStrike,finalMagA2A:magA2A,finalFallback:fallback,dailyHistory:history};
   }
   function organicCliff(alloc,options){
     var rows=[],peak=0,fuel=0;options=Object.assign({},options||{},{tankerMode:'organic'});
@@ -699,7 +800,7 @@ footer b{color:var(--ink-dim)}
       var box=document.createElement("div"); box.className="grp";
       box.innerHTML='<div class="grp-h"><span class="chip '+g.chip+'"></span>'+g.label+'</div>';
       g.keys.forEach(function(k){
-        var a=CAT[k], n=st.alloc[k]||0, atMax=used()>=POOL;
+        var a=CAT[k], n=st.alloc[k]||0, atMax=used()+spotsOf(k)>POOL+1e-9;
         var row=document.createElement("div"); row.className="ac";
         row.innerHTML='<div class="ac-nm">'+a.name+(a.custom?' <span class="tag ghost">CUSTOM</span>':(a.concept?' <span class="tag">CONCEPT</span>':''))+
           ' <button type="button" class="info" title="About '+a.name+'" aria-label="About '+a.name+'" aria-expanded="'+(st.open[k]?'true':'false')+'">i</button></div>'+
@@ -709,7 +810,7 @@ footer b{color:var(--ink-dim)}
           '<div class="ac-note">'+a.note+'</div>';
         var bs=row.querySelectorAll(".stepper button");
         bs[0].addEventListener("click",function(){if((st.alloc[k]||0)>0){st.alloc[k]--;buildRoster();render();}});
-        bs[1].addEventListener("click",function(){if(used()<POOL){st.alloc[k]=(st.alloc[k]||0)+1;buildRoster();render();}});
+        bs[1].addEventListener("click",function(){if(used()+spotsOf(k)<=POOL+1e-9){st.alloc[k]=(st.alloc[k]||0)+1;buildRoster();render();}});
         row.querySelector(".info").addEventListener("click",function(){st.open[k]=!st.open[k];buildRoster();});
         box.appendChild(row);
         if(st.open[k]){var dd=document.createElement("div");dd.className="acdesc";dd.innerHTML=a.desc||a.note;box.appendChild(dd);}
@@ -762,13 +863,13 @@ footer b{color:var(--ink-dim)}
     el("relay-warning").textContent=st.tankerTactics.consolidation>0&&(st.alloc.horn5||0)>=2&&st.relayOrbit>buddyReach?"Buddy relay cannot reach this orbit (limit "+fmt(buddyReach,1)+" nm). Drag the receiver orbit to 250 nm to try a feasible relay.":"";
     document.querySelectorAll("[data-scenario]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.scenario===st.scenario?"true":"false");});
     var u=used(), r=evalWing(st.rng);
-    var defenseScenario=st.scenario==='strait_defense',objective=el('scenario-objective');objective.hidden=!defenseScenario;
-    objective.textContent=(st.rankBy==='surv'?'Strait objective: Survivability':'Use Strait objective: Survivability')+' - '+fmt(r.survScore*100,1)+' / 100';objective.setAttribute('aria-pressed',st.rankBy==='surv'?'true':'false');
+    var defenseScenario=isStrait(),objective=el('scenario-objective');objective.hidden=!defenseScenario;
+    objective.textContent=(st.rankBy==='surv'?'Strait objective: Survivability':'Use Strait objective: Survivability')+' - '+fmt(r.objScore*100,1)+' / 100';objective.setAttribute('aria-pressed',st.rankBy==='surv'?'true':'false');
     el("v-spots").textContent=POOL+" / "+DECKS[DECK].spots;
     el("s-spots").max=DECKS[DECK].spots; el("s-spots").value=POOL;
-    el("pool").innerHTML='<b>'+DECKS[DECK].name+' &mdash; '+POOL+' spots</b>: '+u+' assigned '+(POOL-u>0?'('+(POOL-u)+' idle)':'(full)');
+    el("pool").innerHTML='<b>'+DECKS[DECK].name+' &mdash; '+POOL+' spots</b>: '+fmtSpots(u)+' assigned '+(POOL-u>1e-9?'('+fmtSpots(POOL-u)+' idle)':'(full)');
     var sb="";GROUPS.forEach(function(g){if(activeRoles().indexOf(g.role)<0)return;
-      var n=g.keys.reduce(function(s,k){return s+(st.alloc[k]||0);},0);if(n>0)sb+='<i style="width:'+(n/POOL*100)+'%;background:'+g.col+'"></i>';});
+      var n=g.keys.reduce(function(s,k){return s+(activeKeys().indexOf(k)>=0?(st.alloc[k]||0)*spotsOf(k):0);},0);if(n>0)sb+='<i style="width:'+(n/POOL*100)+'%;background:'+g.col+'"></i>';});
     var idle=(POOL-u)/POOL*100;if(idle>0)sb+='<i style="width:'+idle+'%;background:#141f2e"></i>';
     el("spotbar").innerHTML=sb;
 
@@ -800,6 +901,17 @@ footer b{color:var(--ink-dim)}
     else{var head=r.tankerOffload>r.gasDemand*1.05, tail=r.support>=0.999?(head?' &mdash; <b>fully supplied; more tankers add nothing.</b>':' &mdash; supply just meets demand.'):' &mdash; <b>gas-starved</b>: add tankers or pull the range in.';
       el("gas").innerHTML='<span class="k">Ball &mdash; strikers supported</span> demand '+fmt(r.gasDemand/1000,0)+'k lb/day &middot; supply '+
       fmt(r.tankerOffload/1000,0)+'k &rarr; <span class="'+(r.support>=0.999?"cool":"hot")+'">'+fmt(r.support*100,0)+'% fuel-demand coverage at '+st.rng+' nm</span>'+tail;}
+    // v3.1 S1 / S2 / S3 readouts
+    var bindTxt={none:'none',weapons:'weapons',fuel:'fuel',deck:'deck'}[r.binding];
+    el("launchline").innerHTML='<span class="k">Strike sorties</span> <span class="value"><b>'+fmt(r.strikeSorties,0)+'</b> Flown / <b>'+fmt(r.strikeHeld,0)+'</b> Held</span><span class="badge b-'+r.binding+'">Binding: '+bindTxt+'</span>'+
+      (r.strikeHeld>=.5?' &mdash; '+({weapons:'Shipboard strike magazine exhausted; unsupported sorties held in hangar.',fuel:'Insufficient tanker or organic gas to support release line and safe recovery; unsupported sorties held on deck.',deck:'Deck cyclic recovery capacity saturated.'})[r.binding]:' &mdash; every scheduled strike is supported.');
+    el("overhead").innerHTML='<span class="k">Overhead sorties</span> <b>'+fmt(r.overheadSorties,0)+'</b> ('+fmt(r.fcfSorties,0)+' FCF, '+fmt(r.qualSorties,0)+' Qual) &mdash; Non-Combat Operations (0 Effect)'+(r.overheadSorties>0?'; flown by crewed strike fighters, ~'+fmt(r.overheadFuel/1000,1)+'k lb ship fuel (illustrative)':'');
+    el("deckcap").innerHTML='<span class="k">Deck recovery</span> <b>'+fmt(r.totalLaunches,0)+'</b> launches vs ceiling <b>'+fmt(r.deckCeiling,0)+'</b> = '+r.events+' events &times; '+r.recPerEvent+' traps per '+r.recoveryWindow+'-min window. No daily wall: the deck is limited per recovery window; the wing by maintenance, crews and ordnance over time.';
+    var scn=SCENARIOS[st.scenario],cp=el("campaign");cp.hidden=!(scn&&scn.days);
+    if(scn&&scn.days){var cr=evalCampaign(st.rng,st.alloc),avg=cr.windowedAverageSorties,surgePct=(avg/cr.routineTarget-1)*100;
+      cp.innerHTML='<span class="k">'+cr.days+'-day campaign</span> Daily Tempo: <b>'+fmt(avg,0)+'</b> sorties/day avg (Target: '+cr.routineTarget+' sustained | Surge: '+(surgePct>=0?'+':'')+fmt(surgePct,0)+'%)'+
+        cr.dailyHistory.map(function(d){return '<br>Day '+d.day+': '+fmt(d.sortiesFlown,0)+' launches, '+fmt(d.strikeSorties,0)+' strike flown / '+fmt(d.strikeHeld,0)+' held (binding '+d.binding+'), effect '+fmt(d.effects,0)+(d.fatigue.turnMult>1?', crews tiring: +2% turn time':'')+(d.fatigue.availMult<1?', maintenance aborts: -5% availability':'');}).join('')+
+        '<br>Cumulative effect <b>'+fmt(cr.cumulativeEffect,0)+'</b>; strike rounds left '+fmt(cr.finalMagStrike,0)+', fallback '+fmt(cr.finalFallback,0)+', A2A '+fmt(cr.finalMagA2A,0)+'; airframes left '+Object.keys(cr.survivingAirframes).filter(function(k){return (st.alloc[k]||0)>0;}).map(function(k){return cr.survivingAirframes[k]+'/'+st.alloc[k]+' '+CAT[k].name;}).join(', ')+'. Illustrative.';}
     el("cost").innerHTML='<span class="k">Fleet cost</span> <b>$'+fmt(r.cost/1000,1)+'B</b> for the wing &rarr; <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b> effect index per $B';
     // Tier-3 attrition (multi-day campaign teaching, not per-sortie realism): loss/sortie = 0.30 x (1 - survivability)
     if(r.strikeSorties<=0.05){el("atr").innerHTML='<span class="k">Under fire</span> no strike sorties &mdash; nothing exposed to attrition.';}
@@ -816,6 +928,7 @@ footer b{color:var(--ink-dim)}
 
     var series=[["strike","#e5484d","Strike",r.strikeSorties],["tanker","#9a7bec","Tanker",r.tankerSorties],
       ["cap","#4a90d9","CAP",r.capSorties],["isr","#41c46a","ISR/EW",r.isrSorties]].filter(function(p){return activeRoles().indexOf(p[0])>=0;});
+    if(r.overheadSorties>0)series.push(["overhead","#8a95a5","FCF/Qual",r.overheadSorties]);
     var tot=series.reduce(function(s,p){return s+p[3];},0);
     el("sortietot").textContent=fmt(tot,0)+" /day";
     var html="",leg="";
@@ -931,7 +1044,7 @@ footer b{color:var(--ink-dim)}
       x.fillStyle=ag.col;x.beginPath();x.moveTo(6,0);x.lineTo(-4,3.2);x.lineTo(-4,-3.2);x.closePath();x.fill();x.restore();});
   }
   function buildTally(r){
-    var total=r.strikeSorties+r.tankerSorties+r.capSorties+r.isrSorties;
+    var total=r.totalLaunches;
     var events=r.events, perEvent=events>0?total/events:0;
     var keys=activeKeys().filter(function(k){return (r.byKey[k]||0)>0.05;});
     var maxc=1;keys.forEach(function(k){if(r.byKey[k]>maxc)maxc=r.byKey[k];});
@@ -948,6 +1061,7 @@ footer b{color:var(--ink-dim)}
         '<div class="tstat"><div class="tv">'+fmt(r.effects,0)+'</div><div class="tk">effect index</div></div>'+
       '</div>'+
       '<div class="tally-types"><div class="tt-cap">Sorties generated by aircraft type</div>'+rows+
+      '<div class="tt-note">Strike: '+fmt(r.strikeSorties,0)+' flown / '+fmt(r.strikeHeld,0)+' held (binding '+r.binding+'); overhead '+fmt(r.overheadSorties,0)+' ('+fmt(r.fcfSorties,0)+' FCF, '+fmt(r.qualSorties,0)+' qual, 0 effect); deck ceiling '+fmt(r.deckCeiling,0)+' ('+r.recPerEvent+' per recovery window).</div>'+
       '<div class="tt-note">A day is flown as '+fmt(events,0)+' cyclic events; strike spots fly ~once per event (~'+
       fmt(st.tempo?0.78:0.62,2)+' availability), while CAP / tanker / ISR cycle faster on their own shorter tempos. '+
       fmt(r.support*100,0)+'% aggregate fuel support at '+st.rng+' nm. Illustrative model.</div></div>';
@@ -1000,7 +1114,7 @@ footer b{color:var(--ink-dim)}
     if(st.rankBy==="cliff")return r.cliff?(r.cliff.range===null?910:r.cliff.range):-1;
     if(st.rankBy==="perspot")return r.effects/Math.max(1,spots);
     if(st.rankBy==="dollar")return r.effects/Math.max(1,r.cost);
-    if(st.rankBy==="surv")return r.survScore;
+    if(st.rankBy==="surv")return r.objScore;   // v3.1 S4: survScore x Strait effect floor (factor 1 elsewhere)
     if(st.rankBy==="gas")return -gasPerEffect(r);   // least gas PER UNIT EFFECT -> higher is better
     return r.effects;
   }
@@ -1014,7 +1128,7 @@ footer b{color:var(--ink-dim)}
       if(st.rankBy==='cliff'){r.cliff=organicCliff(alloc,{tankerTactics:plan});if(!r.cliff.eligible)continue;}
       if(r.effects<st.target || r.strikeSorties<=0)continue;
       if(r.effects>maxEff)maxEff=r.effects;
-      var spots=keys.reduce(function(s,k){return s+(alloc[k]||0);},0);
+      var spots=usedSpots(alloc);
       pool.push({alloc:alloc,r:r,spots:spots,plan:Object.assign({},plan)});
     }
     // gas / survivability are degenerate without an effect floor (a tiny, fully-supported force "wins");
@@ -1038,18 +1152,18 @@ footer b{color:var(--ink-dim)}
     top.forEach(function(t,i){var r=t.r,a=t.alloc;
       var metric=st.rankBy==="cliff"?cliffLabel(r.cliff)+" <small>organic cliff</small>":st.rankBy==="perspot"?fmt(r.effects/Math.max(1,t.spots),1)+' <small>eff / spot</small>'
         :st.rankBy==="dollar"?fmt(r.effects/Math.max(0.001,r.cost/1000),0)+' <small>eff / $B</small>'
-        :st.rankBy==="surv"?fmt(r.survScore*100,0)+' <small>surv score</small>'
+        :st.rankBy==="surv"?fmt(objVal(r,t.spots)*100,0)+' <small>surv score</small>'
         :st.rankBy==="gas"?fmt(gasPerEffect(r),0)+' <small>lb gas / effect</small>'
         :fmt(r.effects,0)+' <small>effect index</small>';
       var chips=activeKeys().filter(function(k){return (a[k]||0)>0;}).map(function(k){
         return '<span class="lb-chip"><span class="d" style="background:'+(ROLECOL[CAT[k].role]||"#ccc")+'"></span>'+a[k]+' '+CAT[k].name+'</span>';}).join("");
-      var total=r.strikeSorties+r.tankerSorties+r.capSorties+r.isrSorties;
+      var total=r.totalLaunches;
       var aria='Load rank '+(i+1)+' wing: '+activeKeys().filter(function(k){return (a[k]||0)>0;}).map(function(k){return a[k]+' '+CAT[k].name;}).join(", ");
       html+='<div class="lb-row"><div class="lb-top"><span class="lb-rank">'+(i+1)+'</span><span class="lb-metric">'+metric+
         '</span><button class="lb-load" data-i="'+i+'" title="Load this wing into the Planner" aria-label="'+aria.replace(/"/g,"")+'">Load wing &#9654;</button></div><div class="lb-mix">'+chips+'</div>'+
         '<div class="lb-stats"><span>effect <b>'+fmt(r.effects,0)+'</b></span><span>sorties/day <b>'+fmt(total,0)+
         '</b></span><span>reach <b>'+fmt(r.support*100,0)+'%</b></span><span>surv <b>'+fmt(r.meanSurv*100,0)+
-        '%</b></span><span>gas <b>'+fmt(r.gasDemand/1000,0)+'k</b></span><span>cost <b>$'+fmt(r.cost/1000,1)+'B</b></span><span>eff/$B <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b></span><span>spots <b>'+t.spots+'/'+POOL+'</b></span></div></div>';
+        '%</b></span><span>gas <b>'+fmt(r.gasDemand/1000,0)+'k</b></span><span>cost <b>$'+fmt(r.cost/1000,1)+'B</b></span><span>eff/$B <b>'+fmt(r.effects/Math.max(0.001,r.cost/1000),0)+'</b></span><span>held <b>'+fmt(r.strikeHeld,0)+'</b></span><span>spots <b>'+fmtSpots(t.spots)+'/'+POOL+'</b></span></div></div>';
     });
     host.innerHTML=html; autoTop=top;
     host.querySelectorAll(".lb-load").forEach(function(btn){btn.addEventListener("click",function(){
@@ -1144,12 +1258,15 @@ footer b{color:var(--ink-dim)}
   }
 
   var SCENARIOS={
-    strait_defense:{name:"Contested Strait Defense",objective:"surv",range:500,posture:"integrated",threat:.85,strike:"standoff",weapon:"amraam",orbit:350,
+    strait_defense:{name:"Contested Strait Defense",objective:"surv",effectFloor:350,range:500,posture:"integrated",threat:.85,strike:"standoff",weapon:"amraam",orbit:350,
       alloc:{f35c:12,fa18:12,mq25:6,horn5:0,cap:10,isr:4},tactics:{yoyo:20,strike:50,consolidation:0,recovery:30}},
     war_at_sea:{name:'War at Sea',orbit:150,range:600,posture:'fleeting',threat:.65,strike:'mace',weapon:'amraam',
       alloc:{f35c:16,fa18:12,mq25:6,horn5:2,cap:6,isr:2},tactics:{yoyo:25,strike:70,consolidation:0,recovery:5}},
     deep_strike:{name:'Deep Strike Inland',orbit:350,range:800,posture:'hardened',threat:.70,strike:'standoff',weapon:'malice',
-      alloc:{f35c:24,fa18:0,mq25:12,horn5:0,cap:6,isr:2},tactics:{yoyo:10,strike:40,consolidation:50,recovery:0}}
+      alloc:{f35c:24,fa18:0,mq25:12,horn5:0,cap:6,isr:2},tactics:{yoyo:10,strike:40,consolidation:50,recovery:0}},
+    // v3.1 D3: sustained multi-day home of the windowed-average demonstration. [ILLUSTRATIVE] throughout.
+    strait_defense_3day:{name:'Contested Strait Defense (3-Day Campaign)',objective:'surv',effectFloor:350,days:3,deck:'ford',tempo:1,range:500,posture:'integrated',threat:.85,
+      strike:'mace',weapon:'malice',orbit:350,alloc:{f35c:16,fa18:10,ccx:8,mq25:6,horn5:0,cap:8,isr:2},tactics:{yoyo:20,strike:50,consolidation:0,recovery:30}}
   };
   function syncMission(){
     el('target-posture').value=st.targetPosture;el('tanker-mode').value=st.tankerMode;el('threat-level').value=st.threat==null?'auto':String(st.threat);
@@ -1161,12 +1278,13 @@ footer b{color:var(--ink-dim)}
     [['rankpick','r',st.rankBy],['strikepick','s',st.strike],['weappick','m',st.weapon],['deckpick','d',DECK],['tempopick','o',String(st.tempo)]].forEach(function(a){document.querySelectorAll('#'+a[0]+' button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset[a[1]]===a[2]?'true':'false');});});
   }
   function applyScenario(key,environment){var p=SCENARIOS[key];if(!p)return;
-    st.rankBy=p.objective||"effect";st.scenario=key;st.wing=2;st.play=0;st.tempo=environment?environment.tempo:0;st.rng=p.range;st.targetPosture=p.posture;st.threat=p.threat;st.strike=p.strike;st.weapon=p.weapon;
-    st.tankerMode='organic';st.strikeOrbit=p.orbit;st.relayOrbit=500;st.tankerTactics=Object.assign({},p.tactics);DECK=environment?environment.deck:'nimitz';POOL=DECKS[DECK].spots;
-    st.alloc=Object.assign({},p.alloc);el('tanker-plan').value='custom';el('scenario-note').textContent=p.name+' - illustrative single-day scenario';
+    st.rankBy=p.objective||"effect";st.scenario=key;st.wing=2;st.play=0;st.tempo=environment?environment.tempo:(p.tempo||0);st.rng=p.range;st.targetPosture=p.posture;st.threat=p.threat;st.strike=p.strike;st.weapon=p.weapon;
+    st.tankerMode='organic';st.strikeOrbit=p.orbit;st.relayOrbit=500;st.tankerTactics=Object.assign({},p.tactics);DECK=environment?environment.deck:(p.deck||'nimitz');POOL=DECKS[DECK].spots;
+    st.alloc=Object.assign({},p.alloc);el('tanker-plan').value='custom';el('scenario-note').textContent=p.name+(p.days?' - illustrative '+p.days+'-day campaign':' - illustrative single-day scenario');
     syncMission();prevEff=null;applyModes();
   }
-  function straitObjectiveText(r){return st.scenario==='strait_defense'?'Strait objective: survivability '+fmt(r.survScore*100,1)+' / 100 (fuel support x mean survivability). ':'';}
+  function isStrait(){var p=SCENARIOS[st.scenario];return !!(p&&p.effectFloor);}
+  function straitObjectiveText(r){return isStrait()?'Strait objective: survivability '+fmt(r.objScore*100,1)+' / 100 (fuel support x mean survivability x effect floor '+fmt(r.effFloorFactor*100,0)+'%: effect '+fmt(r.effects,0)+' of '+fmt(r.effectFloor,0)+' needed to stop the invasion force). ':'';}
   el('scenario-objective').addEventListener('click',function(){st.rankBy='surv';syncMission();refresh();});
   function missionReadout(r){var c=organicCliff(st.alloc),comparison=evalWing(st.rng,st.alloc,{tankerMode:st.tankerMode==='organic'?'theater':'organic'});
     el('mission-ledger').innerHTML=straitObjectiveText(r)+'<b>Organic cliff: '+cliffLabel(c)+'</b> (peak '+fmt(c.peak,0)+')<br>Primary / fallback support: '+fmt(100*r.gas.primarySupport,0)+'% / '+fmt(100*r.gas.fallbackSupport,0)+'% &middot; strike rounds used '+fmt(r.primaryUsed,1)+' / '+fmt(r.primaryAvail,1)+'; fallback '+fmt(r.fallbackUsed,1)+' / '+r.fallbackAvail+
@@ -1194,7 +1312,7 @@ footer b{color:var(--ink-dim)}
     for(var i=0;i<text.length;i++)h=Math.imul(h^text.charCodeAt(i),16777619)>>>0;
     function random(){h=(Math.imul(h,1664525)+1013904223)>>>0;return h/4294967296;}
     function pick(a){return a[Math.floor(random()*a.length)];}
-    var key=pick(Object.keys(SCENARIOS)),p=SCENARIOS[key],a=Object.assign({},p.alloc);
+    var key=pick(Object.keys(SCENARIOS).filter(function(k){return !SCENARIOS[k].days;})),p=SCENARIOS[key],a=Object.assign({},p.alloc);
     var shift=pick([-4,-2,0,2,4]);
     if(shift>0){shift=Math.min(shift,a.f35c||0);a.f35c-=shift;a.fa18=(a.fa18||0)+shift;}
     else{shift=Math.min(-shift,a.fa18||0);a.fa18-=shift;a.f35c=(a.f35c||0)+shift;}
@@ -1215,12 +1333,12 @@ footer b{color:var(--ink-dim)}
 
   function watchExplanation(id){
     var q=watchState.input,r=evalWing(st.rng),a=st.alloc;
-    if(id==='scenarios')return SCENARIOS[q.scenario].name+': '+({war_at_sea:'Moving targets reward timely delivery before coordinates go stale.',deep_strike:'Hardened targets reward warhead effect, while long range stretches fuel and sortie budgets.',strait_defense:'This defense mission ranks by Survivability: fuel support times mean survivability. Raw effect remains visible because protection costs strike capacity.'})[q.scenario];
+    if(id==='scenarios')return SCENARIOS[q.scenario].name+': '+({war_at_sea:'Moving targets reward timely delivery before coordinates go stale.',deep_strike:'Hardened targets reward warhead effect, while long range stretches fuel and sortie budgets.',strait_defense:'This defense mission ranks by Survivability with an effect floor: fuel support times mean survivability, scaled down when the wing delivers less than the effect needed to stop the invasion. Raw effect remains visible because protection costs strike capacity.'})[q.scenario];
     if(id==='roster'){var tankers=Object.keys(a).filter(function(k){return CAT[k].role==='tanker';}).reduce(function(n,k){return n+a[k];},0);return tankers+' tanker spots support the wing instead of carrying strike aircraft. This mix has '+(a.fa18||0)+' Super Hornets and '+(a.f35c||0)+' F-35Cs to trade volume against survivability.';}
     if(id==='watch-loadout')return STRIKES[st.strike].name+' sets strike reach and warhead effect; '+WEAPONS[st.weapon].name+' sets the air-defense magazine. Both choices have finite rounds for this day.';
     if(id==='v3controls'){var p=resolveTankerTacticsByType(a,st.tankerTactics),count=function(k){return Object.values(p[k]).reduce(function(x,y){return x+y;},0);};return count('consolidation')/2+' relay pairs serve '+st.relayOrbit+' nm; '+count('strike')+' single strike tankers serve '+st.strikeOrbit+' nm. '+(count('consolidation')&&a.horn5?'A buddy relay can reach beyond the single buddy tanker limit of 212 nm.':count('recovery')+' recovery tankers protect returning aircraft; their fuel is not outbound strike gas.');}
     if(id==='deckwrap')return fmt(r.events,0)+' launch-and-recover cycles in this '+(st.tempo?'surge':'sustained')+' day on '+DECKS[DECK].name+'. '+(st.tempo?'Faster turns raise output, but crews cannot keep this pace indefinitely.':'Watch aircraft launch, recover and move back into position for another cycle.');
-    if(st.scenario==='strait_defense')return straitObjectiveText(r)+'Raw effect is '+fmt(r.effects,1)+'; protection and output are separate tradeoffs.';
+    if(isStrait())return straitObjectiveText(r)+'Raw effect is '+fmt(r.effects,1)+'; protection and output are separate tradeoffs.';
     return 'The day delivers an effect index of '+fmt(r.effects,1)+' with '+fmt(r.support*100,0)+'% fuel-demand coverage. '+watchTrade(r);
   }
   var watchReveal=0;
@@ -1275,9 +1393,9 @@ footer b{color:var(--ink-dim)}
   }
   function watchTempoComparison(){var saved=st.tempo;try{st.tempo=0;var sustained=evalWing(st.rng);st.tempo=1;var surge=evalWing(st.rng);return {sustained:sustained,surge:surge};}finally{st.tempo=saved;}}
   function watchDelta(pair){
-    function sorties(r){return r.strikeSorties+r.tankerSorties+r.capSorties+r.isrSorties;}
+    function sorties(r){return r.totalLaunches;}
     function delta(a,b){return b>0?((a>=b?'+':'')+fmt((a-b)/b*100,0)+'%'):fmt(a,1)+' vs 0';}
-    return 'SURGE: 12 cycles vs 8 sustained -- '+delta(sorties(pair.surge),sorties(pair.sustained))+' sorties, '+delta(pair.surge.effects,pair.sustained.effects)+' effect; crews and the deck can\'t hold it forever.';
+    return 'SURGE: '+fmt(pair.surge.events,0)+' cycles vs '+fmt(pair.sustained.events,0)+' sustained -- '+delta(sorties(pair.surge),sorties(pair.sustained))+' sorties, '+delta(pair.surge.effects,pair.sustained.effects)+' effect; crews and the deck can\'t hold it forever.';
   }
   function watchFly(q){st.play=1;applyModes();watchCaption('launch',st.tempo?'Surge! Faster deck cycling uses the existing surge model.':'Launch! Watch the flight deck cycle through the day.');watchHighlight('deckwrap');
     runDay(function(r){if(!watchState.active)return;var cliff=organicCliff(st.alloc),delta=st.tempo?watchDelta(watchTempoComparison()):watchTrade(r);
@@ -1308,7 +1426,7 @@ footer b{color:var(--ink-dim)}
   // Additive, behavior-neutral test export: a no-op global handle that lets an
   // out-of-browser regression harness drive the SHIPPED model (evalWing/objVal)
   // directly. Creates one window property; changes no model or DOM behavior.
-  if(typeof window!=="undefined"){window.__airbossTest={evalWing:evalWing,objVal:objVal,gasPerEffect:gasPerEffect,st:st,
+  if(typeof window!=="undefined"){window.__airbossTest={evalWing:evalWing,objVal:objVal,evalCampaign:evalCampaign,recoveryRisk:recoveryRisk,usedSpots:usedSpots,tempoSchedule:tempoSchedule,gasPerEffect:gasPerEffect,st:st,
     WEAPONS:WEAPONS,STRIKES:STRIKES,CAT:CAT,DECKS:DECKS,
     watchTempoComparison:watchTempoComparison,watchCycle:watchCycle,watchState:watchState,startWatch:startWatch,stopWatch:stopWatch,
     resolveTankerTacticsByType:resolveTankerTacticsByType,tankerLedger:tankerLedger,debitGas:debitGas,
@@ -1326,7 +1444,7 @@ footer b{color:var(--ink-dim)}
   var selector='button,select,input,a[href],summary',seq=0,active=null,touchArmed=null,blockClick=null,timer,openTimer,pending=null,scrollUntil=0,touchUntil=0;
   var bubble=document.createElement('div');bubble.id='control-help';bubble.setAttribute('role','tooltip');bubble.hidden=true;document.body.appendChild(bubble);
   var help={
-    'scenario-objective':'Defense prioritizes protecting the wing. Select the existing Survivability objective: fuel support times mean survivability, shown out of 100. Raw effect remains separate; Auto-Boss retains its minimum-effect filter.',
+    'scenario-objective':'Defense prioritizes protecting the wing, but a token force cannot stop an invasion. Select the Strait Survivability objective: fuel support times mean survivability times an effect floor (full credit only at 350 effect or more), shown out of 100. Raw effect remains separate.',
     'watch-surge':'Push the carrier: more cycles, faster turns -- for a while. Press again to return to Sustained. The current setup is kept.',
     'watch-start':'Watch a seeded scenario get set and played. Tap again to start. Deck and tempo queue for the next cycle; other input returns control.',
     'watch-stop':'Stop automatic play and keep the current wing. Try changing one choice yourself.',
@@ -1366,7 +1484,7 @@ footer b{color:var(--ink-dim)}
     if(d.o!=null)return 'Choose '+label+' operating tempo. Compare sustained output with a short surge. During Watch, this applies next cycle.';
     if(d.m)return 'Choose '+label+' for air defense. Compare magazine coverage as threat rises.';
     if(d.s)return 'Choose '+label+' strike weapons. Compare fast delivery, warhead size and finite rounds.';
-    if(d.r==='surv')return 'Rank by fuel support times mean survivability. Defense prioritizes wing protection; Auto-Boss still requires meaningful effect, so compare the raw effect too.';
+    if(d.r==='surv')return 'Rank by fuel support times mean survivability. In the Contested Strait an effect floor also applies; Auto-Boss still requires meaningful effect, so compare the raw effect too.';
     if(d.r)return 'Rank candidate wings by '+label+'. Try a minimum effect floor to avoid weak solutions.';
     if(n.classList.contains('lb-load'))return 'Load this candidate into Build Wing. Inspect its tanker plan and compare the result.';
     if(n.classList.contains('info'))return label+'. Open the aircraft notes before assigning deck spots.';

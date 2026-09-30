@@ -165,6 +165,7 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
     <section class="scene" data-ev="02">
       <div class="ev">EVENT <b>02</b> &middot; SPOT THE DECK</div>
       <h2 class="sc-h">Build your mix.</h2>
+      <p class="sc-p" style="font-size:12px"><b>New in v3.1:</b> the illustrative <b>CCX-1 Carrier CCA</b> &mdash; four fit in three deck spots, stealthy and fast-turning, but carrier landing gear and approach margins cap its clean radius (420 nm), so it needs tanker gas to go deep, and a jet that brings its weapons back lands heavy and bolters more unless a recovery tanker is overhead.</p>
       <p class="sc-p">Allocate spots across strike, tankers, CAP escorts, and ISR/EW. Stealth strike-fighters bring long unrefueled legs and deep survivability; workhorses turn fast on the catapults with heavy bomb loads; uncrewed CCAs offer low-cost tempo. Every airframe trades <span class="k">payload, unrefueled combat radius, survivability, and deck turn time</span>.</p>
       <div class="demo">
         <div style="margin-bottom:10px">
@@ -281,8 +282,8 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
     <!-- 07: SCENARIOS -->
     <section class="scene" data-ev="07">
       <div class="ev">EVENT <b>07</b> &middot; OPERATIONAL SCENARIOS</div>
-      <h2 class="sc-h">Three operational tests: sea, inland &amp; strait.</h2>
-      <p class="sc-p">Three curated missions test your air wing mix, weapon selection, and tanker doctrine:</p>
+      <h2 class="sc-h">Four operational tests: sea, inland, strait &amp; a 3-day campaign.</h2>
+      <p class="sc-p">Four curated missions test your air wing mix, weapon selection, and tanker doctrine:</p>
       <div class="sc-grid">
         <div class="sc-card">
           <div class="sc-card-h">War at Sea <span class="sc-card-tag">150 nm Orbit</span></div>
@@ -299,8 +300,14 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
         <div class="sc-card">
           <div class="sc-card-h">Contested Strait <span class="sc-card-tag">500 nm &middot; Dense Opp</span></div>
           <div class="sc-row q"><b>Question:</b> Can you defend the fleet against heavy peer air opposition while delivering strike effect across a 500 nm strait?</div>
-          <div class="sc-row hint"><b>Objective:</b> Survivability prioritizes protecting the wing: fuel support &times; mean survivability, shown out of 100. Auto-Boss retains its minimum-effect filter; this is not a new effect formula.</div>
-          <div class="sc-row trap"><b>Trade:</b> The balanced preset scores 77.0 versus 57.5 for the specified strike-heavy wing on this protection objective, but raw effect is 508.5 versus 865.5. More protection wins this objective; it does not maximize raw output. Illustrative, not for planning.</div>
+          <div class="sc-row hint"><b>Objective:</b> Survivability with an effect floor: fuel support &times; mean survivability &times; min(1, effect / 350), shown out of 100. Stopping the invasion force takes about 350 effect. Deliver that and your score is simply how well you protected the wing; fall short and the score shrinks in proportion (half the effect, half the score). A wing that keeps everyone safe but cannot stop the landing has not won.</div>
+          <div class="sc-row trap"><b>Trade:</b> The balanced preset scores 78.5 versus 57.8 for the specified strike-heavy wing, but raw effect is 458.4 versus 826.9. Wings that hide behind escorts lose: a minimalist strike wing (12 F-35C, 2 F/A-18, 2 MQ-25, 20 CAP, 8 ISR) protects better (93.4) but delivers only 224 effect and scores 59.9; a wing just short of 200 effect scores 52.8; a token escort-heavy wing (8 F-35C, 6 MQ-25, 22 CAP, 8 ISR) delivers 109 effect and scores 29.1. The floor guarantees the balanced preset beats any wing below about 275 effect; above that it is not a universal ranking proof. Illustrative, not for planning.</div>
+        </div>
+        <div class="sc-card">
+          <div class="sc-card-h">Contested Strait: 3 Days <span class="sc-card-tag">Ford &middot; Surge &middot; 500 nm</span></div>
+          <div class="sc-row q"><b>Question:</b> Can the wing keep up the fight for three days, not just one?</div>
+          <div class="sc-row hint"><b>Lesson:</b> The deck is limited per recovery window; the air wing is limited by maintenance, crews and ordnance over time. Day 1 surges to about 171 launches; a day above 130% of the 120/day routine target costs the next day +2% turn time, and a two-day average above it costs 5% availability.</div>
+          <div class="sc-row trap"><b>Trap:</b> The 120-round prompt-strike magazine is spent on day 1 and the fallback bombs on day 2, so day 3 launches only support sorties: about 115 sorties/day on average, and strike jets sit on deck, held for weapons. Magazines, not the deck, end this campaign. Illustrative, not for planning.</div>
         </div>
       </div>
     </section>
@@ -318,6 +325,9 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
       <div class="ev">EVENT <b>09</b> &middot; READ THE DAY</div>
       <h2 class="sc-h">Read the day: the tally &amp; the ball.</h2>
       <p class="sc-p">Sorties generated per event, per aircraft type &mdash; and the day's <span class="k">Effect Index</span>. Anchored to realistic carrier surge/sustained rates (~1.5&ndash;2.6 sorties/jet/day), not fantasy.</p>
+      <p class="sc-p" style="font-size:12px"><b>v3.1 &mdash; mission-governed launch:</b> a strike jet launches only when its own fuel plus tanker gas it can actually receive, a weapon, and a deck recovery slot support the whole sortie. The rest are <b>held</b> on deck and the readout names the binding resource (weapons, fuel or deck). An unsupplied jet is never launched for zero effect.</p>
+      <p class="sc-p" style="font-size:12px"><b>No daily wall:</b> recoveries are bounded per event &mdash; about 16 traps in a routine 12-minute window, 29 in a surged 22-minute window (45 s per trap) &mdash; times the events flown: 8 events sustained, 10 surged. A single surge day can pass 140 sorties. The routine rate is a target averaged over days, shown in the 3-day campaign.</p>
+      <p class="sc-p" style="font-size:12px"><b>Overhead:</b> even in combat, functional check flights (about 3% of scheduled sorties) and aviator qual flights (about 2%) are flown by crewed strike fighters. They use deck slots and airframes and deliver zero effect.</p>
       <div class="demo" style="display:flex;align-items:flex-end;gap:26px">
         <div style="display:flex;align-items:center;gap:18px">
           <div class="lens"><div class="datum"></div><div class="ball"></div></div>
@@ -501,11 +511,7 @@ canvas{width:100%;height:auto;display:block;border:1px solid var(--rule);border-
   go(0);
 })();
 </script>
-
-<!-- Cloudflare Web Analytics -->
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d6bb3b90f0bd447a84ced9c7d864c0f2"}'></script>
-<!-- End Cloudflare Web Analytics -->
 </body>
 </html>
 
-<script>if(location.protocol === "file:"){document.querySelectorAll('a[href="./"]').forEach(function(a){a.href="air_boss_public.html";});}</script>
+<script>if(location.protocol === "file:"){document.querySelectorAll('a[href="./"]').forEach(function(a){a.href="air-boss-offline.html";});}</script>
