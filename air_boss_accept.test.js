@@ -531,4 +531,240 @@ ok(srch.length>0&&srch.every(function(t){return near(t.spots,T.usedSpots(t.alloc
 v31();T.st.wing=2;var cc4=T.evalWing(400,{ccx:16,mq25:4}),cc7=T.evalWing(700,{ccx:16});
 ok(cc4.strikeSorties>0&&cc7.strikeSorties===0&&cc7.binding==='fuel','S6 CCX-1 organic reach limited: deep without tanker gas it is held');
 
+
+// ---- v3.2 Logistics Pipeline: normative tests L1-L12 (AIR_BOSS_V32_LOGISTICS_SPEC.md section 11) ----
+// Every value is produced by the SHIPPED logistics solver (window.__airbossTest.logistics); nothing is re-implemented here.
+// "+/- 1%" and "approximately" are both checked at +/- 1% of the spec value; integers are checked exactly.
+var L=T.logistics;
+function pct1(a,b){return Number.isFinite(a)&&Math.abs(a-b)<=Math.abs(b)*0.01;}
+function lgroup(name,fn){try{fn();}catch(e){ok(false,name+' (threw: '+e.message+')');}}
+function lreset(){L.setState(L.DEFAULT_STATE);}
+lgroup('L1 normal tempo 115/day',function(){lreset();
+  var b=L.dailyBill(115),d=L.daysOfSupply(b),p=L.pipeline(b,750);
+  ok(pct1(b.fuelGalDay,143750),'L1 fuel 143,750 gal/day +/- 1% ('+r3(b.fuelGalDay)+')');
+  ok(pct1(b.ordTonsDay,85.6),'L1 ordnance 85.6 short tons/day +/- 1% ('+r3(b.ordTonsDay)+')');
+  ok(b.alloc.overhead===6&&b.alloc.fcf===3&&b.alloc.cq===3,'L1 overhead 6 sorties/day = 3 FCF + 3 CQ');
+  ok(pct1(d.fuel,15.7)&&pct1(d.mag,19.6),'L1 fuel DOS ~15.7 days, magazine DOS ~19.6 days ('+r3(d.fuel)+' / '+r3(d.mag)+')');
+  ok(near(p.cycleDays,6.97,0.005),'L1 shuttle cycle 6.97 days at 750 nm ('+r3(p.cycleDays)+')');
+  ok(p.oilers===1&&p.ammo===1&&p.total===2,'L1 pipeline 1 oiler + 1 ammunition ship = 2 ships');
+});
+lgroup('L2 surge tempo 180/day',function(){lreset();
+  var b=L.dailyBill(180),d=L.daysOfSupply(b),p=L.pipeline(b,750);
+  ok(pct1(b.fuelGalDay,225000),'L2 fuel 225,000 gal/day +/- 1%');
+  ok(pct1(b.ordTonsDay,141.5),'L2 ordnance 141.5 short tons/day +/- 1% ('+r3(b.ordTonsDay)+')');
+  ok(pct1(d.fuel,10.0)&&pct1(d.mag,11.9),'L2 fuel DOS ~10.0 days, magazine DOS ~11.9 days ('+r3(d.fuel)+' / '+r3(d.mag)+')');
+  ok(pct1(p.cargoDaysFuel,11.1)&&pct1(p.cargoDaysMag,10.6),'L2 one ship cargo lasts: fuel ~11.1 days, magazine ~10.6 days ('+r3(p.cargoDaysFuel)+' / '+r3(p.cargoDaysMag)+')');
+  ok(near(p.cadenceFuel,10.0,1e-9)&&p.cadenceFuel===d.fuel&&near(p.cadenceMag,1500/b.ordTonsDay,1e-9)&&pct1(p.cadenceMag,10.60),'L2 reserve-safe cadence: fuel 10.00 days (usable stores bind, not the 11.1-day cargo), magazine 10.60 days ('+r3(p.cadenceFuel)+' / '+r3(p.cadenceMag)+')');
+  ok(p.oilers===1&&p.ammo===1&&p.total===2,'L2 pipeline 1 oiler + 1 ammunition ship = 2 ships');
+});
+lgroup('L3 fleet doubling at 1,800 nm',function(){lreset();
+  var b=L.dailyBill(180),p=L.pipeline(b,1800);
+  ok(near(p.cycleDays,3.5+1800/216,1e-9)&&near(p.cycleDays,11.83,0.005),'L3 cycle 3.5 + 1,800/216 = 11.83 days');
+  ok(p.cycleDays>p.cadenceFuel&&p.cycleDays>p.cadenceMag,'L3 cycle exceeds both replenishment cadences');
+  ok(p.oilers===2&&p.ammo===2&&p.total===4,'L3 pipeline doubles: 2 oilers + 2 ammunition ships = 4 ships');
+});
+lgroup('L4 overhead inclusion',function(){lreset();
+  var b=L.dailyBill(115);
+  ok(b.alloc.mission===109&&b.alloc.overhead===6&&b.alloc.mission+b.alloc.overhead===115,'L4 115/day = 109 mission + 6 overhead sorties');
+  ok(near(b.overheadFuelGal,6*0.75*7000/6.8,1e-9)&&Math.round(b.overheadFuelGal)===4632,'L4 overhead fuel 6 x 0.75 hr x 7,000 lb/hr / 6.8 = 4,632 gal');
+  ok(near(b.missionFuelGal+b.overheadFuelGal,b.fuelGalDay,1e-9)&&b.overheadFuelGal<b.fuelGalDay,'L4 overhead fuel is debited inside the daily fuel bill');
+  ok(b.overheadWeapons===0,'L4 overhead weapons = 0 (FCF and CQ carry no ordnance)');
+});
+lgroup('L5 inactive wing guard',function(){lreset();
+  var b=L.dailyBill(0),p=L.pipeline(b,750),d=L.daysOfSupply(b);
+  ok(b.fuelGalDay===0&&b.ordTonsDay===0&&b.alloc.overhead===0&&p.total===0,'L5 zero tempo: fuel 0, ordnance 0, overhead 0, ships 0');
+  ok(!Number.isNaN(d.fuel)&&!Number.isNaN(d.mag)&&!Number.isNaN(p.cadenceFuel)&&!Number.isNaN(p.cadenceMag),'L5 zero tempo: no NaN in supply or cadence');
+  var s=L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:0})),html=L.cardsHTML(s);
+  ok(!/NaN|Infinity|undefined/.test(html)&&html.length>0,'L5 zero tempo: cards render with no NaN, Infinity or undefined');
+});
+lgroup('L6 upstream isolation',function(){
+  v31();T.applyScenario('strait_defense');
+  var snap=function(){return JSON.stringify({st:T.st,deck:T.getDeck(),pool:T.getPool(),wing:T.evalWing(500),camp:T.evalCampaign(500,T.st.alloc,{events:8}),
+    scen:T.SCENARIOS,cat:T.CAT,weap:T.WEAPONS,decks:T.DECKS,obj:T.objVal(T.evalWing(500),44)});};
+  var before=snap(),runs=0;
+  [0,50,60,115,180,240].forEach(function(S){[150,200,500,800].forEach(function(R){[200,750,1800,2500].forEach(function(D){
+    ['salvo','sls'].forEach(function(doc){['standard','collaborative'].forEach(function(w){['delegated','shipboard'].forEach(function(m){
+      L.setState({tempo:S,radius:R,transit:D,doctrine:doc,wing:w,mumt:m});L.cardsHTML(L.solve());runs++;});});});});});});
+  L.requestPosture('beast');L.overnightReset(12);L.render();L.setView('logistics');L.setView('deck');
+  ok(runs===768&&snap()===before,'L6 768 logistics solves, posture reset, render and view switch leave v3.1 state, deck, Strait score and campaign unchanged');
+  lreset();
+  ok(failures.filter(function(f){return !/^L\d+ /.test(f);}).length===0,'L6 every v3.1 regression check in this suite passes');
+});
+lgroup('L7 weapon demand',function(){
+  var w=L.weaponsRequired({targets:50,hits:1,pk:0.80,pSurv:0.95,pValid:0.90});
+  ok(near(w.divisor,0.684,1e-12),'L7 chain divisor 0.80 x 0.95 x 0.90 = 0.684');
+  ok(w.weapons===74,'L7 weapons required = ceil(50 / 0.684) = 74');
+  ok(near(w.ratio,1.48,1e-12),'L7 weapon-to-effect ratio 74 / 50 = 1.48');
+});
+lgroup('L8 salvo vs shoot-look-shoot',function(){
+  var o={targets:50,pHit:0.72,perSortie:2,fuelLbPerSortie:8500},sv=L.strikeDoctrine('salvo',o),sl=L.strikeDoctrine('sls',o);
+  ok(sv.weapons===100&&sv.kills===46&&sv.sorties===50&&sv.reattackSorties===0,'L8 salvo: 100 weapons, 46 kills, 50 sorties, 0 re-attack');
+  ok(near(sv.fuelPerTarget,9239,1),'L8 salvo: 9,239 lb JP-5 per target ('+r3(sv.fuelPerTarget)+')');
+  var w1=sl.waves[0],w2=sl.waves[1];
+  ok(w1.weapons===50&&w1.kills===36&&w1.targets-w1.kills===14,'L8 shoot-look-shoot wave 1: 50 bombs, 36 kills, 14 survive');
+  ok(w2&&w2.sorties===7&&w2.weapons===14&&near(w2.fuelGal,8750,1e-9)&&sl.reattackSorties===7,'L8 re-attack wave 2: ceil(14 / 2) = 7 sorties, 14 weapons, +8,750 gal');
+  ok(sl.kills===46&&sl.waves.length===2&&sl.weapons===64&&sl.sorties===32,'L8 shoot-look-shoot totals: 46 kills (92%), 64 weapons, 32 sorties');
+  ok(near(1-sl.weapons/sv.weapons,0.36,1e-12),'L8 shoot-look-shoot saves 36% of weapons vs salvo');
+});
+lgroup('L9 sortie sag with distance',function(){
+  var g=L.sortieSag(500,{hours:14,spot:15}),base=L.sortieSag(200,{hours:14,spot:15});
+  ok(near(g.tSortie,2*500/450+0.50+0.35,1e-12)&&near(g.tSortie,3.07,0.005),'L9 sortie duration 2 x 500/450 + 0.50 + 0.35 = 3.07 hr');
+  ok(g.tEvent===2.75,'L9 scheduled cyclic event stretches to 2.75 hr');
+  ok(g.events===5&&g.ceiling===75,'L9 floor(14.0 / 2.75) = 5 events; ceiling 5 x 15 = 75 sorties/day');
+  ok(base.ceiling===120&&near(1-g.ceiling/base.ceiling,0.375,1e-12),'L9 a 37.5% reduction from 120/day at 200 nm');
+});
+lgroup('L10 day-level posture',function(){lreset();
+  var s=L.postureWave('stealth',50),b=L.postureWave('beast',50);
+  ok(s.bombs===100&&b.bombs===300,'L10 50-sortie wave: stealth 100 bombs, beast 300 bombs (3x)');
+  ok(s.burnLbHr===7000&&near(b.burnLbHr,8400,1e-9)&&near(b.burnLbHr/s.burnLbHr,1.20,1e-12),'L10 beast fuel burn +20%: 7,000 -> 8,400 lb/hr');
+  ok(s.pSurv===0.95&&b.pSurv===0.78,'L10 penetration survivability 0.95 -> 0.78');
+  var s60=L.postureWave('stealth',30),b60=L.postureWave('beast',10);
+  ok(s60.bombs===60&&b60.bombs===60&&near(s60.expectedLosses,1.5,1e-9)&&near(b60.expectedLosses,2.2,1e-9),'L10 60 bombs: 30 vs 10 sorties, expected losses 1.5 vs 2.2 jets');
+  var r=L.requestPosture('beast');
+  ok(L.getState().posture==='stealth'&&L.getState().pendingPosture==='beast'&&r.applied===false&&r.leadHours===12,'L10 posture request mid-day is locked: still stealth, beast pending 12 hr');
+  var short=L.overnightReset(6);
+  ok(!short.applied&&L.getState().posture==='stealth','L10 a reset shorter than 12 hr does not reconfigure');
+  var full=L.overnightReset(12);
+  ok(full.applied&&L.getState().posture==='beast'&&L.getState().pendingPosture===null,'L10 12-hr overnight deck reset applies beast mode');
+  lreset();
+});
+lgroup('L11 aircrew limits',function(){
+  var c=L.aircrew({fighters:44,crewRatio:1.48,medDown:0.05,tSortie:2.5,hrs7:30,hrs30:65});
+  ok(c.pilots===65&&c.ready===62&&c.medDowned===3,'L11 44 x 1.48 = 65 pilots; 5% med-down -> 62 ready');
+  ok(c.perWeek===12&&c.perMonth===26,'L11 floor(30.0 / 2.50) = 12 sorties/week; floor(65.0 / 2.50) = 26 sorties/month');
+  ok(near(c.ceil7,106.3,0.05)&&near(c.ceil30,53.7,0.05),'L11 ceilings: 62 x 12 / 7 = 106.3/day; 62 x 26 / 30 = 53.7/day');
+  ok(c.ceil7<180&&c.ceil30<c.ceil7,'L11 aircrew limits bind well before a 180-sortie surge deck');
+});
+lgroup('L12 CCA operators and MUMT handoff',function(){lreset();
+  // Spec 3.7.8 sec 6.5 / L12: consoles = ceil(N_cca / R_ctrl) with an airborne quarterback (1:1 without);
+  // on watch = ceil(consoles x 1.5) integer watchstanders; 0 charged en route; assigned = on watch x shifts (8-hr, 1..3).
+  // R_ctrl is player-tunable in [1, 8]; its default is ONE named constant (placeholder value 4).
+  ok(L.CCA_CONTROL_RATIO_DEFAULT===4&&L.C.ctrlRatio===4&&L.DEFAULT_STATE.ctrlRatio===4&&L.getState().ctrlRatio===4,'L12 default control ratio R_ctrl = 4 CCAs per operator, one named constant (placeholder)');
+  var a=L.ccaOperators(12,'delegated',3),bb=L.ccaOperators(12,'shipboard',3);
+  ok(a.ratio===4&&a.consoles===3&&a.onWatch===5&&a.enRoute===0&&a.shifts===3&&a.operators===15,'L12 continuous 24-hr fixture, handoff at default R_ctrl 4: ceil(12/4) = 3 consoles, ceil(3 x 1.5) = 5 on watch, 0 en route, 5 x 3 shifts = 15 assigned');
+  ok(bb.consoles===12&&bb.onWatch===18&&bb.operators===54,'L12 continuous 24-hr fixture, no handoff (1:1): 12 consoles, 18 on watch, 18 x 3 = 54 assigned');
+  var FIX={2:[6,9,27],4:[3,5,15],8:[2,3,9]},fixOk=true,bOk=true;
+  Object.keys(FIX).forEach(function(R){var x=L.ccaOperators(12,'delegated',3,+R),y=L.ccaOperators(12,'shipboard',3,+R),e=FIX[R];
+    if(!(x.consoles===e[0]&&x.onWatch===e[1]&&x.operators===e[2]&&x.enRoute===0&&x.ratio===+R))fixOk=false;
+    if(!(y.consoles===12&&y.onWatch===18&&y.operators===54))bOk=false;});
+  ok(fixOk,'L12 24-hr fixture at R_ctrl 2 / 4 / 8: 6 / 3 / 2 consoles, 9 / 5 / 3 on watch, 27 / 15 / 9 assigned');
+  ok(bOk,'L12 no handoff is 1:1 at every R_ctrl: 12 consoles, 18 on watch, 54 assigned');
+  var w115=L.flightOpsWindow(115,200),w180=L.flightOpsWindow(180,200),w240=L.flightOpsWindow(240,200),w60=L.flightOpsWindow(60,200);
+  ok(w115.hours===14&&w115.shifts===2&&w180.hours===18&&w180.shifts===3&&w240.hours===24&&w240.shifts===3&&w60.hours===8&&w60.shifts===1,
+    'L12 flight-ops window -> shifts = min(3, max(1, ceil(W / 8))): 115/day 14 hr -> 2; 180/day 18 hr -> 3; 240/day 24 hr -> 3; 60/day 8 hr -> 1');
+  function ops(S,m,R){var o={tempo:S,radius:200,wing:'collaborative',mumt:m};if(R!=null)o.ctrlRatio=R;return L.solve(Object.assign({},L.DEFAULT_STATE,o)).cca;}
+  var n1=ops(115,'delegated'),n2=ops(115,'shipboard'),s1=ops(180,'delegated'),s2=ops(180,'shipboard'),f1=ops(60,'delegated'),f2=ops(60,'shipboard');
+  ok(n1.operators===10&&n1.onWatch===5&&n1.shifts===2&&n2.operators===36&&n2.onWatch===18,'L12 normal 115/day (14-hr window, 2 shifts), R_ctrl 4: handoff 10 assigned (5 on watch) vs no handoff 36 (18 on watch)');
+  ok(s1.operators===15&&s1.onWatch===5&&s1.shifts===3&&s2.operators===54&&s2.onWatch===18,'L12 surge 180/day (18-hr window, 3 shifts), R_ctrl 4: handoff 15 assigned (5 on watch) vs no handoff 54 (18 on watch)');
+  ok(f1.operators===5&&f1.onWatch===5&&f1.shifts===1&&f2.operators===18,'L12 short day 60/day (8-hr window, 1 shift), R_ctrl 4: handoff 5 assigned (the 5 floor) vs no handoff 18');
+  var TT={2:[18,27,9],8:[6,9,3]},tOk=true;Object.keys(TT).forEach(function(R){var e=TT[R];
+    if(!(ops(115,'delegated',+R).operators===e[0]&&ops(180,'delegated',+R).operators===e[1]&&ops(60,'delegated',+R).operators===e[2]&&ops(115,'shipboard',+R).operators===36&&ops(180,'shipboard',+R).operators===54&&ops(60,'shipboard',+R).operators===18))tOk=false;});
+  ok(tOk,'L12 tempo table at R_ctrl 2: 18 / 27 / 9 assigned (9 on watch); at R_ctrl 8: 6 / 9 / 3 (3 on watch); no handoff 36 / 54 / 18 at both');
+  var inRange=true,mb=true;[50,60,61,90,115,120,121,150,180,200,201,240].forEach(function(S){[150,200,350,500,800].forEach(function(R){[1,2,3,4,5,6,7,8].forEach(function(K){
+    var A=ops(S,'delegated',K),B=ops(S,'shipboard',K),w=Math.ceil(Math.ceil(12/K)*1.5);
+    if(!(A.onWatch===w&&Number.isInteger(A.onWatch)&&A.operators===w*A.shifts&&A.shifts>=1&&A.shifts<=3&&A.enRoute===0&&A.operators<=B.operators))inRange=false;
+    if(!(B.onWatch===18&&B.operators===18*B.shifts&&B.shifts===A.shifts))mb=false;if(K===1&&A.operators!==B.operators)inRange=false;});});});
+  ok(inRange&&mb,'L12 the operator bill is computed: handoff on watch = ceil(ceil(12 / R_ctrl) x 1.5), an integer, x shifts, never above no handoff (equal at 1:1); no handoff fixed 18 on watch, at every tempo, radius and R_ctrl 1..8');
+  var cl=L.ccaOperators(12,'delegated',3,100),c0=L.ccaOperators(12,'delegated',3,0.5),cn=L.ccaOperators(12,'delegated',3,NaN);
+  ok(cl.ratio===8&&cl.consoles===2&&c0.ratio===1&&c0.consoles===12&&cn.ratio===4&&cn.operators===15,'L12 R_ctrl is held to its [1, 8] range; a non-number falls back to the default 4');
+  var h=L.cardsHTML(L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:115,wing:'collaborative',mumt:'delegated'})));
+  ok(h.indexOf('10 assigned (5 on watch, 2 shifts)')>=0&&h.indexOf('0 en route')>=0&&h.indexOf('1 operator per 4 CCAs')>=0&&h.indexOf('[teaching assumption]')>=0,'L12 Card F shows the computed bill at default: 10 assigned (5 on watch, 2 shifts), 0 en route, 1 operator per 4 CCAs [teaching assumption]');
+  var h2=L.cardsHTML(L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:115,wing:'collaborative',mumt:'delegated',ctrlRatio:2}))),h8=L.cardsHTML(L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:115,wing:'collaborative',mumt:'delegated',ctrlRatio:8})));
+  ok(h2.indexOf('18 assigned (9 on watch, 2 shifts)')>=0&&h8.indexOf('6 assigned (3 on watch, 2 shifts)')>=0,'L12 Card F at R_ctrl 2: 18 assigned (9 on watch, 2 shifts); at R_ctrl 8: 6 assigned (3 on watch, 2 shifts)');
+  var zOk=true;[1,2,4,8].forEach(function(K){['delegated','shipboard'].forEach(function(m){var z=L.ccaOperators(0,m,3,K);if(z.consoles!==0||z.onWatch!==0||z.operators!==0)zOk=false;});
+    var sw=L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:115,wing:'standard',ctrlRatio:K})).cca;if(sw.operators!==0||sw.onWatch!==0)zOk=false;});
+  ok(zOk,'L12 no CCAs, no consoles, no one on watch and no console operators, in both modes at every R_ctrl');
+  var sv=JSON.stringify(T.st);L.setState({ctrlRatio:8});var g8=L.solve();L.setState({ctrlRatio:2});var g2=L.solve();lreset();
+  ok(g8.state.ctrlRatio===8&&g2.state.ctrlRatio===2&&L.getState().ctrlRatio===4&&JSON.stringify(T.st)===sv,'L12 R_ctrl is logistics state: set, solved, reset to the default, flight-deck state untouched');
+  lreset();
+});
+// ---- v3.2 round 2 (spec 3.7.5): numeric reconciliation, reserve-safe pipeline, horizon-governed headline, posture scoping ----
+lgroup('L1 overhead and weapon reconciliation',function(){lreset();
+  var b=L.dailyBill(115),a=b.alloc;
+  ok(b.fuelGalDay===143750&&Math.round(b.missionFuelGal)===139118&&Math.round(b.overheadFuelGal)===4632,'L1 overhead inside the bill: 139,118 gal mission + 4,632 gal overhead = 143,750 gal (not added on top)');
+  ok(Math.round(a.strike*L.C.strikeWpnPerSortie)===168&&Math.round(a.cap*L.C.capWpnPerSortie)===14&&Math.round(b.weaponsDay)===182&&pct1(b.weaponsWeek,1274),'L1 weapons: 70 x 2.4 = 168 strike + 16 x 0.85 = 14 AAM = 182/day; ~1,274/week ('+r3(b.weaponsWeek)+')');
+  var h=L.cardsHTML(L.solve(Object.assign({},L.DEFAULT_STATE)));
+  ok(h.indexOf('182 weapons/day')>=0&&h.indexOf(T.fmt(Math.round(b.weaponsWeek),0)+' weapons/week')>=0,'L1 Card A shows weapons per day and per week');
+});
+lgroup('L2 surge and max-effort reconciliation',function(){lreset();
+  var b=L.dailyBill(180),m=L.dailyBill(240),dm=L.daysOfSupply(m);
+  ok(Math.round(b.weaponsDay)===299&&pct1(b.weaponsWeek,2092),'L2 surge weapons: 278.4 strike + 20.4 AAM = ~299/day; ~2,092/week');
+  ok(pct1(m.ordTonsDay,195.4)&&pct1(dm.mag,8.6)&&pct1(dm.fuel,7.5)&&dm.binding==='fuel','L2 max effort 240/day: 195.4 short tons/day, magazine DOS ~8.6 days, fuel DOS 7.5 days binds ('+r3(m.ordTonsDay)+' / '+r3(dm.mag)+')');
+  ok(L.sortieSag(750,{hours:14,spot:15}).ceiling===60,'L2 deep standoff 750 nm: 4 events x 15 = 60 sorties/day');
+});
+lgroup('L3 reserve-safe pipeline',function(){lreset();
+  var b=L.dailyBill(180),rows=[[300,1,1],[750,1,1],[1200,1,1],[1500,2,1],[1800,2,2],[2400,2,2]],okRows=true;
+  rows.forEach(function(r){var p=L.pipeline(b,r[0]);if(!(p.oilers===r[1]&&p.ammo===r[2]&&p.total===r[1]+r[2]&&near(p.cycleDays,3.5+r[0]/216,1e-9)))okRows=false;});
+  ok(okRows,'L3 reserve-safe matrix at 180/day: 300 / 750 / 1,200 nm 1 + 1; 1,500 nm 2 + 1 = 3; 1,800 / 2,400 nm 2 + 2 = 4');
+  var p15=L.pipeline(b,1500),d15=L.daysOfSupply(b);
+  ok(near(p15.cycleDays,10.444,0.0005)&&p15.cycleDays>d15.fuel&&p15.oilers===2&&p15.cadenceFuel<=d15.fuel&&p15.arrivalFuel<=d15.fuel,'L3 surge at 1,500 nm: cycle 10.444 d exceeds 10.00 d usable fuel -> 2 oilers, never 1; cadence and staggered arrival within usable stores');
+  var s=L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:175,radius:200,transit:1700})),gap=s.pipe.cycleDays-L.C.tUnrep;
+  ok(near(gap,10.370370,1e-5)&&near(s.dos.fuel,10.285714,1e-5)&&gap>s.dos.fuel&&s.pipe.oilers===2&&s.pipe.arrivalFuel<=s.dos.fuel,'L3 transfer-window control 175/day at 1,700 nm: one oiler leaves a 10.370 d no-transfer gap > 10.286 d usable -> 2 staggered oilers');
+  var e1=L.pipeline(b,1404),e2=L.pipeline(b,1405);
+  ok(e1.cycleDays===10&&e1.oilers===1&&e2.oilers===2,'L3 equality boundary at 180/day: 1,404 nm cycle = usable endurance = 10.00 d -> 1 oiler; 1,405 nm -> 2');
+  var c=L.pipeline(b,300);ok(c.oilers===1&&c.ammo===1&&c.cadenceFuel>=c.cycleDays,'L3 short-transit positive control 180/day at 300 nm: 1 oiler + 1 ammunition ship');
+  var safe=true,n=0;[0,60,115,175,180,200,240].forEach(function(S){var bb=L.dailyBill(S),dd=L.daysOfSupply(bb);for(var D=200;D<=2500;D+=50){var p=L.pipeline(bb,D);n++;
+    if(S===0){if(p.total!==0)safe=false;continue;}
+    if(!(p.cadenceFuel<=dd.fuel+1e-9&&p.cadenceMag<=dd.mag+1e-9&&p.arrivalFuel<=p.cadenceFuel+1e-9&&p.arrivalMag<=p.cadenceMag+1e-9&&p.cadenceFuel<=p.cargoDaysFuel+1e-9&&p.cadenceMag<=p.cargoDaysMag+1e-9))safe=false;}});
+  ok(safe&&n===329,'L3 '+n+' tempo x transit cases: every recommended cadence and staggered arrival is within usable stores and one ship\'s cargo');
+  var h=L.cardsHTML(L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:180,transit:1500})));
+  ok(h.indexOf('1 Oiler every 10.0 days')>=0&&h.indexOf('2 Fleet Oilers + 1 Ammunition Ship')>=0&&h.indexOf('11.1 days')>=0,'L3 Card D shows the reserve-safe cadence with the ship count (1,500 nm surge: 1 Oiler every 10.0 days; 2 Fleet Oilers + 1 Ammunition Ship)');
+});
+lgroup('L10 posture state and vignette scope',function(){lreset();
+  ok(/Current Posture: Stealth Ingress/.test(L.postureStatus())&&/Pending Posture: none/.test(L.postureStatus()),'L10 status shows Current Posture and no pending change');
+  L.requestPosture('beast');
+  ok(/Current Posture: Stealth Ingress/.test(L.postureStatus())&&/Pending Posture: Beast Mode/.test(L.postureStatus())&&/locked until the 12-hour overnight deck reset/.test(L.postureStatus()),'L10 mid-day request: Current Posture Stealth Ingress, Pending Posture Beast Mode, locked until the 12-hour overnight reset');
+  lreset();
+  var a=L.solve(Object.assign({},L.DEFAULT_STATE,{posture:'stealth'})),b=L.solve(Object.assign({},L.DEFAULT_STATE,{posture:'beast'}));
+  ok(a.bill.fuelGalDay===143750&&b.bill.fuelGalDay===143750&&a.effects.pSurv>b.effects.pSurv,'L10 posture is scoped to the Card E vignette: the 143,750 gal/day fleet bill is identical across postures');
+  var ha=L.cardsHTML(a),hb=L.cardsHTML(b);
+  ok(ha.indexOf('vignette')>=0&&ha.indexOf('apart from the daily fleet bill')>=0,'L10 Card E is labelled a strike vignette, scoped apart from the daily fleet bill');
+  ok(ha.indexOf('60-bomb strike task')>=0&&ha.indexOf('30 sorties')>=0&&ha.indexOf('1.5 jets lost')>=0&&hb.indexOf('10 sorties')>=0&&hb.indexOf('2.2 jets lost')>=0,'L10 Card E fixed 60-bomb task: stealth 30 sorties / 1.5 jets lost; beast 10 sorties / 2.2 jets lost');
+});
+lgroup('L11 horizon-governed headline',function(){lreset();
+  var c=L.aircrew({tSortie:1.74});
+  ok(c.perWeek===17&&c.perMonth===37&&near(c.ceil7,150.6,0.05)&&near(c.ceil30,76.5,0.05)&&c.ceilDay===186,'L11 ceilings at 1.74 hr: daily 62 x 3 = 186; 7-day 62 x 17 / 7 = 150.6; 30-day 62 x 37 / 30 = 76.5');
+  var s30=L.solve(Object.assign({},L.DEFAULT_STATE,{horizon:'30'})),s7=L.solve(Object.assign({},L.DEFAULT_STATE,{horizon:'7'}));
+  ok(L.DEFAULT_STATE.horizon==='30','L11 the default horizon is the 30-day sustained line period');
+  ok(near(s30.mannedSorties,92,1e-9)&&near(s30.crew.ceil30,80.6,0.05)&&s30.mannedSorties>s30.crew.ceil30&&s30.binding==='aircrew-30'&&near(s30.sustainable,115*s30.crew.ceil30/92,1e-9)&&s30.sustainable<115,
+    'L11 default 115/day, 200 nm, 30-day horizon: 92 manned > 80.6 -> sustainable '+r3(s30.sustainable)+' of 115, Aircrew Fatigue (30-Day Limit) binds');
+  ok(s7.sustainable===115&&s7.binding==='none'&&s7.mannedSorties<s7.crew.ceil7,'L11 the same day on a 7-day surge horizon: 92 manned < '+r3(s7.crew.ceil7)+' -> 115 of 115, nothing binds (passes weekly, fails monthly)');
+  var h30=L.cardsHTML(s30),h7=L.cardsHTML(s7),g30=L.gougeText(s30),g7=L.gougeText(s7);
+  ok(h30.indexOf('30-Day Sustained')>=0&&h30.indexOf('Aircrew Fatigue (30-Day Limit)')>=0&&h7.indexOf('7-Day Surge')>=0&&g30.indexOf('30-day sustained')>=0&&g7.indexOf('7-day surge')>=0,'L11 headline and Gouge state the horizon and name the binding resource');
+  ok(h30.indexOf('7-Day Limit: '+T.fmt(s30.crew.ceil7,1)+' sorties/day')>=0&&h30.indexOf('30-Day Limit: '+T.fmt(s30.crew.ceil30,1)+' sorties/day')>=0,'L11 Card F shows both the 7-day and 30-day aircrew limits');
+  var d=L.solve(Object.assign({},L.DEFAULT_STATE,{radius:500,horizon:'7'}));
+  ok(d.sustainable===75&&d.binding==='deck'&&L.cardsHTML(d).indexOf('Flight Deck Events')>=0,'L11 deck-bound control: 115/day at 500 nm, 7-day horizon -> 75 of 115, Flight Deck Events binds');
+  var good=true,cnt=0;[0,50,60,115,150,180,240].forEach(function(S){[150,200,350,500,800].forEach(function(R){['30','7'].forEach(function(H){['standard','collaborative'].forEach(function(w){
+    var q=L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:S,radius:R,horizon:H,wing:w})),lim=q.limits,keys=Object.keys(lim),m=S;cnt++;
+    keys.forEach(function(k){if(lim[k]<m)m=lim[k];});
+    if(!(Math.abs(q.sustainable-m)<1e-9&&keys.indexOf('aircrew30')>=0===(H==='30')&&keys.every(function(k){return q.sustainable<=lim[k]+1e-9;})))good=false;
+    if(S>0&&q.sustainable<S&&!(q.binding!=='none'&&Math.abs(lim[{deck:'deck','aircrew-day':'aircrewDay','aircrew-7':'aircrew7','aircrew-30':'aircrew30'}[q.binding]]-q.sustainable)<1e-9))good=false;
+    if(q.sustainable===S&&q.binding!=='none')good=false;});});});});
+  ok(good&&cnt===140,'L11 '+cnt+' cases: the headline is the lowest applicable limit under the horizon and names the limit that binds');
+  var ex=true;[60,115,180].forEach(function(S){[200,500].forEach(function(R){var q=L.solve(Object.assign({},L.DEFAULT_STATE,{tempo:S,radius:R}));
+    if(q.exhausted!==(q.mannedSorties>q.crew.ceil7||q.mannedSorties>q.crew.ceil30)||(L.cardsHTML(q).indexOf('Human exhaustion')>=0)!==q.exhausted)ex=false;});});
+  ok(ex&&s30.exhausted,'L11 exhaustion badge shown exactly when manned sorties exceed the 7-day or 30-day limit (default day: 30-day exceeded)');
+  lreset();
+});
+// ---- v3.2 section 10: display binding of the Logistics view (cards read the shipped solver) ----
+lgroup('L UI cards bound to solver',function(){
+  var f=T.fmt;
+  L.setState(Object.assign({},L.DEFAULT_STATE,{tempo:115,radius:500,transit:1800}));
+  var s=L.solve(),h=L.cardsHTML(s);
+  ok(h.indexOf(f(s.bill.fuelGalDay,0)+' gal/day')>=0&&h.indexOf(f(s.bill.fuelLbDay/1e6,2)+' million lb/day')>=0,'L UI Card A fuel gal/day and million lb/day bound to solver');
+  ok(h.indexOf(f(s.bill.ordTonsDay,1)+' short tons/day')>=0&&h.indexOf(f(Math.round(s.bill.weaponsDay),0)+' weapons/day')>=0,'L UI Card A ordnance tons and weapons bound to solver');
+  ok(h.indexOf(s.bill.alloc.overhead+' sorties/day ('+s.bill.alloc.fcf+' FCF + '+s.bill.alloc.cq+' CQ)')>=0,'L UI Card A overhead bound to solver');
+  ok(h.indexOf('500 nm')>=0&&h.indexOf('2.75 hours (2+45 cycle)')>=0&&h.indexOf(s.sagStd.events+' events / day')>=0&&h.indexOf(s.sagStd.ceiling+' sorties / day')>=0,'L UI Card B radius, event length, events and distance ceiling bound to solver');
+  ok(h.indexOf(f(s.dos.fuel,1)+' days')>=0&&h.indexOf(f(s.dos.mag,1)+' days')>=0&&h.indexOf(s.dos.binding==='fuel'?'Fuel binds first':'Magazine binds first')>=0,'L UI Card C days of supply and first bottleneck bound to solver');
+  ok(h.indexOf(f(s.pipe.cycleDays,1)+' days')>=0&&h.indexOf(s.pipe.oilers+' Fleet Oiler')>=0&&h.indexOf(s.pipe.ammo+' Ammunition Ship')>=0&&h.indexOf(f(s.pipe.cadenceFuel,1))>=0,'L UI Card D cycle, cadence and ships bound to solver');
+  ok(h.indexOf(s.effects.kills+' targets')>=0&&h.indexOf(f(s.effects.fuelPerTarget,0)+' lb JP-5 / target')>=0&&h.indexOf(f(s.effects.weaponsPerTarget,2)+' weapons / target')>=0&&h.indexOf(f(s.effects.sortiesPerTarget,2)+' sorties / target')>=0&&h.indexOf(f(s.effects.shipDaysPer100,1)+' ship-days')>=0,'L UI Card E effects and tail ratios bound to solver');
+  ok(h.indexOf(s.crew.ready+' / '+s.crew.pilots+' Ready ('+s.crew.medDowned+' Med-Down)')>=0&&h.indexOf('7-Day Limit: '+f(s.crew.ceil7,1)+' sorties/day')>=0&&h.indexOf('30-Day Limit: '+f(s.crew.ceil30,1)+' sorties/day')>=0&&h.indexOf(s.cca.operators+' assigned ('+s.cca.onWatch+' on watch')>=0,'L UI Card F pilot pool, 7-day and 30-day limits and operators bound to solver');
+  ok(h.indexOf(f(s.sustainable,0)+' of '+s.tempo+' sorties / day')>=0&&h.indexOf(s.bindingLabel)>=0&&h.indexOf(s.horizonLabel)>=0,'L UI summary: sustainable tempo, horizon and binding limit bound to solver');
+  L.setState({tempo:180,radius:350,transit:1800,wing:'collaborative',mumt:'shipboard',doctrine:'sls'});
+  var s2=L.solve(),h2=L.cardsHTML(s2);
+  ok(s2.pipe.total===4&&h2.indexOf('2 Fleet Oilers + 2 Ammunition Ships')>=0&&s2.cca.operators===54&&h2.indexOf('54 assigned (18 on watch, 3 shifts)')>=0&&h2.indexOf('Re-attack sortie tail')>=0,'L UI surge at 1,800 nm: 4 ships, 54 assigned operators (18 on watch, 3 shifts), re-attack tail shown');
+  ok(s2.exhausted===(s2.mannedSorties>s2.crew.ceil7||s2.mannedSorties>s2.crew.ceil30)&&(h2.indexOf('Human exhaustion')>=0)===s2.exhausted,'L UI exhaustion badge shown exactly when manned sorties exceed the 7-day or 30-day aircrew limit');
+  ok(!/\bT-AO\b|\bT-AKE\b|C-2A|CMV-22|MH-60|\bSDB\b/.test(h+h2+L.gougeText(s)+L.gougeText(s2)),'L UI public boundary: generic logistics archetypes only');
+  lreset();
+});
 console.log('checks run: '+checks+' failures: '+failures.length);if(failures.length){console.log(failures.join('\n'));process.exitCode=1;}

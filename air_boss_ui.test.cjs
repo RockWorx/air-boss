@@ -1,0 +1,260 @@
+/* Live offline UI acceptance. Start an isolated Chromium/Edge with --remote-debugging-port=9336.
+ * Run: node air_boss_ui.test.cjs [path-to-game.html] [screenshot-directory]
+ * CDP_ENDPOINT may override the local endpoint. No browser packages or network assets required.
+ */
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url'),assert=require('node:assert/strict');
+(async()=>{
+ const endpoint=process.env.CDP_ENDPOINT||'http://127.0.0.1:9336';
+ const tabs=await(await fetch(endpoint+'/json')).json(),tab=tabs.find(t=>t.type==='page');assert(tab,'browser page target');
+ const ws=new WebSocket(tab.webSocketDebuggerUrl);await new Promise((r,j)=>{ws.addEventListener('open',r,{once:true});ws.addEventListener('error',j,{once:true});});
+ let seq=0,pending=new Map(),errors=[],requests=[],checks=0;
+ ws.addEventListener('message',e=>{let m=JSON.parse(e.data);if(m.id){let p=pending.get(m.id);if(!p)return;clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(m.error):p.resolve(m.result);}
+   else if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails.exception?.description||m.params.exceptionDetails.text);
+   else if(m.method==='Runtime.consoleAPICalled'&&m.params.type==='error')errors.push('console.error');
+   else if(m.method==='Network.requestWillBeSent'&&/^https?:/.test(m.params.request.url))requests.push(m.params.request.url);});
+ function send(method,params={}){return new Promise((resolve,reject)=>{const id=++seq;const timer=setTimeout(()=>{pending.delete(id);reject(Error('CDP timeout '+method));},30000);pending.set(id,{resolve,reject,timer});ws.send(JSON.stringify({id,method,params}));});}
+ async function js(expression){let r=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));return r.result.value;}
+ async function check(expression,label){assert(await js(expression),label);console.log('PASS '+label);checks++;}
+ async function click(selector){await js('document.querySelector('+JSON.stringify(selector)+').click()');}
+ async function change(id,value,event='change'){await js(`(()=>{let n=document.getElementById(${JSON.stringify(id)});n.value=${JSON.stringify(value)};n.dispatchEvent(new Event(${JSON.stringify(event)},{bubbles:true}));})()`);}
+ async function agreement(label){await check(`(()=>{const a=__airbossTest,r=a.evalWing(a.st.rng),text=id=>document.getElementById(id).textContent,number=s=>Number(s.replace(/,/g,'')),raw=text('mission-ledger').match(/Raw effect ([\\d,.]+)/),read=text('trade').match(/effect index ([\\d,.]+)/),ref={};Object.entries({f35c:4,fa18:14,mq25:6,cap:6,isr:2}).forEach(([k,v])=>ref[k]=Math.round(v*a.getPool()/32));const bench=a.evalWing(a.st.rng,ref).effects,rank=Number(text('rank').match(/([+-]?[\\d,.]+)%/)[1]);return number(text('score'))===Math.round(r.effects)&&raw&&Math.abs(number(raw[1])-r.effects)<=.051&&read&&number(read[1])===Math.round(r.effects)&&rank===Math.round((r.effects-bench)/Math.max(bench,1)*100)&&!text('trade').includes('ating.');})()`,label+' effect/readout/reference agreement');}
+ async function shot(name){if(!process.argv[3])return;await js('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');const png=await send('Page.captureScreenshot',{format:'png'});fs.mkdirSync(process.argv[3],{recursive:true});fs.writeFileSync(path.join(process.argv[3],name+'.png'),Buffer.from(png.data,'base64'));}
+ try{
+  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
+  await send('Page.enable');await send('Page.navigate',{url:'about:blank'});await send('Emulation.setFocusEmulationEnabled',{enabled:true});await send('Runtime.enable');await send('Page.enable');await send('Network.enable');
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await send('Page.navigate',{url:pathToFileURL(path.resolve(process.argv[2]||path.join(__dirname,'air_boss_public.html'))).href});
+  await js("new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true}))");
+  await check('!!window.__airbossTest','real model initialized');
+  await agreement('default immediate');
+  await check("document.getElementById('trade').textContent.includes('100% fuel-demand coverage.')",'default coverage sentence is complete');
+  // ---- v3.2 Logistics Pipeline & Bill view: every card and the callout read the SHIPPED solver ----
+  const deckState=await js('JSON.stringify(__airbossTest.st)');
+  const bound=label=>check(`(()=>{const L=__airbossTest.logistics,s=L.solve(),t=document.createElement('div');t.innerHTML=L.cardsHTML(s);return document.getElementById('logi-cards').textContent===t.textContent&&document.getElementById('logi-gouge').textContent===L.gougeText(s)&&!/NaN|Infinity|undefined/.test(document.getElementById('logistics').textContent);})()`,'v3.2 cards and Gouge callout bound to solver: '+label);
+  const cards=()=>"document.getElementById('logi-cards').textContent";
+  await check('document.getElementById("view-deck").getAttribute("aria-pressed")==="true"&&document.getElementById("logistics").getClientRects().length===0','v3.2 opens on Flight Deck Operations with the Logistics view hidden');
+  await click('#view-logistics');
+  await check('document.body.classList.contains("view-logistics")&&document.getElementById("view-logistics").getAttribute("aria-pressed")==="true"&&document.getElementById("logistics").getClientRects().length>0&&document.querySelector(".console").getClientRects().length===0&&document.getElementById("viewtabs").getClientRects().length>0','v3.2 Logistics tab shows the logistics view and hides the deck console');
+  await bound('default 115/day');
+  await check(cards()+'.includes("143,750 gal/day")&&'+cards()+'.includes("6 sorties/day (3 FCF + 3 CQ)")&&'+cards()+'.includes("1 Fleet Oiler + 1 Ammunition Ship")','v3.2 default bill: 143,750 gal/day, 3 FCF + 3 CQ, 1 oiler + 1 ammunition ship');
+  await check(cards()+'.includes("30-Day Sustained horizon")&&'+cards()+'.includes("101 of 115 sorties / day")&&'+cards()+'.includes("Aircrew Fatigue (30-Day Limit)")&&document.getElementById("logi-h30").getAttribute("aria-pressed")==="true"','v3.2 default headline: 30-day sustained horizon, 101 of 115, the 30-day aircrew limit binds');
+  await click('#logi-h7');
+  await check('__airbossTest.logistics.getState().horizon==="7"&&document.getElementById("logi-h7").getAttribute("aria-pressed")==="true"&&'+cards()+'.includes("7-Day Surge horizon")&&'+cards()+'.includes("115 of 115 sorties / day")&&document.getElementById("logi-gouge").textContent.includes("7-day surge")','v3.2 horizon toggle: a 7-day surge sustains 115 of 115');await bound('7-day surge horizon');
+  await click('#logi-h30');await check('__airbossTest.logistics.getState().horizon==="30"&&'+cards()+'.includes("101 of 115 sorties / day")','v3.2 horizon toggle back to 30-day sustained');
+  for(const [id,v] of [['logi-t60',60],['logi-t115',115],['logi-t180',180],['logi-t240',240]]){await click('#'+id);
+    await check(`__airbossTest.logistics.getState().tempo===${v}&&+document.getElementById('logi-tempo').value===${v}&&document.getElementById('${id}').getAttribute('aria-pressed')==='true'&&document.getElementById('logi-tempo-v').textContent==='${v} sorties/day'`,'v3.2 tempo snap '+v);}
+  await click('#logi-t180');await change('logi-transit',1500,'input');
+  await check(cards()+'.includes("2 Fleet Oilers + 1 Ammunition Ship")&&'+cards()+'.includes("1 Oiler every 10.0 days")','v3.2 surge at 1,500 nm: reserve-safe cadence 10.0 days, 2 oilers + 1 ammunition ship');await bound('surge 1,500 nm');
+  await change('logi-transit',1800,'input');
+  await check('__airbossTest.logistics.getState().transit===1800&&'+cards()+'.includes("2 Fleet Oilers + 2 Ammunition Ships")&&document.getElementById("logi-gouge").textContent.includes("Distance multiplies the pipeline")','v3.2 transit slider: surge at 1,800 nm doubles the pipeline to 4 ships');await bound('surge 1,800 nm');
+  await change('logi-radius',500,'input');
+  await check('__airbossTest.logistics.getState().radius===500&&'+cards()+'.includes("2.75 hours (2+45 cycle)")&&'+cards()+'.includes("75 sorties / day")&&document.getElementById("logi-radius-v").textContent.includes("500 nm")','v3.2 radius slider: 500 nm stretches events to 2+45 and sags the ceiling to 75');await bound('500 nm');
+  await click('#logi-beast');
+  await check('__airbossTest.logistics.getState().posture==="stealth"&&__airbossTest.logistics.getState().pendingPosture==="beast"&&document.getElementById("logi-lock").textContent.includes("Current Posture: Stealth Ingress")&&document.getElementById("logi-lock").textContent.includes("Pending Posture: Beast Mode (requested; locked until the 12-hour overnight deck reset)")&&!document.getElementById("logi-reset").disabled&&document.getElementById("logi-beast").getAttribute("aria-pressed")==="true"','v3.2 posture request is locked until the overnight reset');await bound('beast pending');
+  await click('#logi-reset');
+  await check('__airbossTest.logistics.getState().posture==="beast"&&document.getElementById("logi-reset").disabled&&document.getElementById("logi-lock").textContent.includes("Current Posture: Beast Mode")&&document.getElementById("logi-lock").textContent.includes("Pending Posture: none")&&'+cards()+'.includes("Beast Mode")','v3.2 overnight reset applies Beast Mode');await bound('beast');
+  await click('#logi-sls');await click('#logi-collab');await click('#logi-shipboard');
+  await check('__airbossTest.logistics.getState().doctrine==="sls"&&'+cards()+'.includes("Re-attack sortie tail")&&'+cards()+'.includes("54 assigned (18 on watch, 3 shifts)")','v3.2 doctrine, wing and MUMT toggles: re-attack tail and 54 assigned (18 on watch, 3 shifts) shown');await bound('shoot-look-shoot, collaborative, shipboard');
+  await click('#logi-delegated');await check(cards()+'.includes("15 assigned (5 on watch, 3 shifts)")&&'+cards()+'.includes("0 en route")','v3.2 airborne quarterback handoff at surge, default R_ctrl 4: 15 assigned (5 on watch, 3 shifts), 0 en route');
+  await click('#logi-t115');await check(cards()+'.includes("10 assigned (5 on watch, 2 shifts)")','v3.2 normal 115/day, default R_ctrl 4: 10 assigned (5 on watch, 2 shifts)');await bound('collaborative 115/day');
+  await check('+document.getElementById("logi-ratio").value===4&&document.getElementById("logi-ratio").min==="1"&&document.getElementById("logi-ratio").max==="8"&&document.getElementById("logi-ratio-v").textContent.includes("4 CCAs per operator")&&document.getElementById("logi-ratio-l").textContent.includes("[teaching assumption]")','v3.2 CCA control ratio control: 1..8, default 4 CCAs per operator, labelled a teaching assumption');
+  await change('logi-ratio',2,'input');await check('__airbossTest.logistics.getState().ctrlRatio===2&&document.getElementById("logi-ratio-v").textContent.includes("2 CCAs per operator")&&'+cards()+'.includes("18 assigned (9 on watch, 2 shifts)")&&'+cards()+'.includes("1 operator per 2 CCAs")','v3.2 control ratio 2: 18 assigned (9 on watch, 2 shifts)');await bound('control ratio 2');
+  await change('logi-ratio',8,'input');await check('__airbossTest.logistics.getState().ctrlRatio===8&&'+cards()+'.includes("6 assigned (3 on watch, 2 shifts)")','v3.2 control ratio 8: 6 assigned (3 on watch, 2 shifts)');await bound('control ratio 8');
+  await click('#logi-shipboard');await check(cards()+'.includes("36 assigned (18 on watch, 2 shifts)")','v3.2 control ratio does not change shipboard control: 36 assigned (18 on watch, 2 shifts) at ratio 8');await click('#logi-delegated');
+  await change('logi-ratio',4,'input');await check('__airbossTest.logistics.getState().ctrlRatio===4&&'+cards()+'.includes("10 assigned (5 on watch, 2 shifts)")','v3.2 control ratio back to the default 4: 10 assigned');
+  await change('logi-tempo',50,'input');await bound('minimum tempo 50');
+  await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+  await js('document.getElementById("logistics").scrollIntoView()');await shot('logistics-mobile');
+  await check('document.documentElement.scrollWidth<=innerWidth+1','v3.2 Logistics view has no horizontal overflow at phone width');
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await js('__airbossTest.logistics.setState(__airbossTest.logistics.DEFAULT_STATE);__airbossTest.logistics.render();document.getElementById("logi-cards").scrollIntoView()');await shot('logistics-desktop');await js('scrollTo(0,0)');
+  await click('#view-deck');
+  await check('!document.body.classList.contains("view-logistics")&&document.querySelector(".console").getClientRects().length>0&&document.getElementById("logistics").getClientRects().length===0&&JSON.stringify(__airbossTest.st)==='+JSON.stringify(deckState),'v3.2 back to Flight Deck Operations: the v3.1 state is untouched');
+  await agreement('after Logistics view');
+  await check("document.getElementById('local-guide').textContent.includes('Buddy relay is the teaching case')",'field guide explains reachable relay case');
+  await click('[data-scenario="strait_defense"]');await check('__airbossTest.st.rng===500&&__airbossTest.st.threat===.85&&__airbossTest.st.alloc.cap===10&&__airbossTest.st.strike==="standoff"','Contested Strait applies state');await agreement('Contested Strait');
+  await check('__airbossTest.st.rankBy==="surv"&&!document.getElementById("scenario-objective").hidden&&document.getElementById("scenario-objective").textContent.includes((__airbossTest.evalWing(__airbossTest.st.rng).objScore*100).toFixed(1))&&document.querySelector("[data-r=surv]").getAttribute("aria-pressed")==="true"','Strait defaults to visible selected Survivability objective');
+  await js('document.getElementById("scenario-objective").focus({preventScroll:true})');
+  await check('!document.getElementById("control-help").hidden&&document.getElementById("control-help").textContent.includes("fuel support times mean survivability")','Strait objective help defines protection score');
+  await js('__airbossTest.st.rankBy="effect"');await click('#scenario-objective');
+  await check('__airbossTest.st.rankBy==="surv"&&document.getElementById("mission-ledger").textContent.includes("survivability "+(__airbossTest.evalWing(__airbossTest.st.rng).objScore*100).toFixed(1))','Strait objective control restores scoring and readout');
+  await check('(()=>{const r=__airbossTest.evalWing(__airbossTest.st.rng),t=id=>document.getElementById(id).textContent,f=(n)=>Math.round(n).toLocaleString();return t("launchline").includes(f(r.strikeSorties)+" Flown / "+f(r.strikeHeld)+" Held")&&t("launchline").includes("Binding: "+r.binding)&&t("overhead").includes("Overhead sorties "+f(r.overheadSorties)+" ("+f(r.fcfSorties)+" FCF, "+f(r.qualSorties)+" Qual)")&&t("deckcap").includes("ceiling "+f(r.deckCeiling))&&document.getElementById("campaign").hidden;})()','v3.1 launch, overhead and deck readouts bound to engine');
+  await click('[data-scenario="strait_defense_3day"]');
+  await check('__airbossTest.st.scenario==="strait_defense_3day"&&__airbossTest.getDeck()==="ford"&&__airbossTest.st.tempo===1&&__airbossTest.st.alloc.ccx===8&&document.querySelector("[data-scenario=strait_defense_3day]").getAttribute("aria-pressed")==="true"','3-day Strait card applies campaign state');
+  await check('(()=>{const a=__airbossTest,c=a.evalCampaign(a.st.rng,a.st.alloc),e=document.getElementById("campaign");return !e.hidden&&e.textContent.includes("Daily Tempo: "+Math.round(c.windowedAverageSorties).toLocaleString()+" sorties/day avg (Target: 120 sustained")&&e.textContent.includes("Day 3:")&&document.getElementById("pool").textContent.includes("48 assigned");})()','3-day campaign windowed readout bound to engine; weighted spots 48');
+  await click('[data-scenario="war_at_sea"]');await check('__airbossTest.st.rng===600&&__airbossTest.st.strike==="mace"&&__airbossTest.st.alloc.isr===2','War at Sea applies state');
+  await agreement('War at Sea');
+  await check('__airbossTest.st.rankBy==="effect"&&document.getElementById("scenario-objective").hidden','War at Sea restores raw-effect objective');
+  await click('[data-scenario="deep_strike"]');await check('__airbossTest.st.rng===800&&__airbossTest.st.targetPosture==="hardened"&&__airbossTest.getDeck()==="nimitz"&&__airbossTest.st.tempo===0','Deep Strike applies state (and resets campaign deck/tempo)');
+  await check('(()=>{const b=[...document.querySelectorAll("#roster .ac")].find(n=>n.textContent.includes("CCX-1"));if(!b)return false;const used=()=>__airbossTest.usedSpots(__airbossTest.st.alloc),u0=used(),before=__airbossTest.st.alloc.ccx||0;b.querySelectorAll(".stepper button")[1].click();if(u0+0.75<=__airbossTest.getPool()||(__airbossTest.st.alloc.ccx||0)!==before)return false;const row=()=>[...document.querySelectorAll("#roster .ac")],f35=row().find(n=>n.textContent.startsWith("F-35C"));f35.querySelectorAll(".stepper button")[0].click();const u1=used();row().find(n=>n.textContent.includes("CCX-1")).querySelectorAll(".stepper button")[1].click();return __airbossTest.st.alloc.ccx===before+1&&Math.abs(used()-u1-0.75)<1e-9&&document.getElementById("pool").textContent.includes("43.75 assigned");})()','CCX-1 stepper: full deck refuses, freed spot takes 0.75 weighted spot');
+  await agreement('Deep Strike');
+  await change('target-posture','fleeting');await change('tanker-mode','theater');await change('threat-level','0.85');
+  await check('__airbossTest.st.targetPosture==="fleeting"&&__airbossTest.st.tankerMode==="theater"&&__airbossTest.st.threat===.85','posture/theater/threat controls');
+  await agreement('theater');
+  for(const p of ['yoyo','strike','consolidation','recovery','balanced']){await change('tanker-plan',p);await check(`JSON.stringify(__airbossTest.st.tankerTactics)===JSON.stringify(__airbossTest.TACTIC_PLANS[${JSON.stringify(p)}])`,'plan '+p);}
+  for(const [id,v] of [['tactic-yoyo',30],['tactic-consolidation',20],['tactic-recovery',10]])await change(id,v);
+  await check('__airbossTest.st.tankerTactics.strike===40','custom percentages leave strike residual');
+  await change('strike-orbit',150,'input');await check('__airbossTest.st.strikeOrbit===150&&document.getElementById("orbit-value").textContent==="150 nm"','orbit input updates model and label');
+  await change('relay-orbit',250,'input');await check('__airbossTest.st.relayOrbit===250&&document.getElementById("relay-value").textContent==="250 nm"','relay orbit control updates model and label');
+  await check('document.getElementById("tanker-reach").textContent.includes("274.2")','derived reach help is visible');
+  for(const key of ['direct','mixed','mace','standoff']){await click('[data-s="'+key+'"]');await check('__airbossTest.st.strike==='+JSON.stringify(key),'strike button '+key);}
+  for(const key of ['amraam','malice','gunslinger']){await click('[data-m="'+key+'"]');await check('__airbossTest.st.weapon==='+JSON.stringify(key),'A2A button '+key);}
+  await click('[data-d="ford"]');await click('[data-o="1"]');await change('s-rng',700,'input');
+  await check('__airbossTest.getDeck()==="ford"&&__airbossTest.st.tempo===1&&__airbossTest.st.rng===700','deck/tempo/range controls');
+  await click('[data-scenario="war_at_sea"]');await click('[data-p="2"]');await click('[data-r="cliff"]');
+  await check('document.querySelectorAll(".lb-load").length>0','cliff search populates leaderboard');await click('.lb-load');
+  await check('__airbossTest.st.play===0&&__airbossTest.st.tankerMode==="organic"','load cliff candidate restores planner and plan');
+  await click('[data-scenario="war_at_sea"]');await click('[data-p="1"]');
+  await js('document.getElementById("deck").scrollIntoView({block:"center"})');await shot('deck-desktop');
+  await click('#launch');await js('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');await agreement('during day');await change('s-rng',700,'input');await agreement('range changed during day');await js('new Promise((resolve,reject)=>{const stop=Date.now()+12000;function frame(){if(!document.getElementById("launch").disabled)return resolve();if(Date.now()>stop)return reject(Error("run timeout"));requestAnimationFrame(frame)}frame()})');
+  await agreement('after day');
+  await check('!document.getElementById("daytally").classList.contains("hide")','live run completes and renders tally');
+  await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+  await js('document.getElementById("v3controls").scrollIntoView()');await shot('controls-mobile');
+  await check('document.documentElement.scrollWidth<=innerWidth+1','mobile has no horizontal overflow');
+  await click('[data-scenario="deep_strike"]');await check('__airbossTest.st.rng===800','scenario still works at phone width');
+  await click('[data-p="1"]');await js('document.getElementById("deck").scrollIntoView({block:"center"})');await shot('deck-mobile');
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});await js('scrollTo(0,0)');await shot('overview-desktop');
+
+  await click('[data-scenario="war_at_sea"]');
+  await check('document.querySelector("[data-scenario=war_at_sea]").getAttribute("aria-pressed")==="true"&&document.getElementById("scenarios").compareDocumentPosition(document.querySelector(".console"))&Node.DOCUMENT_POSITION_FOLLOWING','scenario cards are prominent and pressed');
+  await check('document.getElementById("tactic-strike").readOnly&&+document.getElementById("tactic-strike").value===__airbossTest.st.tankerTactics.strike','strike remainder is visible and read-only');
+  await change('tanker-plan','consolidation');
+  await check('document.getElementById("relay-warning").textContent.includes("274.2")&&document.getElementById("relay-warning").textContent.includes("250 nm")','infeasible buddy relay has an actionable inline warning');
+  await change('relay-orbit',250,'input');await check('document.getElementById("relay-warning").textContent===""','relay warning clears at feasible orbit');
+  await click('#watch-deck');await check('__airbossTest.st.play===1&&!document.getElementById("deckwrap").classList.contains("hide")','watch deck call-to-action reveals simulation');
+  for(const width of [1440,390]){
+    await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width===390});
+    await js('scrollTo({top:0,behavior:"instant"})');
+    await check(`(()=>{const a=document.querySelector('header .gouge'),b=document.querySelector('header .illus'),r=a.getBoundingClientRect(),s=b.getBoundingClientRect();return !!(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING)&&parseFloat(getComputedStyle(a).fontSize)>=14&&a.dataset.help&&r.left>=0&&s.right<=innerWidth&&s.bottom<=innerHeight&&(innerWidth>600?r.right<=s.left:r.bottom<=s.top)&&b.textContent.includes('not operational analysis');})()`,'Gouge larger and before fully visible disclaimer '+width);
+    await shot('gouge-header-'+width);
+    for(const mode of [0,1,2]){
+      await click('[data-w="2"]');await click('[data-p="'+mode+'"]');
+      const report=await js(`(()=>{let count=0;const controls=[...document.querySelectorAll('button,select,input,a[href],summary')],tip=document.getElementById('control-help'),esc=()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+        for(const n of controls){const desc=document.getElementById(n.getAttribute('aria-describedby'));if(!desc||!desc.textContent||!n.dataset.help)throw Error('Missing help '+n.outerHTML.slice(0,100));
+          if(n.disabled||!n.getClientRects().length)continue;
+          n.scrollIntoView({block:'center',behavior:'instant'});
+          const box=n.getBoundingClientRect();
+          for(const how of ['focus','tap']){esc();n.blur();
+            if(how==='hover')n.dispatchEvent(new PointerEvent('pointerover',{pointerType:'mouse',bubbles:true}));
+            else if(how==='focus')n.focus({preventScroll:true});
+            else{n.dispatchEvent(new PointerEvent('pointerdown',{pointerType:'touch',bubbles:true,cancelable:true}));n.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));}
+            const r=tip.getBoundingClientRect();if(tip.hidden||!tip.textContent.includes(n.dataset.help)||r.left<0||r.top<0||r.right>innerWidth+1||r.bottom>innerHeight+1)throw Error('Help missing or overflowing: '+how+' '+n.outerHTML.slice(0,100));
+            const after=n.getBoundingClientRect();if(Math.abs(after.top-box.top)>1)throw Error('Help shifted layout');
+          }esc();if(!tip.hidden)throw Error('Escape did not dismiss');count++;
+        }return {count,all:controls.length};})()`);
+      assert(report.count>20,'all visible controls exercised');checks++;console.log('PASS help focus/tap '+width+'px mode '+mode+': '+report.count+' visible / '+report.all+' described');
+    }
+  }
+  await js('document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}));document.querySelector("[data-scenario=war_at_sea]").scrollIntoView({block:"center",behavior:"instant"})');
+  const tap=await js('(()=>{const r=document.querySelector("[data-scenario=war_at_sea]").getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()');
+  await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[tap]});await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await check('!document.getElementById("control-help").hidden','real phone tap opens help');
+  await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[tap]});await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await check('__airbossTest.st.play===0&&__airbossTest.st.scenario==="war_at_sea"','second phone tap activates scenario');
+  await js('document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))');
+
+  // Real mouse input: intent, jitter, hover bridge, grace, adjacent switches and scroll.
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await js('document.getElementById("watch-start").scrollIntoView({block:"center",behavior:"instant"});document.activeElement.blur()');
+  await js('new Promise(r=>setTimeout(r,500))');
+  const hover=await js('(()=>{const r=document.getElementById("watch-start").getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()');
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:hover.x,y:hover.y});
+  await check('document.getElementById("control-help").hidden','hover does not open before intent delay');
+  await js('new Promise(r=>setTimeout(r,420))');
+  await check('!document.getElementById("control-help").hidden','hover opens after intent delay');
+  for(let i=0;i<10;i++){await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:hover.x+(i%2),y:hover.y+(i%2)});await js('new Promise(r=>setTimeout(r,220))');await check('!document.getElementById("control-help").hidden','help persists through jitter '+i);}
+  const bridge=await js('(()=>{const r=document.getElementById("control-help").getBoundingClientRect();return {x:r.left+20,y:r.top+20}})()');
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:bridge.x,y:bridge.y});await js('new Promise(r=>setTimeout(r,450))');
+  await check('!document.getElementById("control-help").hidden&&document.querySelectorAll("#control-help:not([hidden])").length===1','control to bubble bridge retains one help bubble');
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:1,y:1});await js('new Promise(r=>setTimeout(r,120))');
+  await check('!document.getElementById("control-help").hidden','leave grace keeps bubble briefly');await js('new Promise(r=>setTimeout(r,300))');
+  await check('document.getElementById("control-help").hidden','leave closes after grace');
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:hover.x,y:hover.y});await js('new Promise(r=>setTimeout(r,420))');
+  const adjacent=await js('(()=>{const r=document.getElementById("watch-replay").getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()');
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:adjacent.x,y:adjacent.y});
+  await check('!document.getElementById("control-help").hidden','adjacent switch keeps existing help during intent');await js('new Promise(r=>setTimeout(r,420))');
+  await check('document.getElementById("control-help").textContent.includes(document.getElementById("watch-replay").dataset.help)&&document.querySelectorAll("#control-help:not([hidden])").length===1','adjacent switch updates one bubble');
+  await js('scrollBy(0,40);new Promise(r=>setTimeout(r,550))');
+  await check('document.getElementById("control-help").hidden','scroll closes without retriggering help');
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:1,y:1});
+
+  // Observe every actual phase after scroll settles, not just the presence of markup.
+  for(const width of [1440,390]){
+    await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width===390});
+    await js('__airbossTest.startWatch("explainer-461")');
+    const phases=await js(`new Promise((resolve,reject)=>{let last='',seen=[],limit=Date.now()+25000;function frame(){const phase=__airbossTest.watchState.phase;if(phase!==last){last=phase;setTimeout(()=>{try{const tip=document.getElementById('watch-explainer'),target=document.querySelector('.watch-highlight'),r=tip.getBoundingClientRect(),t=target.getBoundingClientRect();if(document.querySelectorAll('#watch-explainer:not([hidden])').length!==1||tip.dataset.anchor!==target.id||tip.nextElementSibling!==target)throw Error('unanchored '+phase);if(r.left<0||r.top<0||r.right>innerWidth+1||r.bottom>innerHeight+1||r.bottom>t.top+1)throw Error('callout obscured '+phase+' '+JSON.stringify({r:r.toJSON(),t:t.toJSON()}));if(!tip.textContent.trim())throw Error('empty '+phase);seen.push(phase);if(phase==='result')resolve(seen);}catch(e){reject(e);}},850);}if(phase!=='result'&&Date.now()<limit)requestAnimationFrame(frame);else if(Date.now()>=limit)reject(Error('explainer timeout'));}frame()})`);
+    assert.deepEqual(phases,['scenario','wing','weapons','tankers','launch','result']);checks++;console.log('PASS six anchored unobstructed Watch explainers at '+width+'px');
+    await shot('watch-explainer-'+width);
+    await send('Emulation.setDeviceMetricsOverride',{width:width===390?1440:390,height:900,deviceScaleFactor:1,mobile:width!==390});
+    await js('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
+    await check('(()=>{const r=document.getElementById("watch-explainer").getBoundingClientRect(),t=document.querySelector(".watch-highlight").getBoundingClientRect();return r.left>=0&&r.top>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1&&r.bottom<=t.top+1})()','Watch explanation repositions on viewport resize '+width);
+    await js('__airbossTest.stopWatch()');
+    await check('document.getElementById("watch-explainer").hidden','takeover dismisses explainer '+width);
+  }
+  await send('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+  const gameURL=await js('location.href');
+  await check('document.querySelector("a.gouge").getAttribute("href")==="gouge.html"','Gouge uses portable relative link');
+  await click('a.gouge');
+  await js("new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true}))");
+  await check('location.pathname.endsWith("/gouge.html")&&document.title.includes("Gouge")&&!!document.querySelector(".scene")','Gouge opens offline');
+  await check('document.body.textContent.includes("War at Sea")&&document.body.textContent.includes("Deep Strike")&&document.body.textContent.includes("78.5 versus 57.8")&&document.body.textContent.includes("458.4 versus 826.9")','Gouge includes scenarios and honest Strait objective/output comparison');
+  // Raised Strait floor (350): the Gouge explains the requirement in player terms.
+  await check('document.body.textContent.includes("min(1, effect / 350)")&&document.body.textContent.includes("scores 59.9")&&!document.body.textContent.includes("effect / 200")','Gouge explains the 350 Strait effect requirement');
+  await check('document.body.textContent.includes("Tempo is a logistics bill.")&&document.body.textContent.includes("143,750 gal")&&document.body.textContent.includes("doubles to 4 ships")&&document.body.textContent.includes("36 to 54")&&document.body.textContent.includes("5 operators on watch")&&document.body.textContent.includes("teaching assumption")&&document.body.textContent.includes("second oiler must be staggered in: 3 ships")','Gouge explains the v3.2 logistics bill');
+  await click('.play-cta');
+  await js("new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true}))");
+  // The generated Gouge is shared: from the internal dev file it returns to the public build (pre-existing design);
+  // the UI suite then re-opens the build under test so every later check still exercises it (v3.1: both builds run).
+  const expectReturn=gameURL.endsWith('/air_boss.html')?gameURL.replace(/air_boss\.html$/,'air_boss_public.html'):gameURL;
+  await check('location.href==='+JSON.stringify(expectReturn)+'&&!!window.__airbossTest','Gouge returns to playable offline game');
+  if(expectReturn!==gameURL){await send('Page.navigate',{url:gameURL});await js("new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true}))");await check('location.href==='+JSON.stringify(gameURL)+'&&!!window.__airbossTest','build under test re-opened after Gouge');}
+
+  await click('[data-d="ford"]');await click('[data-o="1"]');
+  await click('#watch-start');await check('__airbossTest.watchState.active&&!!__airbossTest.watchState.seed','Watch button starts with a displayed seed');
+  await check('__airbossTest.getDeck()==="ford"&&__airbossTest.st.tempo===0&&__airbossTest.evalWing(__airbossTest.st.rng).events===8','Watch starts sustained on selected Ford despite prior surge selection');
+  await click('#watch-stop');await check('!__airbossTest.watchState.active','Stop returns control');
+  await js('__airbossTest.startWatch("ui-seed")');
+  await js('new Promise((resolve,reject)=>{const end=Date.now()+25000;window.watchSeen=[];let last="";function frame(){const w=__airbossTest.watchState;if(w.phase!==last){last=w.phase;watchSeen.push(last);if(last==="launch"){document.querySelectorAll("#tempopick button")[1].click();document.querySelector("#deckpick button").click();}if(last==="wing")setTimeout(()=>{const row=document.getElementById("roster").getBoundingClientRect(),caption=document.getElementById("watch-panel").getBoundingClientRect();window.watchWingVisible=row.top>=caption.bottom&&row.top<innerHeight-100;},800);if(__airbossTest.evalWing(__airbossTest.st.rng).infeasible.length)return reject(Error("infeasible Watch step"));}if(w.phase==="result")return resolve();if(Date.now()>end)return reject(Error("Watch cycle timeout"));requestAnimationFrame(frame)}frame()})');
+  await check('["scenario","wing","weapons","tankers","launch","result"].every(p=>watchSeen.includes(p))&&document.getElementById("watch-result").textContent.includes("organic cliff")','Watch narrates setup, launches and displays result');
+  await check('__airbossTest.watchState.active&&__airbossTest.st.tempo===0&&__airbossTest.getDeck()==="ford"&&document.getElementById("watch-result").textContent.includes("Sustained ops: 8 cycles")&&document.getElementById("watch-caption").textContent.includes("Next cycle: surge ops on Nimitz-class")','mid-watch choices queue without changing current sustained result');
+  await check('window.watchWingVisible===true','Watch roster starts below the caption panel');
+  await check('document.documentElement.scrollWidth<=innerWidth+1&&document.getElementById("watch-caption").getBoundingClientRect().width<=innerWidth','Watch captions fit phone viewport');
+  await js('new Promise((resolve,reject)=>{const end=Date.now()+11000;function frame(){if(__airbossTest.watchState.cycle===1)return resolve();if(Date.now()>end)return reject(Error("next cycle timeout"));requestAnimationFrame(frame)}frame()})');
+  await check('JSON.stringify(__airbossTest.watchState.input)===JSON.stringify(__airbossTest.watchCycle("ui-seed",1))','Watch advances to next seeded cycle');
+  await check('__airbossTest.st.tempo===1&&__airbossTest.getDeck()==="nimitz"&&__airbossTest.evalWing(__airbossTest.st.rng).events===10&&document.getElementById("watch-caption").textContent.includes("Surge: 10 cycles")','queued deck and tempo apply at next cycle start');
+  await click('#watch-replay');await check('__airbossTest.watchState.cycle===0&&__airbossTest.watchState.seed==="ui-seed"','Replay restarts the displayed seed');
+  await js('new Promise((resolve,reject)=>{const end=Date.now()+13000;function frame(){if(__airbossTest.watchState.phase==="launch")return resolve();if(Date.now()>end)return reject(Error("launch timeout"));requestAnimationFrame(frame)}frame()})');
+  await check('document.getElementById("watch-teaser").textContent==="Do you want to see the air wing surge?"&&!document.getElementById("watch-teaser").hidden','Surge invitation is exact and visible');
+  await click('#watch-surge');await check('__airbossTest.watchState.active&&__airbossTest.st.tempo===1&&__airbossTest.evalWing(__airbossTest.st.rng).events===10&&Number(document.getElementById("deck").dataset.playbackRate)>1','Surge button keeps Watch running with faster deck playback');
+  await js('new Promise((resolve,reject)=>{const end=Date.now()+10000;function frame(){if(__airbossTest.watchState.phase==="result")return resolve();if(Date.now()>end)return reject(Error("surge timeout"));requestAnimationFrame(frame)}frame()})');
+  await check('document.getElementById("watch-caption").textContent.includes("SURGE: 10 cycles vs 8 sustained")&&document.getElementById("watch-caption").textContent.includes("sorties")&&document.getElementById("watch-caption").textContent.includes("hold it forever")','Surge result shows model delta and endurance caveat');
+  await click('#watch-surge');await check('__airbossTest.watchState.active&&__airbossTest.st.tempo===0&&__airbossTest.evalWing(__airbossTest.st.rng).events===8&&Number(document.getElementById("deck").dataset.playbackRate)===1','Surge toggles back to eight sustained cycles');
+  const takeover=await js('JSON.stringify(__airbossTest.st)');
+  await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+  await check('!__airbossTest.watchState.active&&!document.getElementById("launch").disabled&&JSON.stringify(__airbossTest.st)==='+JSON.stringify(takeover),'keyboard takeover cancels Watch and preserves current inputs');
+  const stoppedClock=await js('document.getElementById("clock").textContent');await js('new Promise(r=>setTimeout(r,2400))');
+  await check('document.getElementById("clock").textContent==='+JSON.stringify(stoppedClock)+'&&!__airbossTest.watchState.active','takeover cancels queued steps and animation frames');
+  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+  await send('Page.navigate',{url:'about:blank'});await send('Page.navigate',{url:gameURL+'#watch'});
+  await js("new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true}))");
+  await check('__airbossTest.watchState.active&&matchMedia("(prefers-reduced-motion:reduce)").matches','bare Watch anchor auto-starts with reduced motion');
+  await js('new Promise((resolve,reject)=>{const end=Date.now()+13000;function frame(){if(__airbossTest.watchState.phase==="result")return resolve();if(Date.now()>end)return reject(Error("reduced motion timeout"));requestAnimationFrame(frame)}frame()})');
+  await check('!document.getElementById("daytally").classList.contains("hide")','reduced-motion Watch completes without flight animation');
+  await click('#watch-surge');await js('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
+  await check('__airbossTest.watchState.active&&__airbossTest.st.tempo===1&&document.getElementById("watch-caption").textContent.includes("SURGE: 10 cycles vs 8 sustained")','reduced-motion Surge conveys the delta without animation');
+  await click('#watch-surge');await js('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
+  await check('__airbossTest.st.tempo===0&&document.getElementById("watch-result").textContent.includes("Sustained ops: 8 cycles")','reduced-motion toggle returns to Sustained');
+  await click('#watch-stop');
+  await send('Page.navigate',{url:'about:blank'});await send('Page.navigate',{url:gameURL+'#watch=replay-42'});
+  await js("new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true}))");
+  await check('__airbossTest.watchState.seed==="replay-42"&&__airbossTest.watchState.active','explicit Watch seed anchor is reproducible');await click('#watch-stop');
+  await js('(()=>{let seed;for(let i=0;i<100;i++){seed="strait-ui-"+i;if(__airbossTest.watchCycle(seed,0).scenario==="strait_defense")break;}__airbossTest.startWatch(seed);})()');
+  await js('new Promise((resolve,reject)=>{const end=Date.now()+14000;function frame(){if(__airbossTest.watchState.phase==="result")return resolve();if(Date.now()>end)return reject(Error("Strait Watch timeout"));requestAnimationFrame(frame)}frame()})');
+  await check('(()=>{const expected=(__airbossTest.evalWing(__airbossTest.st.rng).objScore*100).toFixed(1);return __airbossTest.st.rankBy==="surv"&&["watch-caption","watch-result","daytally","mission-ledger"].every(id=>document.getElementById(id).textContent.includes("survivability "+expected+" / 100"))})()','Strait Watch and day results display the same existing objective');
+  await shot('strait-objective-phone');await js('__airbossTest.stopWatch()');
+  assert.deepEqual(errors,[],'zero console/page errors');assert.deepEqual(requests,[],'zero network dependencies');
+  console.log('LIVE UI PASS: '+checks+' checks; zero console/page errors; zero HTTP requests');
+ }finally{for(const p of pending.values())clearTimeout(p.timer);ws.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});
