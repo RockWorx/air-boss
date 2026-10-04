@@ -120,6 +120,16 @@ h1{font-family:var(--stencil);font-size:clamp(28px,6vw,50px);margin:8px 0 3px;fo
 .budget .track i.over{background:var(--over)}
 .budget .sv{font-family:var(--mono);font-size:11px;width:56px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
 .budget .sv.over{color:var(--over);font-weight:700}
+/* v3.3 Your Design closure panel */
+.designer .spec-row{flex-wrap:wrap;gap:4px 10px}.designer .spec-row input{flex:1;min-width:120px}.designer .spec-row .sv{width:auto;flex:1 1 100%;text-align:left;font-size:11px}
+.designer .picker{margin:4px 0 6px}.designer .opt-note{margin:2px 0 8px}
+.dz-h{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);font-weight:800;margin:10px 0 6px}
+.dz-gate,.dz-row{font:11px/1.45 var(--mono);margin:3px 0;overflow-wrap:anywhere}.dz-gate.pass b{color:var(--good)}.dz-gate.fail b{color:var(--over)}.dz-row.warn{color:var(--foul)}
+.dz-status{font:700 11.5px/1.45 var(--mono);margin:7px 0;padding:6px 8px;border-radius:6px;border:1px solid var(--rule);overflow-wrap:anywhere}.dz-status.ok{color:var(--good)}.dz-status.warn{color:var(--foul)}.dz-status.bad{color:var(--over)}
+#watch-compare table{border-collapse:collapse;font:11px/1.4 var(--mono);margin:4px 0}#watch-compare td,#watch-compare th{padding:2px 8px;border-bottom:1px solid var(--rule);text-align:right}#watch-compare td:first-child,#watch-compare th:first-child{text-align:left}#watch-compare p{font-size:12px;margin:4px 0}
+.watch-toggle-label{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;margin:3px 6px;cursor:pointer}.watch-toggle-label input:disabled+.toggle-text{opacity:.5}
+#watch-pace{background:#0c1420;color:var(--ink);border:1px solid var(--rule);border-radius:6px;padding:3px 6px}
+#watch-transport{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px}#watch-pace{font-size:12px;margin-left:4px}.watch-pace-l{font-size:12px;color:var(--ink-dim);margin-left:6px}
 .mission{margin-top:14px;padding-top:14px;border-top:1px solid var(--rule);display:flex;flex-direction:column;gap:13px}
 .field .fh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
 .field .fl{font-size:12px;font-weight:650} .field .fv{font-family:var(--mono);font-size:13px;color:var(--amber);font-variant-numeric:tabular-nums}
@@ -302,12 +312,17 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   <button id="scenario-objective" class="btn" type="button" hidden aria-pressed="false">Strait objective: Survivability</button>
   <section id="watch-panel" aria-label="Watch a scenario" class="howto">
     <div><button class="btn primary" id="watch-start" type="button" aria-pressed="false">Watch the Air Boss</button>
+    <label id="watch-with-ccas-label" class="watch-toggle-label" title="Toggle autonomous CCA participation in guided tour"><input type="checkbox" id="watch-with-ccas" checked> <span class="toggle-text">With CCAs</span></label>
     <button class="btn" id="watch-stop" type="button" hidden>Stop / take over</button>
-    <button class="btn" id="watch-replay" type="button">Replay this seed</button></div>
+    <button class="btn" id="watch-replay" type="button">Replay this seed</button>
+    <span id="watch-transport"><button class="btn" id="watch-pause" type="button" aria-pressed="false" hidden>Pause</button>
+    <button class="btn" id="watch-next" type="button" hidden>Next &#9654;</button>
+    <label for="watch-pace" class="watch-pace-l">Pace</label> <select id="watch-pace" aria-label="Tour pace"><option value="relaxed" selected>Relaxed</option><option value="normal">Normal</option><option value="brisk">Brisk</option></select></span></div>
     <div id="watch-boost" hidden><span id="watch-teaser">Do you want to see the air wing surge?</span> <button class="btn primary" id="watch-surge" type="button" aria-pressed="false">SURGE</button></div>
     <small id="watch-seed">A fresh seed each time</small> <b id="watch-status">You have control</b>
     <p id="watch-caption" aria-live="polite">Watch a scenario get set and played. Deck and tempo changes apply next cycle; other inputs take over. Illustrative, not for planning.</p>
     <p id="watch-result"></p>
+    <div id="watch-compare" aria-live="polite"></div>
   </section>
   <div class="presets">
     <span class="pl">Quick start</span>
@@ -410,9 +425,8 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
         <div class="opt-lab" style="margin-top:14px">Unit cost</div>
         <div class="field"><div class="fh"><span class="fl">F-35C Lightning II <span style="color:var(--ink-faint);font-weight:500">&plusmn;15%</span></span><span class="fv" id="v-cf35">$102M</span></div>
           <input type="range" id="s-cf35" min="87" max="117" step="1" value="102" aria-label="F-35C unit cost in millions"></div>
-        <div class="field" style="margin-top:8px"><div class="fh"><span class="fl">Your Design <span style="color:var(--ink-faint);font-weight:500">(custom jet)</span></span><span class="fv" id="v-ccustom">$90M</span></div>
-          <input type="range" id="s-ccustom" min="10" max="250" step="5" value="90" aria-label="Custom jet unit cost in millions"></div>
-        <div class="opt-note">F-35C ~$102M contract-lot flyaway; the &plusmn;15% is a what-if control, not a sourced uncertainty. F/A-18E/F fixed $67M (FY23 was the last E/F buy; line shutdown funded). MQ-25 ~$184M (FY25). Your design's price is floored by its capability. Effect/$ uses illustrative flyaway cost only &mdash; not full life-cycle value.</div>
+        <div class="field" style="margin-top:8px"><div class="fh"><span class="fl">Your Design <span style="color:var(--ink-faint);font-weight:500">(priced by the designer)</span></span><span class="fv" id="v-ccustom"></span></div></div>
+        <div class="opt-note">F-35C ~$102M contract-lot flyaway; the &plusmn;15% is a what-if control, not a sourced uncertainty. F/A-18E/F fixed $67M (FY23 was the last E/F buy; line shutdown funded). MQ-25 ~$184M (FY25). Your Design is priced by its closure model: airframe by weight, avionics, and the engine as separately priced hardware. Effect/$ uses illustrative flyaway cost only &mdash; not full life-cycle value.</div>
         <button class="btn primary" id="autoselect" style="width:100%;margin-top:14px">Auto-select best wings &#9654;</button>
         <div class="opt-note">Searches the current deck, range, tempo &amp; wing mode. Includes your design; cliff search also samples tanker plans and requires peak effect of at least 400.</div>
       </div>
@@ -506,7 +520,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
 <script>
 (function(){
   "use strict";
-  var CRUISE=480, STATION=0.5, BUDGET=100;
+  var CRUISE=480, STATION=0.5;
   var KFEED=160, A2A_SHOTS_PER_SORTIE=2;   // A2A sustainment: illustrative deck ordnance-move cap (rounds/day, K_feed) + admitted shots per threatened sortie
   var DECKS={nimitz:{name:"Nimitz-class",spots:44,turnAdj:0,ordMult:1.0},
              ford:{name:"Ford-class",spots:48,turnAdj:-3,ordMult:2.2}};   // Ford AWE ~2.2x weapons throughput [ILLUSTRATIVE]
@@ -522,8 +536,8 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       desc:"<b>CCA-Strike</b> &mdash; a RockWorx clean-sheet carrier concept. Small, uncrewed, built for tempo: a tiny deck footprint means more spots and faster cycling, so it wins the effect-per-spot fight where big jets can't. RockWorx's take on 'quantity is a quality all its own.'"},
     ccap:{name:"CCA-Penetrator", role:"strike", pay:9000, surv:88, rate:1.18, concept:1, note:"Low-observable, uncrewed.",
       desc:"<b>CCA-Penetrator</b> &mdash; a RockWorx low-observable carrier concept. Stealth-shaped and uncrewed, trading raw payload for survivability and the ability to reach into defended airspace. Where the CCA-Strike brings tempo, the CCA-Penetrator brings penetration."},
-    custom:{name:"Your Design", role:"strike", custom:true, concept:1, note:"Set the spec below, then field it.",
-      desc:"<b>Your Design</b> &mdash; roll your own carrier aircraft within a design-point budget. Payload, survivability, and small size all cost points &mdash; you can't max everything, because on a real deck you never can. Field it and see where it lands."},
+    custom:{name:"Your Design", role:"strike", custom:true, concept:1, note:"Close your own carrier CCA below, then field it.",
+      desc:"<b>Your Design</b> &mdash; a teaching-grade conceptual closure model of your own carrier CCA. Pick an engine class, wing area, ingress Mach, payload and fuel: the airplane only exists if approach speed, thrust margin, fuel volume and deck footprint all close at once. An unclosed airplane flies only in PowerPoint &mdash; it stays on deck. Illustrative, not for planning."},
     mq25: {name:"MQ-25 Stingray", role:"tanker", offload:15000, note:"Purpose-built tanker archetype.",
       desc:"<b>MQ-25 Stingray</b> &mdash; a carrier-based unmanned tanker: large offload, long endurance. It works both ends of the cycle &mdash; outbound strike tanker AND inbound recovery tanker &mdash; and is persistent enough that it never has to yo-yo. It exists to stop the fleet burning strike-fighters as gas trucks."},
     horn5:{name:"F/A-18 5-wet", role:"tanker", offload:3500, note:"A striker robbed for gas.",
@@ -545,9 +559,224 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   CAT.ccx={name:"CCX-1 Carrier CCA",role:"strike",pay:3000,surv:84,rate:1.35,clean:420,burn:8.5,internal:1,spots:0.75,cost:18.5,concept:1,
     note:"Stealthy strike/sensor carrier drone. High tempo, but carrier gear limits organic reach.",
     desc:"<b>CCX-1 Carrier CCA</b> &mdash; a notional carrier-suitable Collaborative Combat Aircraft (illustrative teaching archetype). Packs 4 aircraft into 3 deck spots, features clean stealth shaping for survivability, and rapid cyclic turnaround. But carrier suitability is an uncompromising tax: landing gear built for hard carrier arrivals, a catapult launch bar and approach-speed margins eat into internal fuel, capping clean radius at 420 nm. Past that, it depends on tanker gas &mdash; and a jet that brings its weapons back lands heavy, which raises bolter risk unless a recovery tanker is overhead."};
+  // Watch tour (With CCAs ON): CCX-1 flying combat air patrol in the CAP fighter spots. It is the existing CAP role: each
+  // airframe counts as one CAP airframe in the CAP sortie and escort-survivability model [ILLUSTRATIVE]; it carries no strike
+  // effect. Tour-only (tour:1): not a roster row unless fielded, never searched by Auto-Boss.
+  CAT.ccxcap={name:"CCX-1 on CAP",role:"cap",spots:CAT.ccx.spots,cost:CAT.ccx.cost,concept:1,tour:1,note:"CCX-1 flying combat air patrol (uncrewed).",
+    desc:"<b>CCX-1 on CAP</b> &mdash; the notional CCX-1 carrier CCA (illustrative) flying combat air patrol instead of a crewed CAP fighter: 4 aircraft in 3 deck spots, the same CAP role and survivability effect per airframe, no ordnance on target, and no aircrew in the air. Operators on console instead."};
   // v3.1 S6 recovery squeeze: illustrative empty weight / max arrested-landing weight (lb). CCX-1 values follow
   // round(1.10 x payload + 40 nm x burn) and empty + 2,000 reserve + round(0.40 x payload).
-  var EMPTY_WT={f35c:34800,fa18:32000,ccx:3640,custom:20000},MALW={f35c:47000,fa18:34000,ccx:6840,custom:25000};
+  var EMPTY_WT={f35c:34800,fa18:32000,ccx:3640},MALW={f35c:47000,fa18:34000,ccx:6840};   // custom: designer weights (v3.3)
+  /* ===== v3.3 "Your Design" CCA designer: a teaching-grade conceptual CLOSURE model =====
+     Replaces the v3.0-v3.2 point-buy. Engine class (priced separately, NRE amortized over the buy), the carrier wing-area
+     pinch (approach speed vs drag vs fuel volume), transonic drag rise vs installed thrust (D/T <= 0.85), keep-up doctrine
+     against the M0.80 strike package, Breguet radius feeding the sortie model, four closure gates naming the binder,
+     adverse / favorable installed-thrust scenarios and price vs value. Every coefficient is an illustrative teaching value
+     [ILLUSTRATIVE TEACHING-GRADE] from open textbook relations; the engine classes are generic archetypes. Pure module:
+     it reads no game state. */
+  var DESIGNER=(function(){
+    var ENGINES={
+      light:{key:'light',name:'Class 1 Light Turbofan',short:'Light',tsls:4200,weight:850,tsfc:.64,price:1.80,nre:120,nacelle:2.3},
+      mid:{key:'mid',name:'Class 2 Mid-Thrust Turbofan',short:'Mid-Thrust',tsls:8500,weight:1650,tsfc:.72,price:3.60,nre:250,nacelle:3.1},
+      heavy:{key:'heavy',name:'Class 3 Heavy Core Turbofan',short:'Heavy Core',tsls:16500,weight:2750,tsfc:.82,price:6.80,nre:600,nacelle:4.2}};
+    var C={rhoSL:.002377,ktFps:1.6878,etaInstall:.92,lapseSlope:.20,densityExp:.85,hIngress:30000,aKt:589.6,qCoef:440.76,
+      clApp:1.30,vpaMax:135.0,ar:4.20,oswald:.82,cd0k:.0032,wetSlope:2.10,wetFixed:380,mCrit:.72,waveK:.010,waveSpan:.12,dtMax:.85,
+      wingAreal:18.5,payloadStruct:.35,fixedEmpty:1800,reserveFrac:.08,reserveFixed:400,fuelPerSqft:12.0,fuelBody:2200,
+      climbFrac:.05,loiterFrac:.06,cruiseWtFuelFrac:.40,foldFrac:.65,foldKnuckle:3.0,spotK:.01978,spotBase:.2000,spanMax:38.0,spotMax:1.60,
+      sMin:150,sMax:450,mPack:.80,feintMax:.40,packagePenalty:.25,fighterLoiterLbHr:4500,tankerOrbitNm:150,
+      thrustLow:.88,thrustHigh:1.08,airframeRate:1250,avionicsBase:3.50,avionicsSurv:2.50,airframeDev:350,tTarget:.50,tPattern:.35};
+    C.K=1/(Math.PI*C.ar*C.oswald);                                   // induced-drag factor 1 / (pi AR e) = 0.09242
+    C.wlandPerS=.5*C.rhoSL*C.clApp*Math.pow(C.vpaMax*C.ktFps,2);    // 80.2144 lb of landing weight per sq ft at 135 kt
+    var DEFAULTS={engineClass:'mid',wingArea:285,ingressMach:.80,payload:2000,fuel:5620,buyQty:150,surv:.85,doctrine:'keep_up'};
+    var RANGES={wingArea:[150,450],ingressMach:[.60,.88],payload:[1000,6000],fuel:[2000,7600],buyQty:[50,500],surv:[.50,.95]};
+    var DOCTRINES=['keep_up','early_launch','loiter','slow_package'];
+    var DOCTRINE_NAMES={keep_up:'Formation Keep-Up',early_launch:'Early Launch Departure',loiter:'Push-Point Loiter',slow_package:'Slower Package Speed'};
+    function fin(x){return typeof x==='number'&&isFinite(x);}
+    // Spec 10.2: a legacy point-buy record (pay / size keys) migrates to the closing defaults; a missing or malformed key
+    // takes its default; numbers are clamped to the slider domain.
+    function migrate(c){
+      if(!c||typeof c!=='object'||('size' in c)||('pay' in c))return {state:Object.assign({},DEFAULTS),migrated:true,legacy:true};
+      var o={},changed=false;
+      Object.keys(DEFAULTS).forEach(function(k){var v=c[k],d=DEFAULTS[k];
+        if(k==='engineClass'){o[k]=ENGINES.hasOwnProperty(v)?v:d;}
+        else if(k==='doctrine'){o[k]=DOCTRINES.indexOf(v)>=0?v:d;}
+        else{var r=RANGES[k];o[k]=fin(v)?Math.min(r[1],Math.max(r[0],v)):d;}
+        if(o[k]!==v)changed=true;});
+      Object.keys(c).forEach(function(k){if(!(k in DEFAULTS))changed=true;});
+      return {state:o,migrated:changed,legacy:false};}
+    function engineOf(e){return typeof e==='string'?ENGINES[e]:e;}
+    function densityRatio(h){return Math.pow(1-6.8756e-6*h,4.256);}
+    function thrustAvail(e,h,M){e=engineOf(e);return e.tsls*Math.pow(densityRatio(h),C.densityExp)*(1-C.lapseSlope*M)*C.etaInstall;}
+    function waveDrag(M){return M<=C.mCrit?0:C.waveK*Math.pow((M-C.mCrit)/C.waveSpan,3);}
+    function vpa(wLand,S){return Math.sqrt(2*wLand/(C.rhoSL*S*C.clApp))/C.ktFps;}
+    function sMinLanding(wLand){return wLand/C.wlandPerS;}
+    function weights(e,S,Wp,Wf){var empty=e.weight+C.wingAreal*S+C.payloadStruct*Wp+C.fixedEmpty,to=empty+Wp+Wf,res=C.reserveFrac*Wf+C.reserveFixed;
+      return {empty:empty,to:to,reserveFuel:res,land:empty+Wp+res,cruise:to-C.cruiseWtFuelFrac*Wf,
+        landFixed:e.weight+(1+C.payloadStruct)*Wp+C.reserveFrac*Wf+C.reserveFixed+C.fixedEmpty};}
+    // Term-by-term drag build-up at the ingress condition (never a borrowed L/D).
+    function aero(e,S,Wp,Wf,M){e=engineOf(e);var w=weights(e,S,Wp,Wf),q=C.qCoef*M*M,cl=w.cruise/(q*S),cd0=C.cd0k*(C.wetSlope*S+C.wetFixed)/S,
+      cdi=C.K*cl*cl,cdw=waveDrag(M),cd=cd0+cdi+cdw,D=q*S*cd,T=thrustAvail(e,C.hIngress,M);
+      return {w:w,q:q,CL:cl,CD0:cd0,CDi:cdi,CDwave:cdw,CD:cd,D:D,T:T,DT:D/T,LD:cl/cd};}
+    // Thrust set {S in [150, 450] : D/T <= 0.85}. D(S) = a + bS + c/S is convex, so the set is one interval bounded by a
+    // lower induced-drag root and an upper parasite-drag root (either may sit on the slider limit); null when empty.
+    function thrustWindow(e,Wp,Wf,M){e=engineOf(e);var f=function(S){return aero(e,S,Wp,Wf,M).DT-C.dtMax;};
+      var a=C.sMin,b=C.sMax,g=(Math.sqrt(5)-1)/2,x1=b-g*(b-a),x2=a+g*(b-a),f1=f(x1),f2=f(x2);
+      for(var i=0;i<120;i++){if(f1<f2){b=x2;x2=x1;f2=f1;x1=b-g*(b-a);f1=f(x1);}else{a=x1;x1=x2;f1=f2;x2=a+g*(b-a);f2=f(x2);}}
+      var sStar=(a+b)/2;if(f(sStar)>0)return null;
+      function root(lo,hi){var flo=f(lo)>0;for(var i=0;i<200&&hi-lo>1e-12;i++){var m=(lo+hi)/2;if((f(m)>0)===flo)lo=m;else hi=m;}return flo?hi:lo;}
+      return {lo:f(C.sMin)<=0?C.sMin:root(C.sMin,sStar),hi:f(C.sMax)<=0?C.sMax:root(sStar,C.sMax),sStar:sStar};}
+    function breguet(o){var climb=C.climbFrac*o.wFuel,res=C.reserveFrac*o.wFuel+C.reserveFixed,loit=C.loiterFrac*o.wFuel,
+      cruise=o.wFuel-climb-res-loit,wStart=o.wTO-climb,wEnd=wStart-cruise,ok=cruise>0&&wEnd>0&&o.tsfc>0&&o.ld>0;
+      return {climb:climb,reserve:res,loiter:loit,cruise:cruise,wStart:wStart,wEnd:wEnd,
+        radius:ok?.5*(o.v/o.tsfc)*o.ld*Math.log(wStart/wEnd):0};}
+    function engineUnitCost(e,q){e=engineOf(e);return e.price+e.nre/q;}
+    function costPerEffect(apuc,E,N,doesClose){return doesClose&&fin(apuc)&&fin(E)&&fin(N)&&E>0&&N>0?N*apuc*1e6/E:Infinity;}
+    // Spec 7.1 / 7.2 gates. Fail closed on any non-finite metric; binding = argmax over failures of deficit / threshold.
+    function nf(x,d){return fin(x)?fmt(x,d):String(x);}   // formats non-finite metrics without throwing
+    function evaluateGates(m){
+      function gate(code,name,pass,value,limit,ratio,msg){return {code:code,name:name,pass:pass,value:value,limit:limit,
+        margin:fin(value)?limit-value:-Infinity,deficitRatio:pass?0:(fin(ratio)?Math.max(0,ratio):Infinity),message:pass?'':msg};}
+      var v=m.vpa,dt=m.dt,fu=m.fuel,fm=m.fuelMax,bf=m.bFolded,sp=m.spot;
+      var g={approach:gate('GATE_APPROACH','Carrier Approach Speed Exceeded',fin(v)&&v<=C.vpaMax,v,C.vpaMax,(v-C.vpaMax)/C.vpaMax,
+          'DESIGN FAILS TO CLOSE: Carrier approach speed '+nf(v,1)+' kt exceeds '+nf(C.vpaMax,1)+' kt limit (+'+nf(v-C.vpaMax,1)+' kt deficit). Enlarge wing area S_wing or reduce payload.'),
+        thrust:gate('GATE_THRUST','Insufficient Ingress Thrust Margin',fin(dt)&&dt<=C.dtMax,dt,C.dtMax,(dt-C.dtMax)/C.dtMax,
+          'DESIGN FAILS TO CLOSE: Ingress D/T '+nf(dt,3)+' exceeds the '+nf(C.dtMax,2)+' limit (+'+nf((dt-C.dtMax)*100,1)+'% deficit). Select a larger engine, reduce S_wing or lower the ingress Mach.'),
+        volume:gate('GATE_VOLUME','Internal Fuel Tank Packaging Exceeded',fin(fu)&&fin(fm)&&fu<=fm,fu,fm,(fu-fm)/fm,
+          'DESIGN FAILS TO CLOSE: Internal fuel '+nf(fu,0)+' lb exceeds '+nf(fm,0)+' lb tank capacity (-'+nf(fu-fm,0)+' lb volume deficit). Increase wing area S_wing or carry less fuel.')};
+      var spanOk=fin(bf)&&bf<=C.spanMax,spotOk=fin(sp)&&sp<=C.spotMax;
+      g.deck=gate('GATE_DECK','Flight Deck Footprint Exceeded',spanOk&&spotOk,sp,C.spotMax,Math.max((bf-C.spanMax)/C.spanMax,(sp-C.spotMax)/C.spotMax),
+        !spanOk?'GATE_DECK: Span '+nf(bf,1)+' ft exceeds '+nf(C.spanMax,1)+' ft elevator limit':'GATE_DECK: Spot factor '+nf(sp,3)+' exceeds '+nf(C.spotMax,2)+' limit with span '+nf(bf,1)+' ft <= '+nf(C.spanMax,1)+' ft');
+      g.deck.span=bf;g.deck.spanLimit=C.spanMax;
+      var binding=null,worst=-1;['approach','thrust','volume','deck'].forEach(function(k){if(!g[k].pass&&g[k].deficitRatio>worst){worst=g[k].deficitRatio;binding=k;}});
+      g.doesClose=!binding;g.bindingKey=binding;g.bindingGate=binding?g[binding].code:null;g.bindingMessage=binding?g[binding].message:'';
+      return g;}
+    function robustness(doesClose,dt){var low=dt/C.thrustLow,cat=!doesClose?'infeasible':low<=C.dtMax?'robust':'marginal';
+      return {category:cat,dtLow:low,dtHigh:dt/C.thrustHigh,text:cat==='robust'?'ROBUST CLOSURE: All gates pass under Adverse / Hot-Day Thrust':
+        cat==='marginal'?'MARGINAL CLOSURE: High vulnerability to hot-day aborts (D/T_low > 0.85)':'INFEASIBLE: Nominal gate violation'};}
+    // ---- Doctrine vs the M0.80 strike package (spec 5) ----
+    function launchOffsetMin(R,M){var vc=M*C.aKt,vp=C.mPack*C.aKt;return vc>=vp-1e-9?0:R*(1/vc-1/vp)*60;}
+    function effectiveDoctrine(sel,M){if(M>=C.mPack-1e-9)return 'keep_up';return sel==='keep_up'||DOCTRINES.indexOf(sel)<0?'early_launch':sel;}
+    function feintFactor(M){return 1-C.feintMax*Math.min(1,Math.max(0,(C.mPack-M)/(C.mPack-.60)));}
+    function packageFactor(M){return Math.min(1,Math.max(0,1-C.packagePenalty*(C.mPack-M)/.20));}
+    function loiterFuel(n,dtMin){return n*(dtMin/60)*C.fighterLoiterLbHr;}
+    function tankerOffload(){return tankerLedger('mq25',C.tankerOrbitNm,false).offload;}   // the shipped MQ-25 ledger (12,500 lb at 150 nm)
+    function tankersRequired(fuel,offload){offload=offload||tankerOffload();return fuel>0?Math.ceil(fuel/offload-1e-9):0;}
+    function plural(n,w){return n+' '+w+(n===1?'':'s');}
+    // Event-by-event schedule. Event 1 has no prior window: an early launch makes the package hold at the push point for
+    // the launch offset, which needs spare organic tanker sorties of loiter gas; with too few, the CCA is WITHHELD from
+    // that event (fail-closed; crewed fighters push on their baseline) and re-enters at the next flyable event.
+    // Option B needs the loiter gas every event. Option C needs none but slows the whole package.
+    function doctrineSchedule(o){
+      function per(v,e){return Array.isArray(v)?Math.max(0,Math.floor(v[e-1]||0)):Math.max(0,Math.floor(v||0));}
+      var E=Math.max(0,Math.floor(o.events||0)),eff=effectiveDoctrine(o.doctrine,o.mach),dt=launchOffsetMin(o.range,o.mach),
+        active=(o.nCustom||0)>0&&o.doesClose!==false,offload=o.offload||tankerOffload(),rows=[],flown=0,used=0,withheld=0,reason='';
+      for(var e=1;e<=E;e++){var nf=per(o.fightersPerEvent,e),spare=per(o.spareTankers,e),
+          row={event:e,doctrine:eff,status:'keep_up',customFlies:active,fighterDelayMin:0,fighterSurvFactor:1,packageFactor:1,
+            loiterFuel:0,tankersRequired:0,tankersAvailable:spare,tankersUsed:0,feint:false,reason:'',rejoinEvent:null};
+        if(!active){row.status=(o.nCustom||0)>0?'unclosed':'none';row.customFlies=false;}
+        else if(eff==='slow_package'){row.status='slow_package';row.packageFactor=packageFactor(o.mach);}
+        else if(eff!=='keep_up'){
+          if(eff==='early_launch'&&e>1){row.status='early_launch';row.feint=true;}       // launches in the Event N-1 window
+          else{var fuel=loiterFuel(nf,dt),req=tankersRequired(fuel,offload);row.loiterFuel=fuel;row.tankersRequired=req;
+            if(spare>=req){row.status=eff;row.tankersUsed=req;row.fighterDelayMin=dt;row.feint=eff==='early_launch';}
+            else{row.status='withheld';row.customFlies=false;row.loiterFuel=0;
+              row.reason=(eff==='loiter'?'push-point loiter':'early launch')+' needs '+plural(req,'tanker sortie')+' of loiter gas; '+spare+' available';}}}
+        if(row.customFlies)flown++;if(row.status==='withheld'){withheld++;if(!reason)reason=row.reason;}used+=row.tankersUsed;rows.push(row);}
+      rows.forEach(function(r,i){if(r.status==='withheld')for(var j=i+1;j<rows.length;j++)if(rows[j].customFlies){r.rejoinEvent=rows[j].event;break;}});
+      return {events:E,doctrine:o.doctrine,effective:eff,dtLaunch:dt,offload:offload,rows:rows,flownEvents:flown,withheldEvents:withheld,
+        flyFraction:E>0?flown/E:0,tankersUsed:used,reason:reason,packageFactor:eff==='slow_package'&&active?packageFactor(o.mach):1};}
+    function carrierEvent(R){return LOGI.eventLength(R);}                              // v3.2 table 3.3.3 (governs a mixed wing)
+    function sortieHours(R,V){return 2*R/V+C.tTarget+C.tPattern;}                      // isolated sortie (spec 6.3)
+    function stagingCycle(T){return .25*Math.ceil(T/.25-1e-9);}
+    function eventsSpanned(R,V){return Math.ceil(sortieHours(R,V)/carrierEvent(R)-1e-9);}
+    function evaluate(p,opt){opt=opt||{};var mg=opt.raw?{state:Object.assign({},DEFAULTS,p)}:migrate(p),s=mg.state,e=ENGINES[s.engineClass]||ENGINES.mid,
+        S=s.wingArea,Wp=s.payload,Wf=s.fuel,M=s.ingressMach,ae=aero(e,S,Wp,Wf,M),w=ae.w,V=M*C.aKt,fuelMax=C.fuelPerSqft*S+C.fuelBody;
+      var bUn=Math.sqrt(C.ar*S),bF=opt.fold===false?bUn:C.foldFrac*bUn+C.foldKnuckle,spot=C.spotK*bF+C.spotBase,v=vpa(w.land,S);
+      var gates=evaluateGates({vpa:v,dt:ae.DT,fuel:Wf,fuelMax:fuelMax,bFolded:bF,spot:spot});
+      var br=breguet({wTO:w.to,wFuel:Wf,tsfc:e.tsfc,ld:ae.LD,v:V}),tw=thrustWindow(e,Wp,Wf,M);
+      var sMinApp=w.landFixed/(C.wlandPerS-C.wingAreal),sMinVol=Math.max(C.sMin,(Wf-C.fuelBody)/C.fuelPerSqft),
+        bMax=Math.min(C.spanMax,(C.spotMax-C.spotBase)/C.spotK),sMaxDeck=Math.pow(opt.fold===false?bMax:(bMax-C.foldKnuckle)/C.foldFrac,2)/C.ar;
+      var lower=tw?Math.max(C.sMin,sMinApp,sMinVol,tw.lo):Infinity,upper=tw?Math.min(C.sMax,tw.hi,sMaxDeck):-Infinity;
+      var deltaPinch=tw?tw.hi-Math.max(sMinApp,tw.lo):-Infinity,rb=robustness(gates.doesClose,ae.DT);
+      var eff=effectiveDoctrine(s.doctrine,M),dk=Math.min(1,Math.max(0,(C.mPack-M)/(C.mPack-.60)));
+      var airframe=(w.empty-e.weight)*C.airframeRate/1e6,avionics=C.avionicsBase+s.surv*C.avionicsSurv,flyaway=airframe+avionics+e.price,
+        apuc=flyaway+(C.airframeDev+e.nre)/s.buyQty;
+      var d={input:s,migrated:mg.migrated,legacy:mg.legacy,engine:e,engineClass:e.key,S:S,M:M,V_cruise:V,W_payload:Wp,W_fuel:Wf,W_empty:w.empty,W_TO:w.to,
+        W_land:w.land,W_cruise:w.cruise,reserveFuel:w.reserveFuel,w:w,fuelMax:fuelMax,q:ae.q,CL:ae.CL,CD0:ae.CD0,CDi:ae.CDi,CDwave:ae.CDwave,CD:ae.CD,
+        D:ae.D,T:ae.T,DT:ae.DT,LD:ae.LD,T_low:ae.T*C.thrustLow,T_high:ae.T*C.thrustHigh,DT_low:rb.dtLow,DT_high:rb.dtHigh,
+        vpa:v,malw:C.wlandPerS*S,bUnfolded:bUn,bFolded:bF,deckSpotFactor:spot,breguet:br,R_clean:br.radius,burnRate:ae.D*e.tsfc*2/V,
+        sMinApp:sMinApp,sMinVol:sMinVol,sMaxDeck:sMaxDeck,thrustWindow:tw,sMinThrust:tw?tw.lo:null,sMaxThrust:tw?tw.hi:null,
+        deltaPinch:deltaPinch,pinchedOut:!tw||deltaPinch<0,feasible:tw&&lower<=upper?[lower,upper]:null,
+        gates:gates,doesClose:gates.doesClose,bindingGate:gates.bindingGate,bindingMessage:gates.bindingMessage,
+        robustness:rb.category,robustnessText:rb.text,doctrineSelected:s.doctrine,doctrine:eff,feintDk:dk,
+        effectiveSurv:eff==='early_launch'?s.surv*(1-C.feintMax*dk):s.surv,packageSurvFactor:eff==='slow_package'?packageFactor(M):1,
+        costs:{airframe:airframe,avionics:avionics,engineFlyaway:e.price,engineNre:e.nre,engineNrePerUnit:e.nre/s.buyQty,engineUnit:engineUnitCost(e,s.buyQty),
+          airframeDev:C.airframeDev,flyaway:flyaway,apuc:apuc,program:s.buyQty*apuc,buyQty:s.buyQty}};
+      d.statusText=d.doesClose?'STATUS: DESIGN CLOSES -- '+rb.text:'STATUS: '+rb.text+' ('+d.bindingGate+'). '+d.bindingMessage+
+        (d.pinchedOut?' PINCHED OUT: No feasible wing area satisfies approach speed and high-speed thrust simultaneously.':'');
+      return d;}
+    function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function signed(x,d){return (x>=0?'+':'')+fmt(x,d);}
+    function valuesText(d){var e=d.engine,c=d.costs;
+      return {'cv-engine':e.name+': '+fmt(e.tsls,0)+' lbf static | dry '+fmt(e.weight,0)+' lb | cruise TSFC '+fmt(e.tsfc,2)+' | $'+fmt(e.price,2)+'M hardware | $'+fmt(e.nre,0)+'M development',
+        'cv-qty':fmt(c.buyQty,0)+' a/c (amortized engine dev +$'+fmt(c.engineNrePerUnit,2)+'M/unit)',
+        'cv-wing':fmt(d.S,0)+' sq ft (V_PA '+fmt(d.vpa,1)+' kt | margin '+signed(C.vpaMax-d.vpa,1)+' kt)',
+        'cv-mach':'Mach '+fmt(d.M,2)+' (D/T '+fmt(d.DT,2)+' | margin '+signed((C.dtMax-d.DT)*100,1)+'%)',
+        'cv-payload':fmt(d.W_payload,0)+' lb',
+        'cv-fuel':fmt(d.W_fuel,0)+' lb (max '+fmt(d.fuelMax,0)+' lb | '+fmt(d.W_fuel/d.fuelMax*100,0)+'% full)',
+        'cv-surv':fmt(d.input.surv,2),
+        'cv-doctrine':DOCTRINE_NAMES[d.doctrineSelected]+(d.doctrine!==d.doctrineSelected?' (flies as '+DOCTRINE_NAMES[d.doctrine]+' at Mach '+fmt(d.M,2)+')':'')};}
+    function row(t,cls){return '<div class="dz-row'+(cls?' '+cls:'')+'">'+t+'</div>';}
+    function gateRow(g,label,text){return '<div class="dz-gate '+(g.pass?'pass':'fail')+'"><b>[ '+(g.pass?'PASS':'FAIL')+' ]</b> '+label+' : '+esc(text)+'</div>';}
+    // The "Does it close?" diagnostic and the doctrine / price-vs-value readout (spec 7, 8, 9.1). ctx comes from the
+    // shipped evaluator (designerContext): the scheduled doctrine rows, delivered custom effect and cost per effect.
+    function panelHTML(d,ctx){ctx=ctx||{};var g=d.gates,c=d.costs,h='',R=ctx.range||0,sch=ctx.schedule,n=ctx.nCustom||0;
+      h+='<div class="dz-h">3 &middot; Does it close?</div>';
+      h+=gateRow(g.approach,'CARRIER APPROACH SPEED',fmt(d.vpa,1)+' kt '+(g.approach.pass?'<=':'>')+' 135.0 kt limit '+(g.approach.pass?'(margin +'+fmt(C.vpaMax-d.vpa,1)+' kt)':'(exceeded by +'+fmt(d.vpa-C.vpaMax,1)+' kt)'));
+      h+=gateRow(g.thrust,'INGRESS THRUST MARGIN','D/T '+fmt(d.DT,2)+' '+(g.thrust.pass?'<=':'>')+' 0.85 limit '+(g.thrust.pass?'(margin +'+fmt((C.dtMax-d.DT)*100,1)+'%)':'(+'+fmt((d.DT-C.dtMax)*100,1)+'% over)'));
+      h+=gateRow(g.volume,'FUEL VOLUME PACKAGING',fmt(d.W_fuel,0)+' lb '+(g.volume.pass?'<=':'>')+' '+fmt(d.fuelMax,0)+' lb capacity '+(g.volume.pass?'('+fmt(d.W_fuel/d.fuelMax*100,0)+'% full)':'(volume deficit -'+fmt(d.W_fuel-d.fuelMax,0)+' lb)'));
+      h+=gateRow(g.deck,'CARRIER SPOT FOOTPRINT',g.deck.pass?fmt(d.deckSpotFactor,2)+' spots ('+fmt(d.bFolded,1)+' ft span folded | compatible)':g.deck.message);
+      h+='<div class="dz-status '+(d.robustness==='robust'?'ok':d.robustness==='marginal'?'warn':'bad')+'" role="status">'+esc(d.statusText)+'</div>';
+      h+=row('Installed thrust scenarios (illustrative, not a probability): adverse x0.88 D/T '+fmt(d.DT_low,3)+' | nominal '+fmt(d.DT,3)+' | favorable x1.08 '+fmt(d.DT_high,3));
+      h+=row(d.feasible?'Wing-area window: '+fmt(d.feasible[0],1)+' - '+fmt(d.feasible[1],1)+' sq ft closes (approach &gt;= '+fmt(d.sMinApp,1)+', fuel volume &gt;= '+fmt(d.sMinVol,1)+', thrust '+fmt(d.sMinThrust,1)+' - '+fmt(d.sMaxThrust,1)+')':
+        d.thrustWindow?'Wing-area window: none for this payload and fuel (approach &gt;= '+fmt(d.sMinApp,1)+', fuel volume &gt;= '+fmt(d.sMinVol,1)+', thrust '+fmt(d.sMinThrust,1)+' - '+fmt(d.sMaxThrust,1)+')':
+        'Wing-area window: none -- no wing area from 150 to 450 sq ft meets D/T 0.85 at Mach '+fmt(d.M,2),d.feasible?'':'warn');
+      h+='<div class="dz-h">4 &middot; Doctrine &amp; performance</div>';
+      h+=row('Combat radius (clean, Breguet): '+fmt(d.R_clean,0)+' nm '+(R?(d.R_clean>=R?'(reaches the '+fmt(R,0)+' nm target organically)':'(the '+fmt(R,0)+' nm target needs tanker gas beyond '+fmt(d.R_clean,0)+' nm)'):''));
+      if(R)h+=row('Cruise burn '+fmt(d.burnRate,2)+' lb per nm of radius. Isolated sortie at '+fmt(R,0)+' nm: '+fmt(sortieHours(R,d.V_cruise),2)+' hr (staged '+fmt(stagingCycle(sortieHours(R,d.V_cruise)),2)+' hr); the carrier event is '+fmt(carrierEvent(R),2)+' hr from the sortie-sag table.');
+      var dt=launchOffsetMin(R,d.M),docTxt;
+      if(d.doctrine==='keep_up')docTxt='Formation Keep-Up (pushes with the strike package; 0 loiter delay)';
+      else if(d.doctrine==='early_launch')docTxt='Early Launch Departure: launches '+fmt(dt,1)+' min ahead of the Mach 0.80 package and discloses the axis (feint discount: survival '+fmt(d.input.surv,2)+' -&gt; '+fmt(d.effectiveSurv,2)+')';
+      else if(d.doctrine==='loiter')docTxt='Push-Point Loiter: the fighters hold '+fmt(dt,1)+' min every event on spare tanker gas';
+      else docTxt='Slower Package Speed: the whole package flies Mach '+fmt(d.M,2)+' (every strike sortie survival x'+fmt(d.packageSurvFactor,3)+')';
+      h+=row('Ingress doctrine: '+docTxt);
+      if(n>0&&sch&&d.doesClose){var w=sch.rows.filter(function(r){return r.status==='withheld';}),r1=sch.rows[0];
+        if(w.length)h+=row('<b>CCA withheld from '+plural(w.length,'event')+':</b> '+esc(sch.reason)+'. Crewed strike fighters push on schedule'+(w[0].rejoinEvent?'; the CCA joins at Event '+w[0].rejoinEvent+'.':'.'),'warn');
+        else if(r1&&r1.tankersUsed>0)h+=row('Event 1'+(d.doctrine==='loiter'?' (and every event)':'')+': '+plural(r1.tankersUsed,'spare tanker sortie')+' of loiter gas cover the '+fmt(r1.fighterDelayMin,1)+'-min package hold ('+fmt(sch.tankersUsed,0)+' per day).');}
+      else if(n>0&&!d.doesClose)h+=row('Unclosed: the CCA is held on deck and flies no event.','warn');
+      else h+=row('Not fielded: assign deck spots to Your Design to fly it in the wing.');
+      h+=row('Unit flyaway cost: $'+fmt(c.flyaway,2)+'M | Program APUC ('+fmt(c.buyQty,0)+' a/c): $'+fmt(c.apuc,2)+'M');
+      h+=row('Engine per aircraft: $'+fmt(c.engineFlyaway,2)+'M hardware + $'+fmt(c.engineNrePerUnit,2)+'M amortized development = $'+fmt(c.engineUnit,2)+'M');
+      h+=row('Fleet program cost: $'+fmt(c.program,0)+'M | Cost per combat effect: '+(n<=0?'-- (not fielded)':!d.doesClose?'infinite -- an unclosed design delivers zero effect':
+        !(ctx.customEffect>0)?'infinite -- zero delivered effect':'$'+fmt(ctx.costPerEffect,0)+' / effect point ('+n+' fielded, effect '+fmt(ctx.customEffect,1)+')'));
+      h+='<p class="opt-note">Illustrative teaching-grade closure model: generic engine classes, textbook relations, rounded constants. Not for planning.</p>';
+      return h;}
+    return {ENGINES:ENGINES,C:C,DEFAULTS:DEFAULTS,RANGES:RANGES,DOCTRINES:DOCTRINES,DOCTRINE_NAMES:DOCTRINE_NAMES,migrate:migrate,
+      densityRatio:densityRatio,thrustAvail:thrustAvail,waveDrag:waveDrag,vpa:vpa,sMinLanding:sMinLanding,weights:weights,aero:aero,
+      thrustWindow:thrustWindow,breguet:breguet,engineUnitCost:engineUnitCost,costPerEffect:costPerEffect,evaluateGates:evaluateGates,
+      robustness:robustness,launchOffsetMin:launchOffsetMin,effectiveDoctrine:effectiveDoctrine,feintFactor:feintFactor,packageFactor:packageFactor,
+      loiterFuel:loiterFuel,tankerOffload:tankerOffload,tankersRequired:tankersRequired,doctrineSchedule:doctrineSchedule,
+      carrierEvent:carrierEvent,sortieHours:sortieHours,stagingCycle:stagingCycle,eventsSpanned:eventsSpanned,evaluate:evaluate,
+      panelHTML:panelHTML,valuesText:valuesText};
+  })();
+  // Spec 10.3 adapter: CAT.custom is written from the designer; every consumer reads CAT.custom.
+  var _customKey=null,_customDesign=null;
+  function syncCustom(){var m=DESIGNER.migrate(st.custom);if(m.migrated)st.custom=m.state;
+    var key=JSON.stringify(st.custom);if(key===_customKey&&_customDesign)return _customDesign;
+    var d=DESIGNER.evaluate(st.custom),c=CAT.custom;_customKey=key;_customDesign=d;
+    c.clean=d.R_clean;c.burn=d.burnRate;c.cost=d.costs.flyaway;c.rate=d.doesClose?1.00:0;c.pay=d.W_payload;c.surv=d.effectiveSurv*100;
+    c.spots=d.deckSpotFactor;c.doesClose=d.doesClose;c.bindingGate=d.bindingGate;c.empty=d.W_empty;c.malw=d.malw;c.design=d;
+    return d;}
   // Air-to-air weapon loadout -- real Navy AAMs. Trade: AMRAAM = magazine depth (more shots -> raw effect);
   // the long-range AAMs carry fewer/bigger rounds but kill the archer at range -> higher striker survivability.
   var WEAPONS={
@@ -577,8 +806,8 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     {role:"isr",chip:"c-isr",col:"#41c46a",label:"ISR / EW",keys:["isr"]}
   ];
   var WINGROLES=[["strike","tanker"],["strike","tanker","cap"],["strike","tanker","cap","isr"]];
-  var st={targetPosture:"integrated",threat:null,tankerMode:"organic",strikeOrbit:350,relayOrbit:500,tankerTactics:{yoyo:20,strike:60,consolidation:0,recovery:20},wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102,custom:90}, weapon:"amraam", strike:"mixed",
-          custom:{pay:6000,surv:60,size:55},
+  var st={targetPosture:"integrated",threat:null,tankerMode:"organic",strikeOrbit:350,relayOrbit:500,tankerTactics:{yoyo:20,strike:60,consolidation:0,recovery:20},wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102}, weapon:"amraam", strike:"mixed",
+          custom:{engineClass:"mid",wingArea:285,ingressMach:.80,payload:2000,fuel:5620,buyQty:150,surv:.85,doctrine:"keep_up"},
           alloc:{f35c:6,fa18:14,ccx:0,kf1:0,ccap:0,custom:0,mq25:5,horn5:0,cap:6,isr:3}};
 
   var el=function(id){return document.getElementById(id);};
@@ -586,24 +815,19 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   function fmt(n,d){return n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});}
   function activeRoles(){return WINGROLES[st.wing];}
   function activeKeys(){var ar=activeRoles();return Object.keys(CAT).filter(function(k){return ar.indexOf(CAT[k].role)>=0;});}
-  function spotsOf(k){return (CAT[k]&&CAT[k].spots)||1;}   // v3.1 S6 weighted deck-spot accounting
+  function spotsOf(k){if(k==='custom')syncCustom();return (CAT[k]&&CAT[k].spots)||1;}   // v3.1 S6 weighted deck-spot accounting; custom from the designer
   function usedSpots(alloc){alloc=alloc||st.alloc;return activeKeys().reduce(function(s,k){return s+(alloc[k]||0)*spotsOf(k);},0);}
   function used(){return usedSpots(st.alloc);}
   function fmtSpots(n){return Math.abs(n-Math.round(n))<1e-9?fmt(Math.round(n),0):fmt(n,2);}
-  function sizeRate(sz){return 1.4-(sz-20)/80*0.55;}
-  function statsFor(k){var a=CAT[k];return a.custom?{pay:st.custom.pay,surv:st.custom.surv,rate:sizeRate(st.custom.size)}:a;}
-  function designCost(){return st.custom.pay/1000*2.5 + st.custom.surv*0.7 + (100-st.custom.size)*0.6;}
-  function designPenalty(){var c=designCost();return c>BUDGET?Math.pow(BUDGET/c,3):1;}
+  function statsFor(k){var a=CAT[k];if(a.custom)syncCustom();return a;}   // custom: CAT adapter (pay = W_payload, surv %, rate)
   function costFor(k){                                  // $M per aircraft
-    if(k==="custom")return Math.max(st.cost.custom, 25+designCost()*0.85); // floored by capability -- can't price a monster design at $10M
+    if(k==="custom")return syncCustom().costs.flyaway;  // v3.3: recurring flyaway from the designer (engine priced separately)
     if(k==="f35c")return st.cost.f35c;                   // F-35C still in production -> adjustable +/-15%
     return CAT[k].cost||0;                               // fa18/horn5 fixed $67M (line shutdown funded); others sourced/notional
   }
   // ---- Tier-2 OA realism ----
-  function customClean(){return Math.max(250, 450+(100-st.custom.size)*2.5-(st.custom.pay/1000)*10);}
-  function customBurn(){return 9.0+(st.custom.size/100)*8.0;}
-  function cleanFor(k){return k==="custom"?customClean():(CAT[k].clean||450);}
-  function burnFor(k){return k==="custom"?customBurn():(CAT[k].burn||14);}
+  function cleanFor(k){if(k==="custom")syncCustom();return CAT[k].clean||450;}   // custom: Breguet radius (v3.3)
+  function burnFor(k){if(k==="custom")syncCustom();return CAT[k].burn||14;}      // custom: lb fuel per nm of radius (v3.3)
   function calcSurvBonus(nCAP,nISR,wsurv){               // saturating escort value -- first units buy the most
     return 0.22*(1-Math.exp(-0.35*nCAP))+0.28*(1-Math.exp(-0.55*nISR))+(wsurv||0);
   }
@@ -678,8 +902,9 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   function tempoSchedule(tempo,events){var surge=!!tempo,E=events!=null?Math.max(1,Math.floor(events)):(surge?10:8),win=surge?22:12,rec=Math.floor(win/TRAP_MIN);
     return {events:E,eventLen:surge?1.6:1.5,recoveryWindow:win,recPerEvent:rec,deckCeiling:rec*E,caps:surge?4.5:3.5,turnBase:surge?.7:.8};}
   // v3.1 S6 recovery squeeze: trap weight vs max arrested-landing weight -> bolter and recovery-loss risk [ILLUSTRATIVE].
-  function recoveryRisk(k,bringBack,coverage){var empty=EMPTY_WT[k]||25000,malw=MALW[k]||30000,pay=statsFor(k).pay||0;
-    var wTrap=empty+(bringBack?pay:200)+1500,over=Math.max(0,(wTrap-malw)/1000),pBolter=Math.min(.25,.02+.10*over);
+  // v3.3 custom: designer empty weight, MALW = 80.2144 x S (the 135-kt approach limit on the wing), reserve 8% fuel + 400 lb.
+  function recoveryRisk(k,bringBack,coverage){var cd=k==='custom'?syncCustom():null,empty=cd?cd.W_empty:EMPTY_WT[k]||25000,malw=cd?cd.malw:MALW[k]||30000,pay=statsFor(k).pay||0;
+    var wTrap=empty+(bringBack?pay:200)+(cd?cd.reserveFuel:1500),over=Math.max(0,(wTrap-malw)/1000),pBolter=Math.min(.25,.02+.10*over);
     return {wTrap:wTrap,malw:malw,overweight:Math.max(0,wTrap-malw),vpaRatio:Math.sqrt(wTrap/malw),pBolter:pBolter,pLoss:pBolter*(1-.90*clamp(coverage||0,0,1))};}
   function evalWing(range,alloc,options){
     alloc=alloc||st.alloc;options=options||{};
@@ -691,11 +916,12 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     var TURNC=(sch.turnBase+DECKS[DECK].turnAdj/60/eventLen)*turnMult;
     function rateFor(h){return Math.min(CAPS,events*.85/(h/eventLen+TURNC));}
     var airborne=2*range/CRUISE+STATION,baseStrike=rateFor(airborne),byType=[],byKey={},cost=0,pinned=options.sortiesPerJet!=null;
-    var strikeDemand=0,tankerSorties=0,nCAP=0,nISR=0,topoffAvail=0,enroute=0,recoveryGas=0,infeasible=[];
+    var strikeDemand=0,tankerSorties=0,nCAP=0,nCAPcca=0,nISR=0,topoffAvail=0,enroute=0,recoveryGas=0,infeasible=[];
     activeKeys().forEach(function(k){var n=alloc[k]||0,a=CAT[k],s=statsFor(k);if(n<=0)return;cost+=n*costFor(k);
-      if(a.role==='strike'){var ss=(pinned?n*options.sortiesPerJet:n*Math.min(CAPS,baseStrike*s.rate))*avail;strikeDemand+=ss;
-        byType.push({key:k,s:s,n:n,demand:ss,ss:ss,overhead:0,pen:a.custom?designPenalty():1});}
-      else if(a.role==='cap')nCAP+=n;else if(a.role==='isr')nISR+=n;
+      // v3.3 fail-closed exclusion: an unclosed custom design generates no demand on the rate path or the pinned path.
+      if(a.role==='strike'){var ss=a.custom&&!a.doesClose?0:(pinned?n*options.sortiesPerJet:n*Math.min(CAPS,baseStrike*s.rate))*avail;strikeDemand+=ss;
+        byType.push({key:k,s:s,n:n,demand:ss,ss:ss,ssScheduled:ss,overhead:0,pen:1});}
+      else if(a.role==='cap'){nCAP+=n;if(a.tour)nCAPcca+=n;}else if(a.role==='isr')nISR+=n;
     });
     var tankerByKey={};
     Object.keys(TANKERS).forEach(function(k){var t=TANKERS[k],single=tankerLedger(k,orbit,false),deep=tankerLedger(k,relayOrbit,true);
@@ -706,7 +932,20 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       var ts=(plan.yoyo[k]*3.5+plan.recovery[k]*1.5+(single.feasible?plan.strike[k]*1.5:0)+(deep.feasible?plan.consolidation[k]:0))*avail;
       tankerSorties+=ts;tankerByKey[k]=ts;
     });
-    var capSorties=nCAP*rateFor(2)*avail,isrSorties=nISR*rateFor(3)*avail;
+    var capSorties=nCAP*rateFor(2)*avail,isrSorties=nISR*rateFor(3)*avail,capCCAShare=nCAPcca>0?nCAPcca/nCAP:0;
+    // ---- v3.3 doctrine scheduler for a slower custom CCA (spec 5.2). Per event: participating crewed strike sorties, and
+    // spare organic tanker sorties = min(idle MQ-25 airframes, deck recovery slack). Finite: a shortfall withholds the CCA.
+    var cxRow=byType.filter(function(x){return x.key==='custom';})[0],doctrine=null,loiterTankers=0,pkgFactor=1;
+    if(cxRow){var cd=syncCustom(),fx=options.doctrineFixture||null,crewed=byType.reduce(function(s,x){return s+(OVERHEAD_TYPES.indexOf(x.key)>=0?x.ss:0);},0)/events,
+        mqPer=(tankerByKey.mq25||0)/events,idle=Math.max(0,Math.floor(Math.max(0,Math.floor(alloc.mq25||0))-mqPer+1e-9)),
+        slack=Math.max(0,Math.floor(sch.recPerEvent-(strikeDemand+tankerSorties+capSorties+isrSorties)/events+1e-9));
+      doctrine=DESIGNER.doctrineSchedule({events:events,doctrine:cd.input.doctrine,mach:cd.M,range:range,nCustom:cxRow.n,doesClose:cd.doesClose,
+        fightersPerEvent:fx&&fx.fightersPerEvent!=null?fx.fightersPerEvent:Math.ceil(crewed-1e-9),spareTankers:fx&&fx.spareTankers!=null?fx.spareTankers:Math.min(idle,slack)});
+      doctrine.crewedPerEvent=crewed;doctrine.fightersPerEvent=fx&&fx.fightersPerEvent!=null?fx.fightersPerEvent:Math.ceil(crewed-1e-9);
+      doctrine.mq25PerEvent=mqPer;doctrine.idleTankers=idle;doctrine.deckSlack=slack;doctrine.spareTankers=fx&&fx.spareTankers!=null?fx.spareTankers:Math.min(idle,slack);
+      var keep=cd.doesClose?doctrine.flyFraction:0;strikeDemand-=cxRow.ss*(1-keep);cxRow.ss*=keep;cxRow.demand=cxRow.ss;
+      loiterTankers=doctrine.tankersUsed*avail;pkgFactor=doctrine.packageFactor;
+      if(loiterTankers>0){tankerSorties+=loiterTankers;tankerByKey.mq25=(tankerByKey.mq25||0)+loiterTankers;}}   // spent on the package hold, not strike gas
     // ---- v3.1 S3: FCF + qual overhead, reserved from the crewed strike-fighter sortie budget BEFORE combat ----
     var scheduled=strikeDemand+tankerSorties+capSorties+isrSorties,fcf=0,qual=0;
     var eligible=byType.reduce(function(s,x){return s+(OVERHEAD_TYPES.indexOf(x.key)>=0?x.ss:0);},0);
@@ -769,7 +1008,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     var posture=TARGET_POSTURES[st.targetPosture],hasISR=nISR>=1;
     byType.forEach(function(x){var tn=0,td=0;
       function eff(w,key,count){var surf=w.ssurv-.20*(threat-.50);
-        var surv=clamp(1-(1-x.s.surv/100)*(1-airMit)*(1-surf),.02,.995);
+        var surv=clamp(1-(1-x.s.surv/100)*(1-airMit)*(1-surf),.02,.995)*pkgFactor;   // v3.3 slower-package exposure (1 unless Option C flies)
         survNum+=count*x.s.pay*surv;survDen+=count*x.s.pay;tn+=count*surv;td+=count;
         return count*(x.s.pay/1000)*(.35+.65*surv)*x.pen*W.leth*w.sleth*
           posture.defeat[key==='fallback'?'direct':key]*targetValidity(key,st.targetPosture,range,hasISR)*recoveryMult*dogleg;
@@ -778,13 +1017,15 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       x.fallbackEffect=eff(FALLBACK,'fallback',x.fallback);effects+=x.primaryEffect+x.fallbackEffect;x.surv=td>0?tn/td:0;
     });
     var meanSurv=survDen>0?survNum/survDen:0,survScore=gas.support*meanSurv;
+    var customEffect=cxRow?cxRow.primaryEffect+cxRow.fallbackEffect:0,customExcluded=!!(cxRow&&!CAT.custom.doesClose);
     // ---- v3.1 S4: Contested Strait multiplicative mission-effect floor ----
     var scen=SCENARIOS&&SCENARIOS[options.scenario!==undefined?options.scenario:st.scenario],effectFloor=options.effectFloor!=null?options.effectFloor:(scen&&scen.effectFloor)||0;
     var effFloorFactor=effectFloor>0?Math.min(1,effects/effectFloor):1;
     var totalLaunches=flown+tankerSorties+capSorties+isrSorties+overhead;
-    byKey.cap=capSorties;byKey.isr=isrSorties;
+    var capCCASorties=capCCAShare>0?capSorties*capCCAShare:0;   // CAP sorties flown by CCAs (uncrewed)
+    byKey.cap=capSorties-capCCASorties;byKey.isr=isrSorties;if(capCCASorties>0)byKey.ccxcap=capCCASorties;
     return {cyc:airborne+TURNC*eventLen,airborne:airborne,rateStrike:baseStrike,events:events,sps:baseStrike,
-      strikeSorties:flown,tankerSorties:tankerSorties,capSorties:capSorties,isrSorties:isrSorties,
+      strikeSorties:flown,tankerSorties:tankerSorties,capSorties:capSorties,capCCASorties:capCCASorties,isrSorties:isrSorties,
       support:gas.support,gasDemand:dp+df,tankerOffload:enroute+theaterAccepted,effects:effects,score:effects*(theaterAccepted>0?.82:1),
       coverage:coverage,a2aAvail:a2aAvail,a2aDemand:a2aDemand,a2aUsed:Math.min(a2aAvail,a2aDemand),meanSurv:meanSurv,survScore:survScore,
       effectFloor:effectFloor,effFloorFactor:effFloorFactor,objScore:survScore*effFloorFactor,cost:cost,byKey:byKey,
@@ -797,7 +1038,9 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       weaponCapacity:weaponCapacity,fuelCapacity:fuelCapacity,scheduledSorties:scheduled,fcfSorties:fcf,qualSorties:qual,
       overheadSorties:overhead,overheadFuel:overhead*OVERHEAD_FUEL,totalLaunches:totalLaunches,combatSorties:totalLaunches-overhead,
       deckCeiling:sch.deckCeiling,recPerEvent:sch.recPerEvent,recoveryWindow:sch.recoveryWindow,deckScale:deckScale,
-      fuelBurned:byType.reduce(function(s,x){return s+(x.primary+x.fallback)*range*burnFor(x.key);},0)};
+      fuelBurned:byType.reduce(function(s,x){return s+(x.primary+x.fallback)*range*burnFor(x.key);},0),
+      doctrine:doctrine,loiterTankerSorties:loiterTankers,packageFactor:pkgFactor,customExcluded:customExcluded,customEffect:customEffect,
+      customCostPerEffect:cxRow?DESIGNER.costPerEffect(syncCustom().costs.apuc,customEffect,cxRow.n,CAT.custom.doesClose):null};
   }
   // ---- v3.1 D3: multi-day campaign recurrence (pure; magazines, fatigue and attrition carry day to day) ----
   function evalCampaign(range,alloc,options){
@@ -844,13 +1087,14 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     return {entryFuel:entryFuel,burn:returnBurn,finalFuel:entryFuel-returnBurn,landedWeight:empty+bringback+entryFuel-returnBurn};
   }
 
+  function groupKeys(g){return g.keys.concat(Object.keys(CAT).filter(function(k){return CAT[k].tour&&CAT[k].role===g.role;}));}   // + tour-only entries of the role
   function buildRoster(){
     var host=el("roster"); host.innerHTML="";
     GROUPS.forEach(function(g){
       if(activeRoles().indexOf(g.role)<0)return;
       var box=document.createElement("div"); box.className="grp";
       box.innerHTML='<div class="grp-h"><span class="chip '+g.chip+'"></span>'+g.label+'</div>';
-      g.keys.forEach(function(k){
+      groupKeys(g).filter(function(k){return !CAT[k].tour||(st.alloc[k]||0)>0;}).forEach(function(k){
         var a=CAT[k], n=st.alloc[k]||0, atMax=used()+spotsOf(k)>POOL+1e-9;
         var row=document.createElement("div"); row.className="ac";
         row.innerHTML='<div class="ac-nm">'+a.name+(a.custom?' <span class="tag ghost">CUSTOM</span>':(a.concept?' <span class="tag">CONCEPT</span>':''))+
@@ -865,23 +1109,38 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
         row.querySelector(".info").addEventListener("click",function(){st.open[k]=!st.open[k];buildRoster();});
         box.appendChild(row);
         if(st.open[k]){var dd=document.createElement("div");dd.className="acdesc";dd.innerHTML=a.desc||a.note;box.appendChild(dd);}
-        if(a.custom){ box.appendChild(specBlock()); }
+        if(a.custom){ box.appendChild(designerBlock()); }
       });
       host.appendChild(box);
     });
   }
-  function specBlock(){
-    var d=document.createElement("div"); d.className="spec";
-    d.innerHTML='<div class="spec-h">Your Design — spec (within budget)</div>'+
-      '<div class="spec-row"><label>Payload</label><input type="range" id="c-pay" min="2000" max="20000" step="250" value="'+st.custom.pay+'"><span class="sv" id="cv-pay"></span></div>'+
-      '<div class="spec-row"><label>Survivability</label><input type="range" id="c-surv" min="10" max="98" step="1" value="'+st.custom.surv+'"><span class="sv" id="cv-surv"></span></div>'+
-      '<div class="spec-row"><label>Airframe size</label><input type="range" id="c-size" min="20" max="100" step="1" value="'+st.custom.size+'"><span class="sv" id="cv-size"></span></div>'+
-      '<div class="budget"><label>Design points</label><div class="track"><i id="c-bud"></i></div><span class="sv" id="cv-bud"></span></div>';
-    d.querySelector("#c-pay").addEventListener("input",function(){st.custom.pay=+this.value;render();});
-    d.querySelector("#c-surv").addEventListener("input",function(){st.custom.surv=+this.value;render();});
-    d.querySelector("#c-size").addEventListener("input",function(){st.custom.size=+this.value;render();});
+  // v3.3 Your Design closure panel (spec 9.1). Controls write st.custom; render() re-reads the engine into the readouts.
+  function designerBlock(){
+    var c=syncCustom().input,d=document.createElement("div");d.className="spec designer";d.id="c-designer";
+    function picker(id,attr,items,cur){return '<div class="picker" id="'+id+'" role="group">'+items.map(function(it){return '<button type="button" id="'+id+'-'+it[0]+'" data-'+attr+'="'+it[0]+'" aria-pressed="'+(it[0]===cur?'true':'false')+'">'+it[1]+'</button>';}).join('')+'</div>';}
+    function slider(id,label,min,max,step,v){return '<div class="spec-row"><label for="'+id+'">'+label+'</label><input type="range" id="'+id+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'"><span class="sv" id="cv-'+id.slice(2)+'"></span></div>';}
+    d.innerHTML='<div class="spec-h">Your Design &mdash; carrier CCA concept closure model</div>'+
+      '<div class="dz-h">1 &middot; Propulsion</div>'+picker('c-engine','engine',[['light','Light (4.2k lbf)'],['mid','Mid-Thrust (8.5k lbf)'],['heavy','Heavy Core (16.5k lbf)']],c.engineClass)+
+      '<div class="opt-note" id="cv-engine"></div>'+slider('c-qty','Fleet buy',50,500,25,c.buyQty)+
+      '<div class="dz-h">2 &middot; Airframe &amp; aerodynamics</div>'+slider('c-wing','Wing area',150,450,5,c.wingArea)+slider('c-mach','Ingress Mach',.60,.88,.02,c.ingressMach)+
+      slider('c-payload','Payload',1000,6000,250,c.payload)+slider('c-fuel','Internal fuel',2000,7600,20,c.fuel)+slider('c-surv','Survivability',.50,.95,.01,c.surv)+
+      '<div class="dz-h">Doctrine if slower than the Mach 0.80 package</div>'+
+      picker('c-doctrine','doctrine',[['keep_up','Keep up'],['early_launch','Early launch'],['loiter','Fighters loiter'],['slow_package','Slow the package']],c.doctrine)+
+      '<div class="opt-note" id="cv-doctrine"></div><div id="c-readout" aria-live="polite"></div>';
+    var num={"c-qty":"buyQty","c-wing":"wingArea","c-mach":"ingressMach","c-payload":"payload","c-fuel":"fuel","c-surv":"surv"};
+    Object.keys(num).forEach(function(id){d.querySelector("#"+id).addEventListener("input",function(){st.custom[num[id]]=Math.round(+this.value*100)/100;render();});});
+    d.querySelectorAll("[data-engine]").forEach(function(b){b.addEventListener("click",function(){st.custom.engineClass=b.dataset.engine;
+      d.querySelectorAll("[data-engine]").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});render();});});
+    d.querySelectorAll("[data-doctrine]").forEach(function(b){b.addEventListener("click",function(){st.custom.doctrine=b.dataset.doctrine;
+      d.querySelectorAll("[data-doctrine]").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});render();});});
     return d;
   }
+  function designerContext(r){var x=r.byType.filter(function(y){return y.key==='custom';})[0];
+    return {range:st.rng,nCustom:x?x.n:0,schedule:r.doctrine,customEffect:r.customEffect,costPerEffect:r.customCostPerEffect};}
+  function renderDesigner(r){var d=syncCustom(),v=DESIGNER.valuesText(d);
+    Object.keys(v).forEach(function(id){var n=el(id);if(n)n.textContent=v[id];});
+    var out=el("c-readout");if(out)out.innerHTML=DESIGNER.panelHTML(d,designerContext(r));
+    var cc=el("v-ccustom");if(cc)cc.textContent="$"+fmt(d.costs.flyaway,1)+"M flyaway";}
 
   function drawCurve(){
     var c=el("curve"),dpr=Math.min(2,window.devicePixelRatio||1),W=c.clientWidth||640,H=230;
@@ -920,18 +1179,14 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     el("s-spots").max=DECKS[DECK].spots; el("s-spots").value=POOL;
     el("pool").innerHTML='<b>'+DECKS[DECK].name+' &mdash; '+POOL+' spots</b>: '+fmtSpots(u)+' assigned '+(POOL-u>1e-9?'('+fmtSpots(POOL-u)+' idle)':'(full)');
     var sb="";GROUPS.forEach(function(g){if(activeRoles().indexOf(g.role)<0)return;
-      var n=g.keys.reduce(function(s,k){return s+(activeKeys().indexOf(k)>=0?(st.alloc[k]||0)*spotsOf(k):0);},0);if(n>0)sb+='<i style="width:'+(n/POOL*100)+'%;background:'+g.col+'"></i>';});
+      var n=groupKeys(g).reduce(function(s,k){return s+(activeKeys().indexOf(k)>=0?(st.alloc[k]||0)*spotsOf(k):0);},0);if(n>0)sb+='<i style="width:'+(n/POOL*100)+'%;background:'+g.col+'"></i>';});
     var idle=(POOL-u)/POOL*100;if(idle>0)sb+='<i style="width:'+idle+'%;background:#141f2e"></i>';
     el("spotbar").innerHTML=sb;
 
     var mix=activeKeys().filter(function(k){return (st.alloc[k]||0)>0;}).map(function(k){return st.alloc[k]+"× "+CAT[k].name;});
     el("wingsum").textContent=mix.length?mix.join("   ·   "):"Empty deck — add aircraft.";
 
-    if(el("cv-pay")){el("cv-pay").textContent=(st.custom.pay/1000).toFixed(1)+"k";
-      el("cv-surv").textContent=st.custom.surv+"%"; el("cv-size").textContent=(st.custom.size<40?"small":st.custom.size<70?"med":"large");
-      var cost=designCost(), over=cost>BUDGET;
-      el("c-bud").style.width=Math.min(100,cost/BUDGET*100)+"%"; el("c-bud").className=over?"over":"";
-      el("cv-bud").textContent=fmt(cost,0)+"/"+BUDGET; el("cv-bud").className="sv"+(over?" over":"");}
+    renderDesigner(r);
 
     var de=el("delta");
     if(prevEff!=null){var dd=r.effects-prevEff, dpp=prevEff>0?dd/prevEff*100:0;
@@ -990,7 +1245,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
 
     el("v-rng").textContent=st.rng+" nm"; el("s-rng").value=st.rng; el("curveleg").textContent="your wing, 200–900 nm";
     el("v-target").textContent=st.target>0?fmt(st.target,0):"none";
-    el("v-cf35").textContent="$"+st.cost.f35c+"M"; el("v-ccustom").textContent="$"+st.cost.custom+"M";
+    el("v-cf35").textContent="$"+st.cost.f35c+"M";
     el("weapdesc").innerHTML=(WEAPONS[st.weapon]||WEAPONS.amraam).desc;
     el("strikedesc").innerHTML=(STRIKES[st.strike]||STRIKES.mixed).desc;
     missionReadout(r);
@@ -1133,18 +1388,19 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       el("clock").textContent="T+"+String(Math.floor(hours)).padStart(2,"0")+":"+String(Math.floor((hours%1)*60)).padStart(2,"0")+"  —  cycle "+cyc;
       // The headline remains the current evaluated total; the clock shows progress.
       if(k<1)dayFrame=requestAnimationFrame(step);
-      else{running=false;launch.disabled=false;launch.textContent="Re-run the day ▶";
-        el("clock").textContent="T+24:00 — "+fmt(cpd,0)+" cycles complete";el("deckleg").textContent=deckLegendText();
-        if(!reduce)drawDeckFrame(dur/2000*playbackRate);
-        el("daytally").innerHTML=buildTally(r); el("daytally").classList.remove("hide");if(typeof onComplete==="function")onComplete(r);}}
+      else{if(!reduce)drawDeckFrame(dur/2000*playbackRate);finishDay(r);if(typeof onComplete==="function")onComplete(r);}}
     dayFrame=requestAnimationFrame(step);
   }
+  function finishDay(r){running=false;var launch=el("launch");launch.disabled=false;launch.textContent="Re-run the day ▶";
+    el("clock").textContent="T+24:00 — "+fmt(r.events,0)+" cycles complete";el("deckleg").textContent=deckLegendText();
+    el("daytally").innerHTML=buildTally(r); el("daytally").classList.remove("hide");}
+  function dayRunning(){return running;}
 
   /* ---- Auto-Boss optimizer ---- */
   var autoTop=[], _seed=1;
   function srand(){_seed=(_seed*1103515245+12345)&0x7fffffff;return _seed/0x7fffffff;}
   function seedFrom(){ // deterministic per input state -> Auto-Boss results are reproducible, not a fresh roll each time
-    var s=(POOL*7+(DECK==="ford"?131:0)+st.rng+st.tempo*97+st.wing*31+Math.round(st.target/50)+st.rankBy.length*11+st.cost.f35c+st.cost.custom+(st.weapon.length*17))|0;
+    var s=(POOL*7+(DECK==="ford"?131:0)+st.rng+st.tempo*97+st.wing*31+Math.round(st.target/50)+st.rankBy.length*11+st.cost.f35c+Math.round(costFor("custom"))+(st.weapon.length*17))|0;
     _seed=(s&0x7fffffff)||1;
   }
   function randomMix(keys){
@@ -1162,6 +1418,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   // headline call this, so the DISPLAYED number can never diverge from the RANKED number (regression-bound).
   function gasPerEffect(r){return r.gasDemand/Math.max(1,r.effects);}
   function objVal(r,spots){
+    if(r.customExcluded)return -Infinity;      // v3.3: an unclosed custom design has fitness -Infinity (never ranks)
     if(st.rankBy==="cliff")return r.cliff?(r.cliff.range===null?910:r.cliff.range):-1;
     if(st.rankBy==="perspot")return r.effects/Math.max(1,spots);
     if(st.rankBy==="dollar")return r.effects/Math.max(1,r.cost);
@@ -1170,14 +1427,14 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     return r.effects;
   }
   function autoSearch(){
-    var keys=activeKeys();   // includes the player's Your Design jet, priced via its Auto-Boss cost slider
+    var keys=activeKeys().filter(function(k){return !CAT[k].tour;});   // includes the player's Your Design jet, priced via its Auto-Boss cost slider; never the tour-only CAP CCA
     var pool=[],SAMP=st.rankBy==="cliff"?160:2500,maxEff=0;
     seedFrom();
     for(var i=0;i<SAMP;i++){
       var alloc=randomMix(keys), plan=st.rankBy==='cliff'?Object.values(TACTIC_PLANS)[i%5]:st.tankerTactics;
       var r=evalWing(st.rng,alloc,{tankerTactics:plan,tankerMode:st.rankBy==='cliff'?'organic':st.tankerMode});
       if(st.rankBy==='cliff'){r.cliff=organicCliff(alloc,{tankerTactics:plan});if(!r.cliff.eligible)continue;}
-      if(r.effects<st.target || r.strikeSorties<=0)continue;
+      if(r.customExcluded||r.effects<st.target || r.strikeSorties<=0)continue;   // unclosed custom: fitness -Infinity
       if(r.effects>maxEff)maxEff=r.effects;
       var spots=usedSpots(alloc);
       pool.push({alloc:alloc,r:r,spots:spots,plan:Object.assign({},plan)});
@@ -1267,7 +1524,6 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     st.rankBy=b.dataset.r;document.querySelectorAll("#rankpick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});buildLeaderboard();});});
   el("s-target").addEventListener("input",function(){st.target=+this.value; el("v-target").textContent=st.target>0?fmt(st.target,0):"none"; if(st.play===2)buildLeaderboard();});
   el("s-cf35").addEventListener("input",function(){st.cost.f35c=+this.value; el("v-cf35").textContent="$"+this.value+"M"; refresh();});
-  el("s-ccustom").addEventListener("input",function(){st.cost.custom=+this.value; el("v-ccustom").textContent="$"+this.value+"M"; refresh();});
   document.querySelectorAll("#weappick button").forEach(function(b){b.addEventListener("click",function(){
     st.weapon=b.dataset.m;document.querySelectorAll("#weappick button").forEach(function(y){y.setAttribute("aria-pressed",y===b?"true":"false");});refresh();});});
   document.querySelectorAll("#strikepick button").forEach(function(b){b.addEventListener("click",function(){
@@ -1304,7 +1560,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       "s-spots":"How many aircraft the deck can spot at once",
       "s-rng":"Distance to the target — farther = longer cycles + more gas",
       "s-target":"Minimum effect index a wing must deliver to make the leaderboard",
-      "s-cf35":"F-35C unit cost (adjust ±15%)","s-ccustom":"Your custom jet's unit cost"};
+      "s-cf35":"F-35C unit cost (adjust ±15%)"};
     Object.keys(byId).forEach(function(id){var e=el(id);if(e)e.title=byId[id];});
   }
 
@@ -1356,7 +1612,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   el('relay-orbit').addEventListener('input',function(){st.relayOrbit=Number(this.value);syncMission();refresh();});
 
   // Watch varies inputs only. Its sequence is independent of animation timing.
-  var watchState={active:false,seed:'',cycle:0,phase:'idle',timer:0,input:null,settings:null,caption:''};
+  var watchState={active:false,seed:'',cycle:0,phase:'idle',timer:0,input:null,settings:null,caption:'',withCCAs:true};
   function watchCycle(seed,index,settings){
     settings=settings||{deck:DECK,tempo:st.tempo};
     var h=2166136261,text=String(seed)+':'+index;
@@ -1380,7 +1636,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     if(watchState.active&&q){prefix=watchOps(q,evalWing(st.rng).events)+'. ';
       if(p.tempo!==q.tempo||p.deck!==q.deck)pending=' Next cycle: '+(p.tempo?'surge':'sustained')+' ops on '+DECKS[p.deck].name+'.';}
     el('watch-boost').hidden=!watchState.active;el('watch-teaser').hidden=!!st.tempo;el('watch-surge').textContent=st.tempo?'RETURN TO SUSTAINED':'SURGE';el('watch-surge').setAttribute('aria-pressed',st.tempo?'true':'false');
-    el('watch-caption').textContent=prefix+text+pending;el('watch-status').textContent=watchState.active?'Watching cycle '+(watchState.cycle+1):'You have control';}
+    el('watch-caption').textContent=prefix+text+pending;el('watch-status').textContent=watchStatusText();}
 
   function watchExplanation(id){
     var q=watchState.input,r=evalWing(st.rng),a=st.alloc;
@@ -1397,27 +1653,81 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     tip.style.scrollMarginTop=(el('watch-panel').offsetHeight+18)+'px';tip.scrollIntoView({block:'start',behavior:'instant'});
   }
   window.addEventListener('resize',watchPosition);
-  function watchHighlight(id){var serial=++watchReveal,prior=el('watch-explainer');
+  // ---- v3.3 Watch the Air Boss pacing contract (spec 9.2): reading-time dwell per explainer, Relaxed / Normal / Brisk,
+  // Pause / Resume, Next, composed manual / hover / focus pause locks, generation token against stale timers. ----
+  var WATCH_PACE={relaxed:{k:1.00,label:'Relaxed'},normal:{k:.60,label:'Normal'},brisk:{k:.35,label:'Brisk'}};
+  var WATCH_WPS=180/60,WATCH_FLOOR_S=6.0,WATCH_LOOK_S=2.0,WATCH_SETTLE_MS=500,WATCH_SETTLE_MAX_MS=2500;   // 180 wpm reading, 6-s floor, 2 s to look
+  var watchCtx={token:0,dwellSerial:0,dwellTimer:0,scrollTimer:0,runDayTimer:0,manualPause:false,hoverPause:false,focusPause:false,pace:'relaxed',step:0,
+    explainer:'',waiting:false,running:false,dwellTotal:0,remaining:0,startedAt:0,onDwell:null,onStart:null,dayDone:false,launchDone:false,result:null,log:[]};
+  function watchWords(t){t=String(t==null?'':t).trim();return t?t.split(/\s+/).length:0;}
+  function watchDwellBase(t){return Math.max(WATCH_FLOOR_S,watchWords(t)/WATCH_WPS+WATCH_LOOK_S);}
+  function watchDwellMs(t,pace){return Math.ceil(watchDwellBase(t)*(WATCH_PACE[pace]||WATCH_PACE.relaxed).k*1000);}
+  function watchNow(){return typeof performance!=='undefined'&&performance.now?performance.now():Date.now();}
+  function watchPaused(){return watchCtx.manualPause||watchCtx.hoverPause||watchCtx.focusPause;}
+  function watchClearTimers(){clearTimeout(watchCtx.dwellTimer);clearTimeout(watchCtx.scrollTimer);clearTimeout(watchCtx.runDayTimer);
+    watchCtx.dwellTimer=watchCtx.scrollTimer=watchCtx.runDayTimer=0;watchCtx.running=false;watchCtx.waiting=false;watchCtx.onDwell=null;watchCtx.onStart=null;}
+  function watchNewToken(){watchClearTimers();watchReveal++;return ++watchCtx.token;}
+  function watchStatusText(){if(!watchState.active)return 'You have control';
+    return 'Watching cycle '+(watchState.cycle+1)+(watchPaused()?' -- paused'+(watchCtx.manualPause?'':' while you read'):'');}
+  function watchTransport(){var p=el('watch-pause'),n=el('watch-next');
+    if(p){p.hidden=!watchState.active;p.textContent=watchCtx.manualPause?'Resume':'Pause';p.setAttribute('aria-pressed',watchCtx.manualPause?'true':'false');}
+    if(n)n.hidden=!watchState.active;el('watch-status').textContent=watchStatusText();
+    var cc=el('watch-with-ccas');if(cc){cc.disabled=watchState.active;cc.checked=watchState.withCCAs;}}
+  // One tour step: show the card and explainer; the dwell starts only after the reveal and scroll settle.
+  function watchStep(step,phase,caption,id,onDwell,onStart){var token=watchCtx.token;
+    clearTimeout(watchCtx.dwellTimer);clearTimeout(watchCtx.scrollTimer);watchCtx.running=false;watchCtx.waiting=false;
+    watchCtx.step=step;watchCtx.onDwell=onDwell;watchCtx.onStart=onStart||null;watchCaption(phase,caption);
+    watchHighlight(id,function(){if(token!==watchCtx.token||!watchState.active)return;watchSettle(token,watchArm);});}
+  // Arm only once the card has stopped moving: at least WATCH_SETTLE_MS after the reveal and three still scroll samples
+  // in a row (a long smooth scroll on a phone can outlast any fixed delay), capped at WATCH_SETTLE_MAX_MS.
+  function watchSettle(token,fn){var t0=watchNow(),last=null,still=0;
+    function probe(){if(token!==watchCtx.token||!watchState.active)return;
+      var y=typeof window!=='undefined'?+(window.scrollY||window.pageYOffset||0):0,p=el('watch-panel'),py=p?+(p.scrollTop||0):0,t=watchNow();
+      still=last!==null&&Math.abs(y-last[0])<.5&&Math.abs(py-last[1])<.5?still+1:0;last=[y,py];
+      if(reduce||(t-t0>=WATCH_SETTLE_MS&&still>=3)||t-t0>=WATCH_SETTLE_MAX_MS){watchCtx.scrollTimer=0;fn();return;}
+      watchCtx.scrollTimer=setTimeout(probe,50);}
+    watchCtx.scrollTimer=setTimeout(probe,reduce?0:50);}
+  function watchArm(){watchCtx.dwellTotal=watchDwellMs(watchCtx.explainer,watchCtx.pace);watchCtx.remaining=watchCtx.dwellTotal;watchCtx.waiting=true;
+    watchCtx.log.push({step:watchCtx.step,phase:watchState.phase,dwell:watchCtx.dwellTotal,at:watchNow()});if(watchCtx.log.length>60)watchCtx.log.shift();
+    watchRun();watchTransport();}
+  function watchRun(){if(!watchCtx.waiting||watchCtx.running||watchPaused())return;var token=watchCtx.token;
+    if(watchCtx.onStart){var go=watchCtx.onStart;watchCtx.onStart=null;go();if(token!==watchCtx.token)return;}
+    watchCtx.running=true;watchCtx.startedAt=watchNow();var serial=++watchCtx.dwellSerial;   // a frozen or replaced timer can never fire a step
+    watchCtx.dwellTimer=setTimeout(function(){if(token!==watchCtx.token||serial!==watchCtx.dwellSerial||!watchState.active)return;
+      watchCtx.running=false;watchCtx.waiting=false;watchCtx.remaining=0;watchCtx.dwellTimer=0;var fn=watchCtx.onDwell;watchCtx.onDwell=null;if(fn)fn();},watchCtx.remaining);}
+  function watchFreeze(){if(!watchCtx.running)return;clearTimeout(watchCtx.dwellTimer);watchCtx.dwellTimer=0;watchCtx.dwellSerial++;
+    watchCtx.remaining=Math.max(0,watchCtx.remaining-(watchNow()-watchCtx.startedAt));watchCtx.running=false;}
+  function watchPauseChanged(){if(watchPaused())watchFreeze();else watchRun();watchTransport();}
+  function watchTogglePause(){if(!watchState.active)return;watchCtx.manualPause=!watchCtx.manualPause;watchPauseChanged();}
+  function watchHover(on){watchCtx.hoverPause=!!on&&watchState.active;watchPauseChanged();}
+  function watchFocusIn(){if(!watchState.active)return;watchCtx.focusPause=true;watchPauseChanged();}
+  function watchFocusOut(e){var tip=el('watch-explainer'),to=e&&e.relatedTarget;if(tip&&to&&tip.contains&&tip.contains(to))return;watchCtx.focusPause=false;watchPauseChanged();}
+  function watchSetPace(p){if(!WATCH_PACE[p])return;var ratio=WATCH_PACE[p].k/WATCH_PACE[watchCtx.pace].k;watchFreeze();watchCtx.pace=p;
+    if(watchCtx.waiting){watchCtx.remaining*=ratio;watchCtx.dwellTotal*=ratio;}var s=el('watch-pace');if(s&&s.value!==p)s.value=p;watchRun();watchTransport();}
+  function watchHighlight(id,done){var serial=++watchReveal,prior=el('watch-explainer');
     function reveal(){if(!watchState.active||serial!==watchReveal)return;
     document.querySelectorAll('.watch-highlight').forEach(function(n){n.classList.remove('watch-highlight');});
-    var n=el(id),tip=el('watch-explainer');
+    var n=el(id),tip=el('watch-explainer'),text=watchExplanation(id);
     if(!tip){tip=document.createElement('aside');tip.id='watch-explainer';tip.setAttribute('role','note');}
-    tip.textContent=watchExplanation(id);tip.dataset.anchor=id;tip.hidden=false;n.insertAdjacentElement('beforebegin',tip);n.setAttribute('aria-details',tip.id);
+    if(!tip.dataset.watchWired){tip.dataset.watchWired='1';tip.tabIndex=0;
+      tip.addEventListener('mouseenter',function(){watchHover(true);});tip.addEventListener('mouseleave',function(){watchHover(false);});
+      tip.addEventListener('focusin',watchFocusIn);tip.addEventListener('focusout',watchFocusOut);}
+    tip.textContent=text;watchCtx.explainer=text;tip.dataset.anchor=id;tip.hidden=false;n.insertAdjacentElement('beforebegin',tip);n.setAttribute('aria-details',tip.id);
     n.classList.add('watch-highlight');
     tip.style.scrollMarginTop=(el('watch-panel').offsetHeight+18)+'px';
     if(tip.scrollIntoView)tip.scrollIntoView({block:'start',behavior:reduce?'instant':'smooth'});
     if(!reduce&&tip.animate)tip.animate([{opacity:.25,transform:'translateY(4px)'},{opacity:1,transform:'translateY(0)'}],{duration:180});
+    if(done)done();
     }
     if(prior&&!prior.hidden&&!reduce&&prior.animate){var fade=prior.animate([{opacity:1},{opacity:0}],{duration:100});fade.onfinish=reveal;}
     else reveal();
   }
-  function watchLater(fn,ms){clearTimeout(watchState.timer);watchState.timer=setTimeout(function(){if(watchState.active)fn();},ms);}
   function stopWatch(){if(!watchState.active)return;
-    watchState.active=false;clearTimeout(watchState.timer);stopDay();
+    watchNewToken();watchState.active=false;watchCtx.manualPause=watchCtx.hoverPause=watchCtx.focusPause=false;stopDay();
     el('watch-panel').classList.remove('watching');el('watch-stop').hidden=true;el('watch-start').setAttribute('aria-pressed','false');
     document.querySelectorAll('.watch-highlight').forEach(function(n){n.classList.remove('watch-highlight');});
     if(el('watch-explainer'))el('watch-explainer').hidden=true;
-    watchCaption('stopped','Your wing is left exactly here. Adjust a control or launch the day yourself.');
+    watchCaption('stopped','Your wing is left exactly here. Adjust a control or launch the day yourself.');watchTransport();
   }
   function watchTrade(r){
     if(r.support<.9)return 'Fuel is limiting the strike: try a different tanker plan or a shorter target range.';
@@ -1425,51 +1735,120 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     if(st.targetPosture==='fleeting'&&st.strike==='standoff')return 'Long flight time lets coordinates go stale despite the heavier warhead.';
     return 'Tanker and defense spots support the wing but leave fewer spots for strike aircraft.';
   }
+  // ---- "With CCAs" toggle: OFF flies the same seeded scenario, tempo, range, deck, loadout and tanker plan with
+  // every CCA (CCX-1, CCA concepts, Your Design) removed; locked while a tour runs (Pause does not unlock it). ----
+  var CCA_KEYS=['ccx','kf1','ccap','custom','ccxcap'],watchCompare={on:null,off:null};
+  // Tour CAP (With CCAs ON): CCX-1 take the CAP fighter spots only -- as many as those spots hold at the 0.75 spot weight
+  // (same deck) -- and fly CAP in the existing CAP model. The E-2 / EA-18G, F-35C, F/A-18E/F and tankers are unchanged and no
+  // crewed fighter is re-roled. OFF: the seeded v3.2 tour wing exactly.
+  var TOUR_CAP_KEY='ccxcap';
+  function watchTourAlloc(q,on){var a=Object.assign({},q.alloc);
+    if(!on)return {alloc:watchCCAAlloc(a,false),fielded:0,replaced:0,label:''};
+    var m=Math.max(0,Math.floor(a.cap||0)),n=Math.floor(m/spotsOf(TOUR_CAP_KEY)+1e-9);
+    if(m>0){a.cap=0;a[TOUR_CAP_KEY]=n;}
+    return {alloc:a,fielded:m>0?n:0,replaced:m,label:m>0?'Same deck: '+n+' CCAs fly CAP in place of '+m+' CAP fighters -- same strike wing, fewer crew in the air':'Same deck: no CAP fighter spots to hand to CCAs'};}
+  function watchCCAAlloc(a,on){var o=Object.assign({},a);if(!on)CCA_KEYS.forEach(function(k){if(k in o)o[k]=0;});return o;}
+  function watchSetCCAs(v){if(watchState.active){watchTransport();return false;}watchState.withCCAs=!!v;watchTransport();return true;}
+  // Engine-derived run summary (illustrative bases: crewed sortie hours = strike airborne time, 0.75 h overhead, 1.5 h crewed CAP
+  // and buddy tanker, 3.0 h ISR; CCA operators from the logistics model's control ratio and flight-ops window).
+  function watchSummary(r,alloc){var crewed=0,hours=0,cca=CCA_KEYS.reduce(function(n,k){return n+Math.max(0,Math.floor(alloc[k]||0));},0);
+    r.byType.forEach(function(x){if(CCA_KEYS.indexOf(x.key)<0&&OVERHEAD_TYPES.indexOf(x.key)>=0){crewed+=x.primary+x.fallback;hours+=(x.primary+x.fallback)*r.airborne;}});
+    var buddy=r.byKey.horn5||0,capCrewed=r.capSorties-(r.capCCASorties||0);crewed+=r.overheadSorties+capCrewed+r.isrSorties+buddy;
+    hours+=r.overheadSorties*LOGI.C.tOverhead+capCrewed*LOGI.C.tCap+r.isrSorties*3.0+buddy*1.5;
+    var crew=LOGI.aircrew({tSortie:crewed>0?hours/crewed:2.5}),win=LOGI.flightOpsWindow(r.totalLaunches,st.rng),
+      ops=LOGI.ccaOperators(cca,'delegated',win.shifts,LOGI.C.ctrlRatio),pLoss=Math.max(.005,.30*(1-r.meanSurv)),lossC=0,lossU=0,ccaSorties=r.capCCASorties||0;
+    r.byType.forEach(function(x){var f=x.primary+x.fallback,l=f*.30*(1-x.surv);if(CCA_KEYS.indexOf(x.key)>=0){lossU+=l;ccaSorties+=f;}else lossC+=l;});
+    return {effects:r.effects,sorties:r.totalLaunches,strikeSorties:r.strikeSorties,ccaAirframes:cca,fuelLb:r.fuelBurned,gasLb:r.gas.total,
+      fuelGal:r.fuelBurned/LOGI.C.rho,weapons:r.primaryUsed+r.fallbackUsed+r.a2aUsed,crewedSorties:crewed,ccaSorties:ccaSorties,aircrewHours:hours,crewedLosses:lossC,ccaLosses:lossU,
+      binding:crewed>crew.ceil30?'30-day aircrew limit exceeded':crewed>crew.ceil7?'7-day aircrew limit exceeded':'within aircrew limits',
+      operators:ops.operators||0,survival:r.meanSurv,losses:r.strikeSorties>0?r.strikeSorties*pLoss:0,dollarsPerEffect:r.effects>0?r.cost*1e6/r.effects:Infinity};}
+  function watchCompareHTML(c){function v(x,d){return isFinite(x)?fmt(x,d):'--';}
+    if(!c.on&&!c.off)return '';
+    if(!c.on||!c.off)return '<p>Now try it '+(c.on?'without':'with')+' CCAs: Stop, switch "With CCAs", and replay this seed to compare.</p>';
+    var a=c.on.summary,b=c.off.summary;function d(k,n){var x=a[k]-b[k];if(isFinite(x)&&Math.round(Math.abs(x)*Math.pow(10,n))===0)x=0;return isFinite(x)?(x>=0?'+':'')+fmt(x,n):'--';}   // a delta that rounds to zero shows +0, never -0
+    var rows=[['Delivered combat effect',v(b.effects,0),v(a.effects,0),d('effects',0)],['Total sorties flown',v(b.sorties,0),v(a.sorties,0),d('sorties',0)+' ('+v(a.ccaSorties,0)+' CCA)'],
+      ['JP-5 for strike sorties (gal)',v(b.fuelGal,0),v(a.fuelGal,0),d('fuelGal',0)],['Weapons expended',v(b.weapons,0),v(a.weapons,0),d('weapons',0)],
+      ['Aircrew flight hours (day)',v(b.aircrewHours,0),v(a.aircrewHours,0),d('aircrewHours',0)],['Aircrew status',b.binding,a.binding,''],
+      ['CCA operators assigned',v(b.operators,0),v(a.operators,0),d('operators',0)],['Expected crewed strike losses',v(b.crewedLosses,1),v(a.crewedLosses,1),d('crewedLosses',1)],
+      ['Expected CCA losses',v(b.ccaLosses,1),v(a.ccaLosses,1),d('ccaLosses',1)],['Wing flyaway $ per effect point',v(b.dollarsPerEffect,0),v(a.dollarsPerEffect,0),d('dollarsPerEffect',0)]];
+    return '<p><b>With vs without CCAs</b> (latest watched run of each; without: '+c.off.label+'; with: '+c.on.label+'). Illustrative.</p><table><tr><th></th><th>Crewed only</th><th>With CCAs</th><th>Delta</th></tr>'+
+      rows.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';}).join('')+'</table>';}
+  function watchCompareStore(){return watchCompare;}
+  // The five-step cycle: Scenario Setup (1) -> Roster Spotting (2) -> Ordnance Loadout (3) -> Tanker Plan (4) ->
+  // Day Flight Operations & Results (5) -> Next Cycle (1).
   function watchNext(){
     var q=watchCycle(watchState.seed,watchState.cycle,watchState.settings);watchState.input=q;
-    applyScenario(q.scenario,{deck:q.deck,tempo:q.tempo});watchCaption('scenario',SCENARIOS[q.scenario].name+': setting up one illustrative day.');watchHighlight('scenarios');
-    watchLater(function(){
-      DECK=q.deck;POOL=DECKS[DECK].spots;st.rng=q.range;st.tempo=q.tempo;st.alloc=Object.assign({},q.alloc);
-      syncMission();applyModes();
-      watchCaption('wing','The Air Boss spots the '+DECKS[DECK].name+' deck: '+Object.keys(q.alloc).filter(function(k){return q.alloc[k]>0;}).map(function(k){return q.alloc[k]+' '+CAT[k].name;}).join(', ')+'. Target '+q.range+' nm.');watchHighlight('roster');
-      watchLater(function(){st.strike=q.strike;st.weapon=q.weapon;syncMission();refresh();
-        watchCaption('weapons','Strike: '+STRIKES[q.strike].name+'. Air defense: '+WEAPONS[q.weapon].name+'. Finite magazines make this a trade.');watchHighlight('watch-loadout');
-        watchLater(function(){st.tankerTactics=Object.assign({},TACTIC_PLANS[q.plan]);st.strikeOrbit=q.strikeOrbit;st.relayOrbit=q.relayOrbit;el('tanker-plan').value=q.plan;syncMission();refresh();
-          var plan=resolveTankerTacticsByType(st.alloc,st.tankerTactics),counts={};Object.keys(plan).forEach(function(k){counts[k]=Object.values(plan[k]).reduce(function(a,b){return a+b;},0);});
-          watchCaption('tankers','Tankers: '+counts.yoyo+' on Yo-Yo, '+counts.strike+' on strike duty at '+q.strikeOrbit+' nm, '+(counts.consolidation/2)+' relay pairs at '+q.relayOrbit+' nm, '+counts.recovery+' on recovery.');watchHighlight('v3controls');
-          watchLater(function(){watchFly(q);},2200);
-        },2200);
-      },2600);
-    },2000);
+    applyScenario(q.scenario,{deck:q.deck,tempo:q.tempo});
+    watchStep(1,'scenario',SCENARIOS[q.scenario].name+': setting up one illustrative day.','scenarios',watchStepRoster);
   }
+  function watchStepRoster(){var q=watchState.input;
+    var tour=watchTourAlloc(q,watchState.withCCAs);watchState.tour=tour;
+    DECK=q.deck;POOL=DECKS[DECK].spots;st.rng=q.range;st.tempo=q.tempo;st.alloc=tour.alloc;
+    syncMission();applyModes();
+    watchStep(2,'wing','The Air Boss spots the '+DECKS[DECK].name+' deck: '+Object.keys(tour.alloc).filter(function(k){return tour.alloc[k]>0;}).map(function(k){return tour.alloc[k]+' '+CAT[k].name;}).join(', ')+'. Target '+q.range+' nm.'+(tour.label?' '+tour.label+'.':''),'roster',watchStepLoadout);}
+  function watchStepLoadout(){var q=watchState.input;st.strike=q.strike;st.weapon=q.weapon;syncMission();refresh();
+    watchStep(3,'weapons','Strike: '+STRIKES[q.strike].name+'. Air defense: '+WEAPONS[q.weapon].name+'. Finite magazines make this a trade.','watch-loadout',watchStepTankers);}
+  function watchStepTankers(){var q=watchState.input;st.tankerTactics=Object.assign({},TACTIC_PLANS[q.plan]);st.strikeOrbit=q.strikeOrbit;st.relayOrbit=q.relayOrbit;el('tanker-plan').value=q.plan;syncMission();refresh();
+    var plan=resolveTankerTacticsByType(st.alloc,st.tankerTactics),counts={};Object.keys(plan).forEach(function(k){counts[k]=Object.values(plan[k]).reduce(function(a,b){return a+b;},0);});
+    watchStep(4,'tankers','Tankers: '+counts.yoyo+' on Yo-Yo, '+counts.strike+' on strike duty at '+q.strikeOrbit+' nm, '+(counts.consolidation/2)+' relay pairs at '+q.relayOrbit+' nm, '+counts.recovery+' on recovery.','v3controls',function(){watchFly(watchState.input);});}
   function watchTempoComparison(){var saved=st.tempo;try{st.tempo=0;var sustained=evalWing(st.rng);st.tempo=1;var surge=evalWing(st.rng);return {sustained:sustained,surge:surge};}finally{st.tempo=saved;}}
   function watchDelta(pair){
     function sorties(r){return r.totalLaunches;}
     function delta(a,b){return b>0?((a>=b?'+':'')+fmt((a-b)/b*100,0)+'%'):fmt(a,1)+' vs 0';}
     return 'SURGE: '+fmt(pair.surge.events,0)+' cycles vs '+fmt(pair.sustained.events,0)+' sustained -- '+delta(sorties(pair.surge),sorties(pair.sustained))+' sorties, '+delta(pair.surge.effects,pair.sustained.effects)+' effect; crews and the deck can\'t hold it forever.';
   }
-  function watchFly(q){st.play=1;applyModes();watchCaption('launch',st.tempo?'Surge! Faster deck cycling uses the existing surge model.':'Launch! Watch the flight deck cycle through the day.');watchHighlight('deckwrap');
-    runDay(function(r){if(!watchState.active)return;var cliff=organicCliff(st.alloc),delta=st.tempo?watchDelta(watchTempoComparison()):watchTrade(r);
-      watchCaption('result',straitObjectiveText(r)+'Effect index '+fmt(r.effects,0)+'. Organic cliff '+cliffLabel(cliff)+'. '+delta);
-      el('watch-result').textContent='Cycle '+(watchState.cycle+1)+' | '+SCENARIOS[q.scenario].name+' | '+watchOps(q,r.events)+' | '+straitObjectiveText(r)+'effect '+fmt(r.effects,1)+' | organic cliff '+cliffLabel(cliff);
-      watchHighlight('daytally');
-      watchLater(function(){watchState.cycle++;watchNext();},8000);
-    });
+  // Step 5: the day runs while the launch explainer dwells; results appear when both the day and that dwell are done.
+  function watchFly(q){st.play=1;applyModes();watchCtx.dayDone=false;watchCtx.launchDone=false;watchCtx.result=null;
+    watchStep(5,'launch',st.tempo?'Surge! Faster deck cycling uses the existing surge model.':'Launch! Watch the flight deck cycle through the day.','deckwrap',
+      function(){watchCtx.launchDone=true;watchMaybeResult();},
+      function(){var token=watchCtx.token;runDay(function(r){if(token!==watchCtx.token||!watchState.active)return;watchCtx.dayDone=true;watchCtx.result=r;watchMaybeResult();});});
   }
-  function toggleWatchSurge(){if(!watchState.active)return;clearTimeout(watchState.timer);stopDay();
+  function watchMaybeResult(){if(watchCtx.dayDone&&watchCtx.launchDone)watchShowResult(watchCtx.result);}
+  function watchShowResult(r){var q=watchState.input,cliff=organicCliff(st.alloc),delta=st.tempo?watchDelta(watchTempoComparison()):watchTrade(r);
+    var tl=watchState.withCCAs?watchTourAlloc(q,true).label:'';
+    watchCompare[watchState.withCCAs?'on':'off']={label:'seed '+watchState.seed+', cycle '+(watchState.cycle+1)+', '+SCENARIOS[q.scenario].name+(tl?' -- '+tl:''),summary:watchSummary(r,st.alloc)};
+    el('watch-compare').innerHTML=watchCompareHTML(watchCompare);
+    el('watch-result').textContent='Cycle '+(watchState.cycle+1)+' | '+SCENARIOS[q.scenario].name+' | '+watchOps(q,r.events)+' | '+straitObjectiveText(r)+'effect '+fmt(r.effects,1)+' | organic cliff '+cliffLabel(cliff)+(tl?' | '+tl:'');
+    watchStep(5,'result',straitObjectiveText(r)+'Effect index '+fmt(r.effects,0)+'. Organic cliff '+cliffLabel(cliff)+'. '+delta,'daytally',function(){watchState.cycle++;watchNext();});
+  }
+  // Next: cancel every pending timer and advance exactly one sub-step (paused stays paused; during the day run the
+  // animation is cancelled and the day's results are completed at once).
+  function watchNextStep(){if(!watchState.active)return;var phase=watchState.phase;watchNewToken();
+    if(phase==='scenario')watchStepRoster();else if(phase==='wing')watchStepLoadout();else if(phase==='weapons')watchStepTankers();
+    else if(phase==='tankers')watchFly(watchState.input);
+    else if(phase==='launch'){stopDay();var r=evalWing(st.rng);finishDay(r);watchShowResult(r);}
+    else{watchState.cycle++;watchNext();}
+    watchTransport();}
+  function toggleWatchSurge(){if(!watchState.active)return;watchNewToken();stopDay();
     var q=watchState.input;q.tempo=q.tempo?0:1;watchState.settings.tempo=q.tempo;
-    DECK=q.deck;POOL=DECKS[DECK].spots;Object.assign(st,{rng:q.range,tempo:q.tempo,alloc:Object.assign({},q.alloc),strike:q.strike,weapon:q.weapon,strikeOrbit:q.strikeOrbit,relayOrbit:q.relayOrbit,tankerTactics:Object.assign({},TACTIC_PLANS[q.plan])});
+    DECK=q.deck;POOL=DECKS[DECK].spots;Object.assign(st,{rng:q.range,tempo:q.tempo,alloc:watchTourAlloc(q,watchState.withCCAs).alloc,strike:q.strike,weapon:q.weapon,strikeOrbit:q.strikeOrbit,relayOrbit:q.relayOrbit,tankerTactics:Object.assign({},TACTIC_PLANS[q.plan])});
     el('tanker-plan').value=q.plan;syncMission();watchFly(q);
   }
   el('watch-surge').addEventListener('click',toggleWatchSurge);
-  function startWatch(seed){var settings={deck:DECK,tempo:0};stopWatch();stopDay();watchState.settings=settings;
+  function startWatch(seed){var settings={deck:DECK,tempo:0};stopWatch();stopDay();watchNewToken();watchState.settings=settings;
+    watchCtx.manualPause=watchCtx.hoverPause=watchCtx.focusPause=false;
     watchState.seed=String(seed==null?Date.now():seed);watchState.cycle=0;watchState.active=true;
-    el('watch-seed').textContent='Seed '+watchState.seed;el('watch-result').textContent='';el('watch-stop').hidden=false;el('watch-panel').classList.add('watching');el('watch-start').setAttribute('aria-pressed','true');watchNext();
+    el('watch-seed').textContent='Seed '+watchState.seed;el('watch-result').textContent='';el('watch-stop').hidden=false;el('watch-panel').classList.add('watching');el('watch-start').setAttribute('aria-pressed','true');watchTransport();watchNext();
   }
   el('watch-start').addEventListener('click',function(){startWatch();});
   el('watch-stop').addEventListener('click',stopWatch);
   el('watch-replay').addEventListener('click',function(){startWatch(watchState.seed||String(Date.now()));});
-  ['pointerdown','click','keydown','input','change'].forEach(function(type){document.addEventListener(type,function(e){if(!watchState.active)return;var choice=e.target.closest&&e.target.closest('#deckpick button,#tempopick button,#watch-surge');if(choice&&(type!=='keydown'||e.key==='Enter'||e.key===' '))return;stopWatch();},true);});
+  el('watch-pause').addEventListener('click',watchTogglePause);
+  el('watch-with-ccas').addEventListener('change',function(){watchSetCCAs(!!el('watch-with-ccas').checked);});   // rejected (and reset) while a tour runs
+  watchTransport();
+  el('watch-next').addEventListener('click',watchNextStep);
+  el('watch-pace').addEventListener('change',function(){watchSetPace(el('watch-pace').value);});
+  // Space toggles pause, Right arrow advances (not while typing in a form field; auto-repeat ignored).
+  function watchTyping(t){var n=t&&t.tagName?String(t.tagName).toUpperCase():'';return n==='INPUT'||n==='SELECT'||n==='TEXTAREA'||!!(t&&t.isContentEditable===true);}
+  function watchKey(e){if(!watchState.active)return false;var space=e.key===' '||e.key==='Spacebar'||e.code==='Space';
+    if(!space&&e.key!=='ArrowRight')return false;if(watchTyping(e.target))return false;
+    if(e.preventDefault)e.preventDefault();if(e.repeat)return true;if(space)watchTogglePause();else watchNextStep();return true;}
+  // Capture-phase manual takeover: anything outside #watch-panel and #watch-explainer stops the tour, except deck and
+  // tempo choices (queued for the next cycle).
+  ['pointerdown','click','keydown','input','change'].forEach(function(type){document.addEventListener(type,function(e){if(!watchState.active)return;
+    if(type==='keydown'&&watchKey(e))return;
+    var t=e.target;if(t&&t.closest&&(t.closest('#watch-panel')||t.closest('#watch-explainer')))return;
+    var choice=t&&t.closest&&t.closest('#deckpick button,#tempopick button,#watch-surge');if(choice&&(type!=='keydown'||e.key==='Enter'||e.key===' '))return;stopWatch();},true);});
 
   /* ===== v3.2 Logistics Pipeline: tempo is the input, the logistics bill is the output =====
      Teaching-grade and illustrative; generic archetypes only. Isolated from the flight-deck model:
@@ -1685,6 +2064,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   LOGI.wire();
 
   tipsInit();
+  syncCustom();
   syncMission();
   applyModes();
   // Additive, behavior-neutral test export: a no-op global handle that lets an
@@ -1692,6 +2072,10 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   // directly. Creates one window property; changes no model or DOM behavior.
   if(typeof window!=="undefined"){window.__airbossTest={logistics:LOGI,evalWing:evalWing,objVal:objVal,evalCampaign:evalCampaign,recoveryRisk:recoveryRisk,usedSpots:usedSpots,tempoSchedule:tempoSchedule,gasPerEffect:gasPerEffect,st:st,
     WEAPONS:WEAPONS,STRIKES:STRIKES,CAT:CAT,DECKS:DECKS,
+    fmt:fmt,designer:DESIGNER,syncCustom:syncCustom,statsFor:statsFor,costFor:costFor,render:render,designerContext:designerContext,dayRunning:dayRunning,
+    CCA_KEYS:CCA_KEYS,TOUR_CAP_KEY:TOUR_CAP_KEY,watchTourAlloc:watchTourAlloc,watchCCAAlloc:watchCCAAlloc,watchSetCCAs:watchSetCCAs,watchSummary:watchSummary,watchCompareHTML:watchCompareHTML,watchCompareStore:watchCompareStore,
+    watchPacing:{PACE:WATCH_PACE,ctx:watchCtx,words:watchWords,dwellBase:watchDwellBase,dwellMs:watchDwellMs,isPaused:watchPaused,
+      togglePause:watchTogglePause,next:watchNextStep,setPace:watchSetPace,hover:watchHover,focusIn:watchFocusIn,focusOut:watchFocusOut,key:watchKey},
     watchTempoComparison:watchTempoComparison,watchCycle:watchCycle,watchState:watchState,startWatch:startWatch,stopWatch:stopWatch,
     resolveTankerTacticsByType:resolveTankerTacticsByType,tankerLedger:tankerLedger,debitGas:debitGas,
     targetValidity:targetValidity,organicCliff:organicCliff,compareCliffs:compareCliffs,returnLegAudit:returnLegAudit,
@@ -1717,10 +2101,23 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     's-rng':'Set target distance. Drag outward to find where fuel limits effects.',
     's-target':'Set the minimum effect for optimizer candidates. Start at zero, then raise the floor.',
     's-cf35':'Set the illustrative F-35C price. Try a higher price when ranking effect per dollar.',
-    's-ccustom':'Set your custom aircraft price. Compare value with the existing aircraft.',
-    'c-pay':'Trade design budget for payload. Try a lighter load to afford more survivability.',
-    'c-surv':'Trade design budget for survivability. Raise it for more defended targets.',
-    'c-size':'Set custom aircraft size. Try smaller aircraft for lower deck and design cost.',
+    'c-engine-light':'Class 1 light dry turbofan: cheap and economical, but little thrust at altitude. Try it with a small wing at Mach 0.70.',
+    'c-engine-mid':'Class 2 mid-thrust dry turbofan: the balanced pick. Compare its unit cost with the light and heavy classes.',
+    'c-engine-heavy':'Class 3 heavy core: thrust to spare, but heavy, thirsty and $600M of development. Try a small buy and watch APUC.',
+    'c-qty':'Set the fleet buy. Development cost is spread over it: try 50 and 500 with the heavy engine.',
+    'c-wing':'Set wing area: too small and the approach speed fails; too big and drag eats the thrust margin. Find the window.',
+    'c-mach':'Set the ingress Mach. Below 0.80 the CCA cannot keep up with the strike package; above about 0.80 wave drag climbs fast.',
+    'c-payload':'Set the weapon payload. Heavier payload raises weight, approach speed and drag.',
+    'c-fuel':'Set internal fuel. More fuel buys radius, but it must fit in the wing and it raises landing weight.',
+    'c-surv':'Set designed survivability (0.50 to 0.95). It prices the mission systems and feeds strike survival.',
+    'c-doctrine-keep_up':'Keep up with the Mach 0.80 strike package. Below 0.80 this becomes an early launch.',
+    'c-doctrine-early_launch':'Launch the slow CCA early. In the first event the fighters must hold on spare tanker gas, or the CCA is withheld.',
+    'c-doctrine-loiter':'Fighters loiter at the push point for the CCA every event, drawing spare tanker sorties.',
+    'c-doctrine-slow_package':'Slow the whole package to the CCA speed: no tanker draw, but every strike sortie is exposed longer.',
+    'watch-with-ccas':'Toggle ON to tour the carrier air wing operating with autonomous CCAs; toggle OFF to tour the exact same scenario with a traditional crewed-only strike package, demonstrating the operational leverage and cost-per-effect impact of collaborative combat aircraft.',
+    'watch-pause':'Pause the tour on this card; press again (or Space) to resume with the time that was left.',
+    'watch-next':'Skip to the next step now (or press the Right arrow). The tour keeps its pace from there.',
+    'watch-pace':'Choose the tour pace: Relaxed gives at least 6 seconds per card, scaled to the words to read.',
     'target-posture':'Choose the target type. Try prompt weapons on fleeting coordinates and heavy warheads on bunkers.',
     'threat-level':'Set enemy pressure. Try Automatic first; it follows target range.',
     'tanker-mode':'Choose organic fuel or request theater tankers. Compare extra reach with dependency costs.',

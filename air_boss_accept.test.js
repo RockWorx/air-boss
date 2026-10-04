@@ -220,7 +220,7 @@ setup();T.st.rankBy='gas';var g1=T.evalWing(600,tn),g2=T.evalWing(800,tn);
 ok(T.objVal(g1,24)===-T.gasPerEffect(g1)&&T.objVal(g2,24)===-T.gasPerEffect(g2),'gas objective retains shared displayed metric');
 setup();T.st.rankBy='cliff';ok(T.autoSearch().length>0,'cliff eligibility does not produce vacuous empty success');
 setup();var before=JSON.stringify(T.st);T.evalWing(800,{f35c:24,mq25:12},{tankerTactics:T.TACTIC_PLANS.yoyo,tankerMode:'theater'});T.organicCliff({f35c:12});ok(JSON.stringify(T.st)===before,'candidate evaluation and cliff search do not mutate UI state');
-setup();var customWing={custom:12,mq25:4,cap:6,isr:2};T.st.custom={pay:20000,surv:95,size:20};var penalized=T.evalWing(300,customWing);ok(penalized.byType[0].pen<1,'retained custom-design budget penalty');
+setup();var customWing={custom:12,mq25:4,cap:6,isr:2};T.st.custom={pay:20000,surv:95,size:20};var penalized=T.evalWing(300,customWing);ok(penalized.byType[0].pen===1&&T.st.custom.engineClass==='mid'&&!('size' in T.st.custom)&&!('pay' in T.st.custom),'v3.3 re-pin: a legacy point-buy design migrates to the closing defaults; the budget penalty is retired (closure gates replace it)');
 setup();T.st.strike='direct';T.st.tankerTactics=T.TACTIC_PLANS.recovery;var censored=T.organicCliff({f35c:24,mq25:4});ok(censored.rows.length===61,'cliff always scans the prescribed finite domain');
 
 

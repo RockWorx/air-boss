@@ -9,6 +9,52 @@ the cyclic-ops "ballet" run the day, read the sortie tally, see who survives und
 **▶ Play it: https://rockworx.github.io/air-boss/**
 **▶ The Gouge — animated field guide: https://rockworx.github.io/air-boss/gouge.html**
 
+## What's New in Air Boss v3.3: "Your Design" Conceptual Aircraft Closure
+- **Conceptual Aircraft Closure:** Replaces the old point-buy sliders with an illustrative conceptual closure model.
+  An aircraft does not exist because features were chosen; it closes only if thrust, wing area, fuel volume,
+  carrier approach speed and deck footprint close at the same time. Cost is shown as a price-vs-value readout.
+- **Discrete Propulsion Selection & Development Amortization:** Choose a Light, Mid-Thrust or Heavy Core generic
+  dry turbofan class with altitude thrust lapse and fuel consumption. Engine hardware is priced separately from
+  the airframe, and engine development (non-recurring engineering, NRE) is spread over the fleet buy you choose.
+- **The Carrier Wing-Area Pinch:** A small wing keeps drag low for high-speed thrust margin, but a larger wing is
+  needed to stay under the illustrative 135-knot carrier approach speed (V_PA <= 135 kt) and to hold wet-wing fuel.
+- **Transonic Drag Rise & Package Keep-Up Doctrine:** Models transonic wave drag. A CCA either keeps up with the
+  nominal Mach 0.80 strike package or takes a doctrine departure: an early launch (which reveals the strike axis
+  and, in the first event of the day, needs spare tanker sorties for the fighters' hold -- without them the CCA is
+  withheld from that event and joins the next), fighter loiter at the push point (spare tanker gas every event),
+  or a slower common package (longer exposure to air defenses).
+- **Term-by-Term Drag Build-Up:** Drag is built up from the design itself -- wetted-area parasite drag,
+  lift-induced drag and compressibility wave drag -- never from a lift-to-drag ratio borrowed from another shape.
+- **"Does It Close?" Diagnostic Panel & Hot-Day Robustness:** Checks the four closure gates (approach speed, thrust
+  margin, fuel volume, deck spot footprint), names the primary binding gate, and re-checks thrust margin with
+  12% less installed thrust (an adverse hot-day scenario, not a probability).
+- **Economic Value Index ($ per Delivered Combat Effect):** Shows recurring unit flyaway cost, average procurement
+  unit cost (APUC) and cost per delivered combat effect point; an unclosed or grounded design delivers zero
+  effect, so its cost per effect is infinite.
+- **"Watch the Air Boss" Pacing Controls:** each card stays up at least 6 seconds (longer for longer text), with Relaxed / Normal / Brisk pace, Pause / Resume, Next, Space and Right Arrow keys, a pause while you read, and instant jumps for reduced motion.
+- **"With CCAs" Toggle:** watch the same seeded day with CCAs flying combat air patrol (CAP) in the CAP fighter deck spots (same deck; the strike fighters, tankers and E-2 / EA-18G stay as they are), or with the crewed-only wing, and compare effect, sorties, fuel, weapons, aircrew hours, operators, losses and cost per effect side by side. CCAs on CAP use the game's existing CAP model; they carry no ordnance to the target (illustrative).
+
+## What's New in Air Boss v3.2: The Logistics Pipeline
+- **Inverted Requirement Architecture ("Tempo is a Logistics Bill"):** Rather than treating fuel and ordnance
+  as infinite backdrop assumptions, v3.2 solves for the logistics bill a chosen sortie tempo generates: JP-5
+  in gal/day and ordnance in short tons/day across standoff missiles, guided bombs and air-to-air weapons.
+- **Geography & Sortie Sag with Distance:** Strikes at greater standoff distances lengthen sorties and stretch
+  carrier cyclic events (from 1.75 hr at 200 nm to 2.75 hr at 500 nm). Because the fly day has a fixed length,
+  a 14-hour day fits 120 sorties at 200 nm but only 75 at 500 nm (37.5% fewer), even with an undamaged deck.
+- **Combat Logistics Force (CLF) Shuttle Sizing:** Simulates the replenishment pipeline (generic fleet oilers
+  and ammunition ships), computing round-trip shuttle cycle times for a logistics hub 200 to 2,500 nm away and
+  sizing the shuttle so the carrier never runs out of stores.
+- **Reserve-Safe Replenishment Cadences:** Delivery intervals never exceed the carrier's usable stores above its
+  safety reserve or one ship's cargo, so high-tempo operations do not breach the reserve.
+- **Human Physiological Limits & CCA Supervisory Control Ratio:** Models illustrative aviator flight-time limits
+  patterned on public guidance (daily, 7-day and 30-day). Adds a player-tunable CCA supervisory control ratio
+  (CCAs per operator, a teaching assumption) and a manned-unmanned teaming (MUMT) handoff choice, sizing the
+  shipboard operator bill across tempos.
+- **Binding Sustainable Headline:** Names whether flight-deck events, the 7-day or the 30-day aircrew limit binds
+  the sustainable tempo over the chosen horizon.
+- **Day-Level Stealth Fighter Posture:** The trade between low-observable internal carriage and high-capacity
+  external "beast mode" loading, changed only by an overnight deck reset.
+
 ## New in v3.1
 
 - Unsupported strike sorties stay on deck when weapons or tanker gas run short.
