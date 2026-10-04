@@ -72,16 +72,26 @@ try {
       ['M42 auto-repeat Space toggles','if(e.repeat)return true;','',1,'auto-repeat Space is suppressed','P'],
       // "With CCAs" Watch toggle (spec 9.3, D14).
       ['M47 CCAs OFF also changes the tempo','st.tempo=q.tempo;st.alloc=tour.alloc;','st.tempo=watchState.withCCAs?q.tempo:1-q.tempo;st.alloc=tour.alloc;',1,'D14.4 OFF keeps the same scenario, seed','P'],
-      ['M48 CCA toggle not locked during a tour','function watchSetCCAs(v){if(watchState.active){watchTransport();return false;}','function watchSetCCAs(v){',1,'D14.2 a change while the tour runs is rejected','P'],
+      ['M48 CCA toggle not locked during a tour','function watchSetMode(m){if(watchState.active){watchTransport();return false;}','function watchSetMode(m){',1,'D14.2 a change while the tour runs is rejected','P'],
       ['M49 CCAs OFF keeps the Your Design CCA',"','custom','ccxcap'],watchCompare=","','ccxcap'],watchCompare=",1,'D14 CCA set: CCX-1 (strike and on CAP), the two CCA concepts and Your Design','P'],
       ['M50 CCAs OFF also moves the target range','DECK=q.deck;POOL=DECKS[DECK].spots;st.rng=q.range;st.tempo=q.tempo;st.alloc=tour.alloc','DECK=q.deck;POOL=DECKS[DECK].spots;st.rng=watchState.withCCAs?q.range:q.range+50;st.tempo=q.tempo;st.alloc=tour.alloc',1,'D14.4 OFF keeps the same scenario, seed','P'],
       // Tour CAP: With CCAs ON, CCX-1 fly CAP in the CAP fighter spots.
       ['M51 ON also hands the E-2 / EA-18G spots to CCAs','if(m>0){a.cap=0;','if(m>0){a.cap=0;a.isr=0;',1,'E-2 / EA-18G unchanged','P'],
-      ['M52 OFF leaves the tour CCAs in','if(!on)return {alloc:watchCCAAlloc(a,false)','if(false)return {alloc:watchCCAAlloc(a,false)',1,'Tour CAP OFF tour wing is the v3.2 wing exactly','P'],
+      ['M52 OFF leaves the tour CCAs in',"if(mode==='off')return {alloc:watchCCAAlloc(a,false)",'if(false)return {alloc:watchCCAAlloc(a,false)',1,'Tour CAP OFF tour wing is the v3.2 wing exactly','P'],
       ['M53 ON re-roles a crewed CAP fighter to strike','if(m>0){a.cap=0;','if(m>0){a.cap=0;a.fa18=(a.fa18||0)+1;',1,'no crewed fighter re-roled','P'],
       ['M54 CAP CCAs counted as crewed in the summary','capCrewed=r.capSorties-(r.capCCASorties||0);','capCrewed=r.capSorties;',1,'summary counts the CCAs and their CAP sorties as uncrewed','P'],
       ['M55 CAP CCAs give no CAP escort','{nCAP+=n;if(a.tour)nCAPcca+=n;}','{if(!a.tour)nCAP+=n;if(a.tour)nCAPcca+=n;}',1,'deliver exactly the existing CAP model','P'],
-      ['M56 ON changes the F-35C count','if(m>0){a.cap=0;','if(m>0){a.f35c=(a.f35c||0)-1;a.cap=0;',1,'F-35C, F/A-18E/F, MQ-25 and buddy tankers unchanged','P']
+      ['M56 ON changes the F-35C count','if(m>0){a.cap=0;','if(m>0){a.f35c=(a.f35c||0)-1;a.cap=0;',1,'F-35C, F/A-18E/F, MQ-25 and buddy tankers unchanged','P'],
+      // Tour CAP display: the roster step the tour shows must carry the fielded CCAs on screen.
+      ['M57 roster buries the CCAs on CAP (no top group)','if(ks.length)out.push({role:role,tour:1','if(false)out.push({role:role,tour:1',1,'opens with the CCAs-on-CAP group','P'],
+      ['M58 spot bar omits the CCAs on CAP','if(tn>0)sb+=','if(false)sb+=',1,'the spot bar shades the CCAs on CAP','P'],
+      ['M59 roster explainer omits the swap',"if(tour&&tour.fielded>0&&tour.mode==='cap'&&(a.ccxcap||0)>0)lead=",'if(false)lead=',1,'the roster explainer names them','P'],
+      // CCA tour modes (Off / CAP / Strike).
+      ['M60 Strike displaces F-35C instead of F/A-18E/F','if(r>0){a.fa18=f-r;a.ccx=','if(r>0){a.f35c=(a.f35c||0)-r;a.ccx=',1,'F-35C, tankers, CAP and E-2 / EA-18G untouched','P'],
+      ['M61 CAP mode also fields strikers','if(m>0){a.cap=0;','if(m>0){a.ccx=(a.ccx||0)+1;a.cap=0;',1,'CAP mode fields no strikers','P'],
+      ['M62 Strike tour buries the strikers in the roster',"if(typeof watchState!=='undefined'&&watchState&&watchState.active&&watchState.mode==='strike'","if(false&&typeof watchState!=='undefined'&&watchState&&watchState.active&&watchState.mode==='strike'",1,'opens with the CCAs-as-strikers group','P'],
+      ['M63 comparison drops the crewed losses per 100 effect row',"['Crewed losses per 100 effect','per100',2,per100],",'',1,'crewed losses per 100 effect row is engine-derived','P'],
+      ['M64 Strike explainer omits the swap',"else if(tour&&tour.fielded>0&&tour.mode==='strike'&&(a.ccx||0)>0)lead=",'else if(false)lead=',1,'the explainer opens with the deck summary and names the swap','P']
     ];
     for(const [name,needle,replacement,expected,mustFail,suiteKey] of cases) {
       const pairs=!needle?[]:Array.isArray(needle)?needle:[[needle,replacement]];   // a multi-line mutant lists [needle, replacement] pairs

@@ -127,7 +127,7 @@ h1{font-family:var(--stencil);font-size:clamp(28px,6vw,50px);margin:8px 0 3px;fo
 .dz-gate,.dz-row{font:11px/1.45 var(--mono);margin:3px 0;overflow-wrap:anywhere}.dz-gate.pass b{color:var(--good)}.dz-gate.fail b{color:var(--over)}.dz-row.warn{color:var(--foul)}
 .dz-status{font:700 11.5px/1.45 var(--mono);margin:7px 0;padding:6px 8px;border-radius:6px;border:1px solid var(--rule);overflow-wrap:anywhere}.dz-status.ok{color:var(--good)}.dz-status.warn{color:var(--foul)}.dz-status.bad{color:var(--over)}
 #watch-compare table{border-collapse:collapse;font:11px/1.4 var(--mono);margin:4px 0}#watch-compare td,#watch-compare th{padding:2px 8px;border-bottom:1px solid var(--rule);text-align:right}#watch-compare td:first-child,#watch-compare th:first-child{text-align:left}#watch-compare p{font-size:12px;margin:4px 0}
-.watch-toggle-label{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;margin:3px 6px;cursor:pointer}.watch-toggle-label input:disabled+.toggle-text{opacity:.5}
+.watch-mode{display:inline-flex;align-items:center;margin:3px 6px;font-size:13px;font-weight:700;vertical-align:middle}.watch-mode .toggle-text{margin-right:6px}.watch-mode button{background:#0c1420;color:var(--ink);border:1px solid var(--rule);margin-left:-1px;padding:5px 11px;font:inherit;cursor:pointer}.watch-mode button:first-of-type{border-radius:6px 0 0 6px}.watch-mode button:last-of-type{border-radius:0 6px 6px 0}.watch-mode button[aria-checked="true"]{background:var(--amber);color:#0a0e16;border-color:var(--amber)}.watch-mode button:disabled{opacity:.55;cursor:not-allowed}.watch-mode button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}.grp.tour-cca{box-shadow:inset 3px 0 0 var(--amber);padding-left:6px}
 #watch-pace{background:#0c1420;color:var(--ink);border:1px solid var(--rule);border-radius:6px;padding:3px 6px}
 #watch-transport{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px}#watch-pace{font-size:12px;margin-left:4px}.watch-pace-l{font-size:12px;color:var(--ink-dim);margin-left:6px}
 .mission{margin-top:14px;padding-top:14px;border-top:1px solid var(--rule);display:flex;flex-direction:column;gap:13px}
@@ -312,7 +312,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   <button id="scenario-objective" class="btn" type="button" hidden aria-pressed="false">Strait objective: Survivability</button>
   <section id="watch-panel" aria-label="Watch a scenario" class="howto">
     <div><button class="btn primary" id="watch-start" type="button" aria-pressed="false">Watch the Air Boss</button>
-    <label id="watch-with-ccas-label" class="watch-toggle-label" title="Toggle autonomous CCA participation in guided tour"><input type="checkbox" id="watch-with-ccas" checked> <span class="toggle-text">With CCAs</span></label>
+    <span id="watch-cca-mode" class="watch-mode" role="radiogroup" aria-label="CCAs in the tour" data-mode="cap" title="Choose how the guided tour fields CCAs"><span class="toggle-text">CCAs</span><button type="button" data-mode="off" role="radio" aria-checked="false" tabindex="-1">Off</button><button type="button" data-mode="cap" role="radio" aria-checked="true" tabindex="0">CAP</button><button type="button" data-mode="strike" role="radio" aria-checked="false" tabindex="-1">Strike</button></span>
     <button class="btn" id="watch-stop" type="button" hidden>Stop / take over</button>
     <button class="btn" id="watch-replay" type="button">Replay this seed</button>
     <span id="watch-transport"><button class="btn" id="watch-pause" type="button" aria-pressed="false" hidden>Pause</button>
@@ -1087,14 +1087,21 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     return {entryFuel:entryFuel,burn:returnBurn,finalFuel:entryFuel-returnBurn,landedWeight:empty+bringback+entryFuel-returnBurn};
   }
 
-  function groupKeys(g){return g.keys.concat(Object.keys(CAT).filter(function(k){return CAT[k].tour&&CAT[k].role===g.role;}));}   // + tour-only entries of the role
+  // The tour's CCAs open the roster as their own group (hatched on the spot bar) so the deck-load step shows them on screen:
+  // the tour-only CCX-1 on CAP whenever fielded, and the CCX-1 strikers while a Strike-mode tour runs.
+  var TOUR_HATCH={cap:'repeating-linear-gradient(45deg,#4a90d9 0 3px,#a9d2ff 3px 6px)',strike:'repeating-linear-gradient(45deg,#e5484d 0 3px,#ffb3b5 3px 6px)'};
+  var TOUR_GROUP_LABEL={cap:'CCAs on CAP &mdash; in place of CAP fighters',strike:'CCAs as strikers &mdash; in place of F/A-18E/F'};
+  function tourFielded(){var t=Object.keys(CAT).filter(function(k){return CAT[k].tour&&activeKeys().indexOf(k)>=0&&(st.alloc[k]||0)>0;});
+    if(typeof watchState!=='undefined'&&watchState&&watchState.active&&watchState.mode==='strike'&&(st.alloc.ccx||0)>0&&activeKeys().indexOf('ccx')>=0)t.unshift('ccx');return t;}
+  function rosterGroups(){var t=tourFielded(),out=[];
+    ['strike','cap'].forEach(function(role){var ks=t.filter(function(k){return CAT[k].role===role;});if(ks.length)out.push({role:role,tour:1,col:TOUR_HATCH[role],label:TOUR_GROUP_LABEL[role],keys:ks});});
+    return out.concat(GROUPS.filter(function(g){return activeRoles().indexOf(g.role)>=0;}).map(function(g){var ks=g.keys.filter(function(k){return t.indexOf(k)<0;});return ks.length===g.keys.length?g:Object.assign({},g,{keys:ks});}));}
   function buildRoster(){
     var host=el("roster"); host.innerHTML="";
-    GROUPS.forEach(function(g){
-      if(activeRoles().indexOf(g.role)<0)return;
-      var box=document.createElement("div"); box.className="grp";
-      box.innerHTML='<div class="grp-h"><span class="chip '+g.chip+'"></span>'+g.label+'</div>';
-      groupKeys(g).filter(function(k){return !CAT[k].tour||(st.alloc[k]||0)>0;}).forEach(function(k){
+    rosterGroups().forEach(function(g){
+      var box=document.createElement("div"); box.className=g.tour?"grp tour-cca":"grp";
+      box.innerHTML='<div class="grp-h">'+(g.tour?'<span class="chip" style="background:'+g.col+'"></span>':'<span class="chip '+g.chip+'"></span>')+g.label+'</div>';
+      g.keys.forEach(function(k){
         var a=CAT[k], n=st.alloc[k]||0, atMax=used()+spotsOf(k)>POOL+1e-9;
         var row=document.createElement("div"); row.className="ac";
         row.innerHTML='<div class="ac-nm">'+a.name+(a.custom?' <span class="tag ghost">CUSTOM</span>':(a.concept?' <span class="tag">CONCEPT</span>':''))+
@@ -1179,7 +1186,9 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     el("s-spots").max=DECKS[DECK].spots; el("s-spots").value=POOL;
     el("pool").innerHTML='<b>'+DECKS[DECK].name+' &mdash; '+POOL+' spots</b>: '+fmtSpots(u)+' assigned '+(POOL-u>1e-9?'('+fmtSpots(POOL-u)+' idle)':'(full)');
     var sb="";GROUPS.forEach(function(g){if(activeRoles().indexOf(g.role)<0)return;
-      var n=groupKeys(g).reduce(function(s,k){return s+(activeKeys().indexOf(k)>=0?(st.alloc[k]||0)*spotsOf(k):0);},0);if(n>0)sb+='<i style="width:'+(n/POOL*100)+'%;background:'+g.col+'"></i>';});
+      var tf=tourFielded(),n=g.keys.reduce(function(s,k){return s+(activeKeys().indexOf(k)>=0&&tf.indexOf(k)<0?(st.alloc[k]||0)*spotsOf(k):0);},0);if(n>0)sb+='<i style="width:'+(n/POOL*100)+'%;background:'+g.col+'"></i>';
+      var tk=tf.filter(function(k){return CAT[k].role===g.role;}),tn=tk.reduce(function(s,k){return s+(st.alloc[k]||0)*spotsOf(k);},0);
+      if(tn>0)sb+='<i title="'+tk.map(function(k){return CAT[k].name;}).join(', ')+'" style="width:'+(tn/POOL*100)+'%;background:'+TOUR_HATCH[g.role]+'"></i>';});
     var idle=(POOL-u)/POOL*100;if(idle>0)sb+='<i style="width:'+idle+'%;background:#141f2e"></i>';
     el("spotbar").innerHTML=sb;
 
@@ -1612,7 +1621,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   el('relay-orbit').addEventListener('input',function(){st.relayOrbit=Number(this.value);syncMission();refresh();});
 
   // Watch varies inputs only. Its sequence is independent of animation timing.
-  var watchState={active:false,seed:'',cycle:0,phase:'idle',timer:0,input:null,settings:null,caption:'',withCCAs:true};
+  var watchState={active:false,seed:'',cycle:0,phase:'idle',timer:0,input:null,settings:null,caption:'',withCCAs:true,mode:'cap'};
   function watchCycle(seed,index,settings){
     settings=settings||{deck:DECK,tempo:st.tempo};
     var h=2166136261,text=String(seed)+':'+index;
@@ -1641,7 +1650,10 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   function watchExplanation(id){
     var q=watchState.input,r=evalWing(st.rng),a=st.alloc;
     if(id==='scenarios')return SCENARIOS[q.scenario].name+': '+({war_at_sea:'Moving targets reward timely delivery before coordinates go stale.',deep_strike:'Hardened targets reward warhead effect, while long range stretches fuel and sortie budgets.',strait_defense:'This defense mission ranks by Survivability with an effect floor: fuel support times mean survivability, scaled down when the wing delivers less than the effect needed to stop the invasion. Raw effect remains visible because protection costs strike capacity.'})[q.scenario];
-    if(id==='roster'){var tankers=Object.keys(a).filter(function(k){return CAT[k].role==='tanker';}).reduce(function(n,k){return n+a[k];},0);return tankers+' tanker spots support the wing instead of carrying strike aircraft. This mix has '+(a.fa18||0)+' Super Hornets and '+(a.f35c||0)+' F-35Cs to trade volume against survivability.';}
+    if(id==='roster'){var tour=watchState.tour,deck=function(){return 'Deck: '+activeKeys().filter(function(k){return (a[k]||0)>0;}).map(function(k){return a[k]+' '+CAT[k].name;}).join(', ')+'. ';},lead='';
+      if(tour&&tour.fielded>0&&tour.mode==='cap'&&(a.ccxcap||0)>0)lead=deck()+a.ccxcap+' CCX-1 CCAs fly CAP in place of '+tour.replaced+' CAP fighters (listed first below). ';
+      else if(tour&&tour.fielded>0&&tour.mode==='strike'&&(a.ccx||0)>0)lead=deck()+tour.fielded+' CCX-1 CCAs fly strike in place of '+tour.replaced+' F/A-18E/F (listed first below): fewer crew at risk for less payload, a choice when crew losses matter most. ';
+      var tankers=Object.keys(a).filter(function(k){return CAT[k].role==='tanker';}).reduce(function(n,k){return n+a[k];},0);return lead+tankers+' tanker spots support the wing instead of carrying strike aircraft. This mix has '+(a.fa18||0)+' Super Hornets and '+(a.f35c||0)+' F-35Cs to trade volume against survivability.';}
     if(id==='watch-loadout')return STRIKES[st.strike].name+' sets strike reach and warhead effect; '+WEAPONS[st.weapon].name+' sets the air-defense magazine. Both choices have finite rounds for this day.';
     if(id==='v3controls'){var p=resolveTankerTacticsByType(a,st.tankerTactics),count=function(k){return Object.values(p[k]).reduce(function(x,y){return x+y;},0);};return count('consolidation')/2+' relay pairs serve '+st.relayOrbit+' nm; '+count('strike')+' single strike tankers serve '+st.strikeOrbit+' nm. '+(count('consolidation')&&a.horn5?'A buddy relay can reach beyond the single buddy tanker limit of 212 nm.':count('recovery')+' recovery tankers protect returning aircraft; their fuel is not outbound strike gas.');}
     if(id==='deckwrap')return fmt(r.events,0)+' launch-and-recover cycles in this '+(st.tempo?'surge':'sustained')+' day on '+DECKS[DECK].name+'. '+(st.tempo?'Faster turns raise output, but crews cannot keep this pace indefinitely.':'Watch aircraft launch, recover and move back into position for another cycle.');
@@ -1672,7 +1684,8 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   function watchTransport(){var p=el('watch-pause'),n=el('watch-next');
     if(p){p.hidden=!watchState.active;p.textContent=watchCtx.manualPause?'Resume':'Pause';p.setAttribute('aria-pressed',watchCtx.manualPause?'true':'false');}
     if(n)n.hidden=!watchState.active;el('watch-status').textContent=watchStatusText();
-    var cc=el('watch-with-ccas');if(cc){cc.disabled=watchState.active;cc.checked=watchState.withCCAs;}}
+    var g=el('watch-cca-mode');if(g){g.dataset.mode=watchState.mode;g.setAttribute('aria-disabled',watchState.active?'true':'false');
+      var bs=g.querySelectorAll('button[data-mode]');for(var i=0;i<bs.length;i++){var on=bs[i].dataset.mode===watchState.mode;bs[i].disabled=watchState.active;bs[i].setAttribute('aria-checked',on?'true':'false');bs[i].tabIndex=on?0:-1;}}}
   // One tour step: show the card and explainer; the dwell starts only after the reveal and scroll settle.
   function watchStep(step,phase,caption,id,onDwell,onStart){var token=watchCtx.token;
     clearTimeout(watchCtx.dwellTimer);clearTimeout(watchCtx.scrollTimer);watchCtx.running=false;watchCtx.waiting=false;
@@ -1737,18 +1750,26 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   }
   // ---- "With CCAs" toggle: OFF flies the same seeded scenario, tempo, range, deck, loadout and tanker plan with
   // every CCA (CCX-1, CCA concepts, Your Design) removed; locked while a tour runs (Pause does not unlock it). ----
-  var CCA_KEYS=['ccx','kf1','ccap','custom','ccxcap'],watchCompare={on:null,off:null};
-  // Tour CAP (With CCAs ON): CCX-1 take the CAP fighter spots only -- as many as those spots hold at the 0.75 spot weight
+  var CCA_KEYS=['ccx','kf1','ccap','custom','ccxcap'],watchCompare={off:null,cap:null,strike:null};
+  // Tour CCA modes (the Off / CAP / Strike control). Off: the seeded v3.2 tour wing exactly.
+  // Strike: up to 12 CCX-1 strike jets (the standard strike entry, 0.75 spot) replace 9 F/A-18E/F -- whole groups of 3 for 4,
+  // so the deck spots are conserved; F-35C, tankers, CAP and the E-2 / EA-18G untouched; a wing short of F/A-18E/F says so.
+  // CAP (With CCAs ON): CCX-1 take the CAP fighter spots only -- as many as those spots hold at the 0.75 spot weight
   // (same deck) -- and fly CAP in the existing CAP model. The E-2 / EA-18G, F-35C, F/A-18E/F and tankers are unchanged and no
   // crewed fighter is re-roled. OFF: the seeded v3.2 tour wing exactly.
-  var TOUR_CAP_KEY='ccxcap';
-  function watchTourAlloc(q,on){var a=Object.assign({},q.alloc);
-    if(!on)return {alloc:watchCCAAlloc(a,false),fielded:0,replaced:0,label:''};
+  var TOUR_CAP_KEY='ccxcap',TOUR_CCX=12,TOUR_SWAP=9,WATCH_MODES=['off','cap','strike'];
+  function watchMode(m){return m===true?'cap':WATCH_MODES.indexOf(m)>=0?m:'off';}   // legacy boolean: true -> CAP, false -> Off
+  function watchTourAlloc(q,mode){var a=Object.assign({},q.alloc);mode=watchMode(mode);
+    if(mode==='off')return {alloc:watchCCAAlloc(a,false),mode:'off',fielded:0,replaced:0,label:''};
+    if(mode==='strike'){var f=Math.max(0,Math.floor(a.fa18||0)),r=Math.min(TOUR_SWAP,3*Math.floor(f/3)),k=Math.min(TOUR_CCX,Math.round(r/spotsOf('ccx')));
+      if(r>0){a.fa18=f-r;a.ccx=(a.ccx||0)+k;}
+      return {alloc:a,mode:'strike',fielded:k,replaced:r,limited:r<TOUR_SWAP,label:r>0?'Same deck: '+k+' CCX-1 strikers replace '+r+' F/A-18E/F -- less payload per spot, fewer crew at risk'+(r<TOUR_SWAP?' (only '+f+' F/A-18E/F spot'+(f===1?'':'s')+' to trade)':''):'Same deck: no F/A-18E/F spots to trade for CCX-1 strikers'};}
     var m=Math.max(0,Math.floor(a.cap||0)),n=Math.floor(m/spotsOf(TOUR_CAP_KEY)+1e-9);
     if(m>0){a.cap=0;a[TOUR_CAP_KEY]=n;}
-    return {alloc:a,fielded:m>0?n:0,replaced:m,label:m>0?'Same deck: '+n+' CCAs fly CAP in place of '+m+' CAP fighters -- same strike wing, fewer crew in the air':'Same deck: no CAP fighter spots to hand to CCAs'};}
+    return {alloc:a,mode:'cap',fielded:m>0?n:0,replaced:m,label:m>0?'Same deck: '+n+' CCAs fly CAP in place of '+m+' CAP fighters -- same strike wing, fewer crew in the air':'Same deck: no CAP fighter spots to hand to CCAs'};}
   function watchCCAAlloc(a,on){var o=Object.assign({},a);if(!on)CCA_KEYS.forEach(function(k){if(k in o)o[k]=0;});return o;}
-  function watchSetCCAs(v){if(watchState.active){watchTransport();return false;}watchState.withCCAs=!!v;watchTransport();return true;}
+  function watchSetMode(m){if(watchState.active){watchTransport();return false;}if(WATCH_MODES.indexOf(m)<0)return false;watchState.mode=m;watchState.withCCAs=m!=='off';watchTransport();return true;}
+  function watchSetCCAs(v){return watchSetMode(watchMode(!!v));}
   // Engine-derived run summary (illustrative bases: crewed sortie hours = strike airborne time, 0.75 h overhead, 1.5 h crewed CAP
   // and buddy tanker, 3.0 h ISR; CCA operators from the logistics model's control ratio and flight-ops window).
   function watchSummary(r,alloc){var crewed=0,hours=0,cca=CCA_KEYS.reduce(function(n,k){return n+Math.max(0,Math.floor(alloc[k]||0));},0);
@@ -1762,17 +1783,22 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       fuelGal:r.fuelBurned/LOGI.C.rho,weapons:r.primaryUsed+r.fallbackUsed+r.a2aUsed,crewedSorties:crewed,ccaSorties:ccaSorties,aircrewHours:hours,crewedLosses:lossC,ccaLosses:lossU,
       binding:crewed>crew.ceil30?'30-day aircrew limit exceeded':crewed>crew.ceil7?'7-day aircrew limit exceeded':'within aircrew limits',
       operators:ops.operators||0,survival:r.meanSurv,losses:r.strikeSorties>0?r.strikeSorties*pLoss:0,dollarsPerEffect:r.effects>0?r.cost*1e6/r.effects:Infinity};}
+  var WATCH_MODE_NAMES={off:'Crewed only',cap:'CCAs on CAP',strike:'CCAs as strikers'},WATCH_MODE_TRY={off:'Off (crewed only)',cap:'CAP',strike:'Strike'};
   function watchCompareHTML(c){function v(x,d){return isFinite(x)?fmt(x,d):'--';}
-    if(!c.on&&!c.off)return '';
-    if(!c.on||!c.off)return '<p>Now try it '+(c.on?'without':'with')+' CCAs: Stop, switch "With CCAs", and replay this seed to compare.</p>';
-    var a=c.on.summary,b=c.off.summary;function d(k,n){var x=a[k]-b[k];if(isFinite(x)&&Math.round(Math.abs(x)*Math.pow(10,n))===0)x=0;return isFinite(x)?(x>=0?'+':'')+fmt(x,n):'--';}   // a delta that rounds to zero shows +0, never -0
-    var rows=[['Delivered combat effect',v(b.effects,0),v(a.effects,0),d('effects',0)],['Total sorties flown',v(b.sorties,0),v(a.sorties,0),d('sorties',0)+' ('+v(a.ccaSorties,0)+' CCA)'],
-      ['JP-5 for strike sorties (gal)',v(b.fuelGal,0),v(a.fuelGal,0),d('fuelGal',0)],['Weapons expended',v(b.weapons,0),v(a.weapons,0),d('weapons',0)],
-      ['Aircrew flight hours (day)',v(b.aircrewHours,0),v(a.aircrewHours,0),d('aircrewHours',0)],['Aircrew status',b.binding,a.binding,''],
-      ['CCA operators assigned',v(b.operators,0),v(a.operators,0),d('operators',0)],['Expected crewed strike losses',v(b.crewedLosses,1),v(a.crewedLosses,1),d('crewedLosses',1)],
-      ['Expected CCA losses',v(b.ccaLosses,1),v(a.ccaLosses,1),d('ccaLosses',1)],['Wing flyaway $ per effect point',v(b.dollarsPerEffect,0),v(a.dollarsPerEffect,0),d('dollarsPerEffect',0)]];
-    return '<p><b>With vs without CCAs</b> (latest watched run of each; without: '+c.off.label+'; with: '+c.on.label+'). Illustrative.</p><table><tr><th></th><th>Crewed only</th><th>With CCAs</th><th>Delta</th></tr>'+
-      rows.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';}).join('')+'</table>';}
+    var have=WATCH_MODES.filter(function(m){return c[m];}),miss=WATCH_MODES.filter(function(m){return !c[m];});if(!have.length)return '';
+    var prompt=miss.length?'<p>Now try '+miss.map(function(m){return WATCH_MODE_TRY[m];}).join(' and ')+': Stop, pick the CCA mode, and replay this seed to compare.</p>':'';
+    if(have.length<2)return prompt;
+    var b=c.off?c.off.summary:null,cca=have.filter(function(m){return m!=='off';});
+    function per100(x){return x.effects>0?100*x.crewedLosses/x.effects:Infinity;}
+    function d(a,k,n,get){var x=(get?get(a):a[k])-(get?get(b):b[k]);if(isFinite(x)&&Math.round(Math.abs(x)*Math.pow(10,n))===0)x=0;return isFinite(x)?(x>=0?'+':'')+fmt(x,n):'--';}   // a delta that rounds to zero shows +0, never -0
+    var defs=[['Delivered combat effect','effects',0],['Total sorties flown','sorties',0],['JP-5 for strike sorties (gal)','fuelGal',0],['Weapons expended','weapons',0],
+      ['Aircrew flight hours (day)','aircrewHours',0],['Aircrew status','binding',-1],['CCA operators assigned','operators',0],['Expected crewed strike losses','crewedLosses',1],
+      ['Crewed losses per 100 effect','per100',2,per100],['Expected CCA losses','ccaLosses',1],['Wing flyaway $ per effect point','dollarsPerEffect',0]];
+    var head='<tr><th></th>'+have.map(function(m){return '<th>'+WATCH_MODE_NAMES[m]+'</th>';}).join('')+(b?cca.map(function(m){return '<th>Delta '+(m==='cap'?'CAP':'strike')+'</th>';}).join(''):'')+'</tr>';
+    var rows=defs.map(function(r){var cells=have.map(function(m){var x=c[m].summary;if(r[2]<0)return x[r[1]];var val=v(r[3]?r[3](x):x[r[1]],r[2]);return r[1]==='sorties'&&m!=='off'?val+' ('+v(x.ccaSorties,0)+' CCA)':val;});
+      var deltas=b?cca.map(function(m){return r[2]<0?'':d(c[m].summary,r[1],r[2],r[3]);}):[];
+      return '<tr><td>'+r[0]+'</td>'+cells.concat(deltas).map(function(t){return '<td>'+t+'</td>';}).join('')+'</tr>';}).join('');
+    return '<p><b>With vs without CCAs</b> (latest watched run of each mode; '+have.map(function(m){return WATCH_MODE_NAMES[m]+': '+c[m].label;}).join('; ')+'). Illustrative.</p><table>'+head+rows+'</table>'+prompt;}
   function watchCompareStore(){return watchCompare;}
   // The five-step cycle: Scenario Setup (1) -> Roster Spotting (2) -> Ordnance Loadout (3) -> Tanker Plan (4) ->
   // Day Flight Operations & Results (5) -> Next Cycle (1).
@@ -1782,7 +1808,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     watchStep(1,'scenario',SCENARIOS[q.scenario].name+': setting up one illustrative day.','scenarios',watchStepRoster);
   }
   function watchStepRoster(){var q=watchState.input;
-    var tour=watchTourAlloc(q,watchState.withCCAs);watchState.tour=tour;
+    var tour=watchTourAlloc(q,watchState.mode);watchState.tour=tour;
     DECK=q.deck;POOL=DECKS[DECK].spots;st.rng=q.range;st.tempo=q.tempo;st.alloc=tour.alloc;
     syncMission();applyModes();
     watchStep(2,'wing','The Air Boss spots the '+DECKS[DECK].name+' deck: '+Object.keys(tour.alloc).filter(function(k){return tour.alloc[k]>0;}).map(function(k){return tour.alloc[k]+' '+CAT[k].name;}).join(', ')+'. Target '+q.range+' nm.'+(tour.label?' '+tour.label+'.':''),'roster',watchStepLoadout);}
@@ -1805,8 +1831,8 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   }
   function watchMaybeResult(){if(watchCtx.dayDone&&watchCtx.launchDone)watchShowResult(watchCtx.result);}
   function watchShowResult(r){var q=watchState.input,cliff=organicCliff(st.alloc),delta=st.tempo?watchDelta(watchTempoComparison()):watchTrade(r);
-    var tl=watchState.withCCAs?watchTourAlloc(q,true).label:'';
-    watchCompare[watchState.withCCAs?'on':'off']={label:'seed '+watchState.seed+', cycle '+(watchState.cycle+1)+', '+SCENARIOS[q.scenario].name+(tl?' -- '+tl:''),summary:watchSummary(r,st.alloc)};
+    var mode=watchState.mode,tl=mode!=='off'?watchTourAlloc(q,mode).label:'';
+    watchCompare[mode]={label:'seed '+watchState.seed+', cycle '+(watchState.cycle+1)+', '+SCENARIOS[q.scenario].name+(tl?' -- '+tl:''),summary:watchSummary(r,st.alloc)};
     el('watch-compare').innerHTML=watchCompareHTML(watchCompare);
     el('watch-result').textContent='Cycle '+(watchState.cycle+1)+' | '+SCENARIOS[q.scenario].name+' | '+watchOps(q,r.events)+' | '+straitObjectiveText(r)+'effect '+fmt(r.effects,1)+' | organic cliff '+cliffLabel(cliff)+(tl?' | '+tl:'');
     watchStep(5,'result',straitObjectiveText(r)+'Effect index '+fmt(r.effects,0)+'. Organic cliff '+cliffLabel(cliff)+'. '+delta,'daytally',function(){watchState.cycle++;watchNext();});
@@ -1821,7 +1847,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     watchTransport();}
   function toggleWatchSurge(){if(!watchState.active)return;watchNewToken();stopDay();
     var q=watchState.input;q.tempo=q.tempo?0:1;watchState.settings.tempo=q.tempo;
-    DECK=q.deck;POOL=DECKS[DECK].spots;Object.assign(st,{rng:q.range,tempo:q.tempo,alloc:watchTourAlloc(q,watchState.withCCAs).alloc,strike:q.strike,weapon:q.weapon,strikeOrbit:q.strikeOrbit,relayOrbit:q.relayOrbit,tankerTactics:Object.assign({},TACTIC_PLANS[q.plan])});
+    DECK=q.deck;POOL=DECKS[DECK].spots;Object.assign(st,{rng:q.range,tempo:q.tempo,alloc:watchTourAlloc(q,watchState.mode).alloc,strike:q.strike,weapon:q.weapon,strikeOrbit:q.strikeOrbit,relayOrbit:q.relayOrbit,tankerTactics:Object.assign({},TACTIC_PLANS[q.plan])});
     el('tanker-plan').value=q.plan;syncMission();watchFly(q);
   }
   el('watch-surge').addEventListener('click',toggleWatchSurge);
@@ -1834,7 +1860,10 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   el('watch-stop').addEventListener('click',stopWatch);
   el('watch-replay').addEventListener('click',function(){startWatch(watchState.seed||String(Date.now()));});
   el('watch-pause').addEventListener('click',watchTogglePause);
-  el('watch-with-ccas').addEventListener('change',function(){watchSetCCAs(!!el('watch-with-ccas').checked);});   // rejected (and reset) while a tour runs
+  el('watch-cca-mode').addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button[data-mode]'):null;if(b)watchSetMode(b.dataset.mode);});   // refused while a tour runs
+  el('watch-cca-mode').addEventListener('keydown',function(e){if(watchState.active)return;var k=e.key,i=WATCH_MODES.indexOf(watchState.mode);
+    if(k==='ArrowRight'||k==='ArrowDown')i=(i+1)%3;else if(k==='ArrowLeft'||k==='ArrowUp')i=(i+2)%3;else return;if(e.preventDefault)e.preventDefault();
+    watchSetMode(WATCH_MODES[i]);var b=el('watch-cca-mode').querySelector('button[data-mode="'+WATCH_MODES[i]+'"]');if(b&&b.focus)b.focus();});
   watchTransport();
   el('watch-next').addEventListener('click',watchNextStep);
   el('watch-pace').addEventListener('change',function(){watchSetPace(el('watch-pace').value);});
@@ -2073,7 +2102,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   if(typeof window!=="undefined"){window.__airbossTest={logistics:LOGI,evalWing:evalWing,objVal:objVal,evalCampaign:evalCampaign,recoveryRisk:recoveryRisk,usedSpots:usedSpots,tempoSchedule:tempoSchedule,gasPerEffect:gasPerEffect,st:st,
     WEAPONS:WEAPONS,STRIKES:STRIKES,CAT:CAT,DECKS:DECKS,
     fmt:fmt,designer:DESIGNER,syncCustom:syncCustom,statsFor:statsFor,costFor:costFor,render:render,designerContext:designerContext,dayRunning:dayRunning,
-    CCA_KEYS:CCA_KEYS,TOUR_CAP_KEY:TOUR_CAP_KEY,watchTourAlloc:watchTourAlloc,watchCCAAlloc:watchCCAAlloc,watchSetCCAs:watchSetCCAs,watchSummary:watchSummary,watchCompareHTML:watchCompareHTML,watchCompareStore:watchCompareStore,
+    CCA_KEYS:CCA_KEYS,TOUR_CAP_KEY:TOUR_CAP_KEY,TOUR_CCX:TOUR_CCX,WATCH_MODES:WATCH_MODES,watchSetMode:watchSetMode,watchTourAlloc:watchTourAlloc,rosterGroups:rosterGroups,watchCCAAlloc:watchCCAAlloc,watchSetCCAs:watchSetCCAs,watchSummary:watchSummary,watchCompareHTML:watchCompareHTML,watchCompareStore:watchCompareStore,
     watchPacing:{PACE:WATCH_PACE,ctx:watchCtx,words:watchWords,dwellBase:watchDwellBase,dwellMs:watchDwellMs,isPaused:watchPaused,
       togglePause:watchTogglePause,next:watchNextStep,setPace:watchSetPace,hover:watchHover,focusIn:watchFocusIn,focusOut:watchFocusOut,key:watchKey},
     watchTempoComparison:watchTempoComparison,watchCycle:watchCycle,watchState:watchState,startWatch:startWatch,stopWatch:stopWatch,
@@ -2114,7 +2143,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     'c-doctrine-early_launch':'Launch the slow CCA early. In the first event the fighters must hold on spare tanker gas, or the CCA is withheld.',
     'c-doctrine-loiter':'Fighters loiter at the push point for the CCA every event, drawing spare tanker sorties.',
     'c-doctrine-slow_package':'Slow the whole package to the CCA speed: no tanker draw, but every strike sortie is exposed longer.',
-    'watch-with-ccas':'Toggle ON to tour the carrier air wing operating with autonomous CCAs; toggle OFF to tour the exact same scenario with a traditional crewed-only strike package, demonstrating the operational leverage and cost-per-effect impact of collaborative combat aircraft.',
+    'watch-cca-mode':'Choose how the tour fields CCAs: Off tours the crewed-only wing; CAP puts CCX-1 on combat air patrol in the CAP fighter spots; Strike swaps Super Hornet spots for CCX-1 strikers, 4 for 3. Same seed, same deck: run each and compare.',
     'watch-pause':'Pause the tour on this card; press again (or Space) to resume with the time that was left.',
     'watch-next':'Skip to the next step now (or press the Right arrow). The tour keeps its pace from there.',
     'watch-pace':'Choose the tour pace: Relaxed gives at least 6 seconds per card, scaled to the words to read.',
@@ -2157,6 +2186,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   };
   function description(n){
     if(help[n.id])return help[n.id];
+    if(n.dataset.mode&&n.closest&&n.closest('#watch-cca-mode'))return {off:'Off: tour the crewed-only wing, exactly the classic tour.',cap:'CAP: CCX-1 fly combat air patrol in the CAP fighter spots. Same strike wing, fewer crew in the air.',strike:'Strike: CCX-1 strikers replace Super Hornets, 4 for every 3 deck spots. Less payload, fewer crew at risk.'}[n.dataset.mode]+' Locked while a tour runs.';
     var d=n.dataset,label=(n.getAttribute('aria-label')||n.getAttribute('title')||Array.from(n.childNodes).map(function(c){return c.textContent;}).join(' ')).trim().replace(/\s+/g,' ');
     if(d.scenario)return 'Load '+label+'. Try changing one weapon or tanker choice and compare effects.';
     if(d.preset)return 'Load the '+label+' starting mix. Try changing the target range first.';
@@ -2175,7 +2205,8 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     if(n.tagName==='A')return 'Open '+label+'. Read the illustrated tour, then use Play to return to the game.';
     return label+'. Try changing this choice and compare the effect readout.';
   }
-  function install(){document.querySelectorAll(selector).forEach(function(n){
+  function install(){var mg=document.getElementById('watch-cca-mode');if(mg&&!mg.dataset.help)mg.dataset.help=help['watch-cca-mode'];   // the group's own description (its buttons get one each)
+    document.querySelectorAll(selector).forEach(function(n){
     if(n.dataset.help)return;
     var text=description(n),span=document.createElement('span');span.id='help-description-'+(++seq);span.hidden=true;span.textContent=text;
     n.dataset.help=text;n.setAttribute('aria-describedby',span.id);n.removeAttribute('title');n.insertAdjacentElement('afterend',span);

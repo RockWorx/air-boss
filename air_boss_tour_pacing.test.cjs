@@ -179,15 +179,17 @@ for (const html of builds()) {
     T.stopWatch();
   });
 
-  group('D14 "With CCAs" Watch toggle (spec 9.3)', () => {
+  group('D14 CCA tour mode: Off / CAP / Strike (spec 9.3)', () => {
     const CCA = loadEngine(html).T.CCA_KEYS;   // the engine's CCA keys (public builds alias the concept keys)
-    const setToggle = (e, on) => { e.el('watch-with-ccas').checked = on; e.el('watch-with-ccas').fire('change'); };
+    const setMode = (e, m) => e.T.watchSetMode(m);
     const runToResult = (e, seed) => { const W = e.T.watchState; e.T.watchPacing.setPace('brisk'); e.T.startWatch(seed); e.clock.advance(0);
       for (let i = 0; i < 400 && W.phase !== 'result'; i++) e.clock.advance(250); return e; };
     const fresh = loadEngine(html);
     // D14.1 default state and DOM binding
-    ok(fresh.T.watchState.withCCAs === true && fresh.el('watch-with-ccas').checked === true && /id="watch-with-ccas-label"[^>]*title="[^"]+"><input type="checkbox" id="watch-with-ccas" checked> <span class="toggle-text">With CCAs<\/span>/.test(fresh.html) && fresh.html.indexOf('id="watch-start"') < fresh.html.indexOf('id="watch-with-ccas"') && fresh.html.indexOf('id="watch-with-ccas"') - fresh.html.indexOf('id="watch-start"') < 300, 'D14.1 #watch-with-ccas checkbox beside the Watch button (#watch-start), checked by default, label "With CCAs" with a tooltip');
-    ok(fresh.html.indexOf("'watch-with-ccas':'Toggle ON to tour the carrier air wing operating with autonomous CCAs; toggle OFF to tour the exact same scenario with a traditional crewed-only strike package") >= 0, 'D14.1 accessible help text (spec 9.3.2 item 4)');
+    ok(fresh.T.watchState.mode === 'cap' && fresh.T.watchState.withCCAs === true && fresh.el('watch-cca-mode').dataset.mode === 'cap' && /<span id="watch-cca-mode" class="watch-mode" role="radiogroup" aria-label="[^"]+"[^>]*><span class="toggle-text">CCAs<\/span><button type="button" data-mode="off" role="radio" aria-checked="false" tabindex="-1">Off<\/button><button type="button" data-mode="cap" role="radio" aria-checked="true" tabindex="0">CAP<\/button><button type="button" data-mode="strike" role="radio" aria-checked="false" tabindex="-1">Strike<\/button><\/span>/.test(fresh.html) && fresh.html.indexOf('id="watch-start"') < fresh.html.indexOf('id="watch-cca-mode"') && fresh.html.indexOf('id="watch-cca-mode"') - fresh.html.indexOf('id="watch-start"') < 300, 'D14.1 #watch-cca-mode Off / CAP / Strike radio group beside the Watch button (#watch-start), CAP by default');
+    ok(fresh.html.indexOf("'watch-cca-mode':'Choose how the tour fields CCAs:") >= 0, 'D14.1 accessible help text');
+    ok(['off', 'cap', 'strike'].every(m => fresh.T.watchSetMode(m) && fresh.T.watchState.mode === m && fresh.T.watchState.withCCAs === (m !== 'off') && fresh.el('watch-cca-mode').dataset.mode === m) && fresh.T.watchSetMode('bogus') === false && fresh.T.watchState.mode === 'strike' && fresh.T.watchSetCCAs(true) && fresh.T.watchState.mode === 'cap' && fresh.T.watchSetCCAs(false) && fresh.T.watchState.mode === 'off', 'D14.1 the three modes select; an unknown mode is refused; the legacy boolean maps true -> CAP, false -> Off');
+    fresh.T.watchSetMode('cap');
     // D14.3 strict ceteris paribus on a wing that fields CCAs
     const mixed = { f35c: 4, fa18: 6, mq25: 6, horn5: 2, cap: 6, isr: 2 }; CCA.forEach((k, i) => { mixed[k] = [8, 2, 2, 3, 4][i]; });
     ok(CCA.length === 5 && CCA.indexOf('ccx') >= 0 && CCA.indexOf('custom') >= 0 && CCA.indexOf('ccxcap') >= 0, 'D14 CCA set: CCX-1 (strike and on CAP), the two CCA concepts and Your Design');
@@ -200,34 +202,70 @@ for (const html of builds()) {
     ok(rOn.byType.some(x => CCA.indexOf(x.key) >= 0 && x.ss > 0) && !rOff.byType.some(x => CCA.indexOf(x.key) >= 0) && JSON.stringify(crewedKeys(rOn)) === JSON.stringify(crewedKeys(rOff)), 'D14.3 OFF removes exactly the CCA sorties; crewed strike fighter counts and schedule unchanged');
     ok(sOff.operators === 0 && sOff.ccaSorties === 0 && sOff.ccaLosses === 0 && sOn.operators > 0 && sOn.ccaSorties > 0, 'D14.3 / D14.5 OFF: 0 CCA operators, 0 CCA sorties, 0 CCA losses (ON: ' + sOn.operators + ' operators, ' + sOn.ccaSorties.toFixed(1) + ' CCA sorties)');
     ok(sOn.effects >= sOff.effects, 'D14.5 E_with ' + sOn.effects.toFixed(1) + ' >= E_without ' + sOff.effects.toFixed(1) + ' under identical conditions');
-    // D14.3 / D14.4 the shipped tour, same seed, both settings
-    const A = runToResult(loadEngine(html), 'd14-seed'), Bx = loadEngine(html); setToggle(Bx, false); const B = runToResult(Bx, 'd14-seed');
-    ok(A.T.watchState.phase === 'result' && B.T.watchState.phase === 'result' && B.T.watchState.withCCAs === false, 'D14 both tours reach the day results');
+    // D14.3 / D14.4 the shipped tour, same seed, CAP vs Off
+    const A = runToResult(loadEngine(html), 'd14-seed'), Bx = loadEngine(html); setMode(Bx, 'off'); const B = runToResult(Bx, 'd14-seed');
+    ok(A.T.watchState.phase === 'result' && B.T.watchState.phase === 'result' && B.T.watchState.mode === 'off' && B.T.watchState.withCCAs === false, 'D14 both tours reach the day results');
     const run = e => ({ scenario: e.T.watchState.input.scenario, seed: e.T.watchState.seed, days: e.T.SCENARIOS[e.T.watchState.input.scenario].days || 1, range: e.T.st.rng, tempo: e.T.st.tempo,
       fighters: JSON.stringify([e.T.st.alloc.f35c || 0, e.T.st.alloc.fa18 || 0, e.T.st.alloc.isr || 0]), deck: e.T.getDeck(), loadout: e.T.st.strike + '/' + e.T.st.weapon, tankers: JSON.stringify(e.T.st.tankerTactics) + (e.T.st.alloc.mq25 || 0) });
     const runOn = run(A), runOff = run(B);
     ok(['scenario', 'seed', 'days', 'range', 'tempo', 'fighters', 'deck', 'loadout', 'tankers'].every(k => runOff[k] === runOn[k]), 'D14.4 OFF keeps the same scenario, seed, days, range, tempo, F-35C, F/A-18E/F and E-2 / EA-18G, deck, loadout and tankers');
-    ok(JSON.stringify(A.T.st.alloc) === JSON.stringify(A.T.watchTourAlloc(A.T.watchState.input, true).alloc) && JSON.stringify(B.T.st.alloc) === JSON.stringify(B.T.watchState.input.alloc) && CCA.every(k => !B.T.st.alloc[k]), 'D14.3 ON flies the seeded wing plus the tour CCA complement; OFF flies the seeded wing with no CCA');
+    ok(JSON.stringify(A.T.st.alloc) === JSON.stringify(A.T.watchTourAlloc(A.T.watchState.input, 'cap').alloc) && JSON.stringify(B.T.st.alloc) === JSON.stringify(B.T.watchState.input.alloc) && CCA.every(k => !B.T.st.alloc[k]), 'D14.3 ON flies the seeded wing plus the tour CCA complement; OFF flies the seeded wing with no CCA');
     const sA = A.T.watchCompareStore(), sB = B.T.watchCompareStore();
-    ok(JSON.stringify(sA.on.summary) === JSON.stringify(A.T.watchSummary(A.T.evalWing(A.T.st.rng), A.T.st.alloc)) && JSON.stringify(sB.off.summary) === JSON.stringify(B.T.watchSummary(B.T.evalWing(B.T.st.rng), B.T.st.alloc)), 'D14.5 recorded values equal the engine for each run');
-    ok(/Now try it without CCAs/.test(A.el('watch-compare').innerHTML) && /Now try it with CCAs/.test(B.el('watch-compare').innerHTML), 'D14 a single run prompts the other setting');
-    // one session, both settings
-    A.T.stopWatch(); setToggle(A, false); runToResult(A, 'd14-seed');
-    const st = A.T.watchCompareStore(), h = A.el('watch-compare').innerHTML;
-    ok(st.on && st.off && h === A.T.watchCompareHTML(st) && /Crewed only/.test(h) && /With CCAs/.test(h) && /Delta/.test(h), 'D14.5 after both settings: Crewed only / With CCAs / Delta table rendered from the engine summaries');
-    ['effects', 'sorties', 'fuelGal', 'weapons', 'aircrewHours', 'binding', 'operators', 'crewedLosses', 'ccaLosses', 'dollarsPerEffect'].forEach(k => ok(k in st.on.summary && k in st.off.summary, 'D14.5 comparison carries ' + k));
-    ok(!Object.is(st.off.summary.operators, -0) && !/>-0</.test(h), 'D14 zero CCA operators render as 0, never -0');
+    ok(JSON.stringify(sA.cap.summary) === JSON.stringify(A.T.watchSummary(A.T.evalWing(A.T.st.rng), A.T.st.alloc)) && JSON.stringify(sB.off.summary) === JSON.stringify(B.T.watchSummary(B.T.evalWing(B.T.st.rng), B.T.st.alloc)), 'D14.5 recorded values equal the engine for each run');
+    ok(/Now try Off \(crewed only\) and Strike/.test(A.el('watch-compare').innerHTML) && /Now try CAP and Strike/.test(B.el('watch-compare').innerHTML), 'D14 a single run prompts the missing modes');
+    // one session: CAP, then Off, then Strike
+    A.T.stopWatch(); setMode(A, 'off'); runToResult(A, 'd14-seed');
+    let st = A.T.watchCompareStore(), h = A.el('watch-compare').innerHTML;
+    ok(st.cap && st.off && !st.strike && h === A.T.watchCompareHTML(st) && /Crewed only/.test(h) && /CCAs on CAP/.test(h) && /Delta CAP/.test(h) && /Now try Strike/.test(h), 'D14.5 after Off and CAP: Crewed only / CCAs on CAP / Delta table from the engine summaries, prompt for Strike');
+    A.T.stopWatch(); setMode(A, 'strike'); runToResult(A, 'd14-seed');
+    st = A.T.watchCompareStore(); h = A.el('watch-compare').innerHTML;
+    ok(st.cap && st.off && st.strike && h === A.T.watchCompareHTML(st) && /CCAs as strikers/.test(h) && /Delta strike/.test(h) && !/Now try/.test(h) && JSON.stringify(st.strike.summary) === JSON.stringify(A.T.watchSummary(A.T.evalWing(A.T.st.rng), A.T.st.alloc)), 'D14.5 after all three modes: three engine columns and two delta columns, no prompt left');
+    const p100 = x => A.T.fmt(100 * x.crewedLosses / x.effects, 2);
+    ok(h.indexOf('<td>Crewed losses per 100 effect</td><td>' + p100(st.off.summary) + '</td><td>' + p100(st.cap.summary) + '</td><td>' + p100(st.strike.summary) + '</td>') >= 0, 'D14.5 crewed losses per 100 effect row is engine-derived (' + p100(st.off.summary) + ' / ' + p100(st.cap.summary) + ' / ' + p100(st.strike.summary) + ')');
+    ['effects', 'sorties', 'fuelGal', 'weapons', 'aircrewHours', 'binding', 'operators', 'crewedLosses', 'ccaLosses', 'dollarsPerEffect'].forEach(k => ok(k in st.cap.summary && k in st.off.summary && k in st.strike.summary, 'D14.5 comparison carries ' + k));
+    ok(!Object.is(st.off.summary.operators, -0) && !/>-0</.test(h) && !/>-0\.0+</.test(h), 'D14 zero CCA operators render as 0, never -0');
     // D14.2 in-flight lock
     const L = loadEngine(html); L.T.startWatch('lock'); L.clock.advance(0);
-    ok(L.el('watch-with-ccas').disabled === true, 'D14.2 starting the tour disables #watch-with-ccas');
-    setToggle(L, false);
-    ok(L.T.watchState.withCCAs === true && L.el('watch-with-ccas').checked === true && L.T.watchSetCCAs(false) === false, 'D14.2 a change while the tour runs is rejected and the box is reset');
-    L.T.watchPacing.togglePause(); setToggle(L, false);
-    ok(L.el('watch-with-ccas').disabled === true && L.T.watchState.withCCAs === true, 'D14.2 Pause does not unlock the toggle');
+    ok(L.el('watch-cca-mode').getAttribute('aria-disabled') === 'true', 'D14.2 starting the tour disables the CCA mode control');
+    ok(L.T.watchSetMode('off') === false && L.T.watchState.mode === 'cap' && L.el('watch-cca-mode').dataset.mode === 'cap', 'D14.2 a change while the tour runs is rejected and the mode is kept');
+    L.T.watchPacing.togglePause(); setMode(L, 'strike');
+    ok(L.el('watch-cca-mode').getAttribute('aria-disabled') === 'true' && L.T.watchState.mode === 'cap', 'D14.2 Pause does not unlock the mode control');
     L.T.stopWatch();
-    ok(L.el('watch-with-ccas').disabled === false, 'D14.2 Stop re-enables the toggle');
-    setToggle(L, false);
-    ok(L.T.watchState.withCCAs === false && L.el('watch-with-ccas').checked === false, 'D14.2 after Stop the toggle switches OFF');
+    ok(L.el('watch-cca-mode').getAttribute('aria-disabled') === 'false', 'D14.2 Stop re-enables the mode control');
+    setMode(L, 'off');
+    ok(L.T.watchState.mode === 'off' && L.el('watch-cca-mode').dataset.mode === 'off', 'D14.2 after Stop the mode switches to Off');
+  });
+
+  group('Tour Strike: CCX-1 strikers replace F/A-18E/F 4-for-3 on the same deck (F-35C, tankers, CAP and E-2 / EA-18G unchanged)', () => {
+    const E = loadEngine(html), T = E.T; T.st.wing = 2;
+    const SEEDS = { 'tour-0-11491': 'strait_defense', 'tour-1-13234': 'war_at_sea', 'tour-10-6114': 'deep_strike' };
+    const ROUND2 = { strait_defense: [398.8, 587.0], war_at_sea: [599.8, 760.8], deep_strike: [317.3, 352.0] };   // round-2 engine values, same seeds
+    Object.keys(SEEDS).forEach(seed => {
+      const q = T.watchCycle(seed, 0, { deck: 'nimitz', tempo: 0 }), f = q.alloc.fa18 || 0, r = Math.min(9, 3 * Math.floor(f / 3)), n = Math.min(12, Math.round(r / 0.75)), t = T.watchTourAlloc(q, 'strike'), sc = q.scenario;
+      const lab = r > 0 ? 'Same deck: ' + n + ' CCX-1 strikers replace ' + r + ' F/A-18E/F -- less payload per spot, fewer crew at risk' + (r < 9 ? ' (only ' + f + ' F/A-18E/F spot' + (f === 1 ? '' : 's') + ' to trade)' : '') : 'Same deck: no F/A-18E/F spots to trade for CCX-1 strikers';
+      ok(sc === SEEDS[seed] && t.mode === 'strike' && t.fielded === n && n > 0 && t.replaced === r && t.alloc.ccx === n && t.alloc.fa18 === f - r && !('ccxcap' in t.alloc), 'Tour Strike ' + sc + ': ' + n + ' CCX-1 (the standard strike entry) replace ' + r + ' F/A-18E/F (of ' + f + ')');
+      ok(Object.keys(q.alloc).filter(k => k !== 'fa18').every(k => t.alloc[k] === q.alloc[k]), 'Tour Strike ' + sc + ': F-35C, tankers, CAP and E-2 / EA-18G untouched');
+      ok(Math.abs(T.usedSpots(t.alloc) - T.usedSpots(q.alloc)) < 1e-9, 'Tour Strike ' + sc + ': same deck (' + T.usedSpots(t.alloc) + ' spots ON and OFF)');
+      ok(t.label === lab, 'Tour Strike label "' + t.label + '"');
+    });
+    ok((() => { const t = T.watchTourAlloc({ deck: 'nimitz', alloc: { f35c: 30, mq25: 6, cap: 8 } }, 'strike'); return t.fielded === 0 && t.alloc.f35c === 30 && !t.alloc.ccx && t.label === 'Same deck: no F/A-18E/F spots to trade for CCX-1 strikers'; })(), 'Tour Strike no F/A-18E/F to trade: 0 CCX-1, F-35C never displaced, and the label says so');
+    ok(!('ccx' in T.watchTourAlloc(T.watchCycle('tour-0-11491', 0, { deck: 'nimitz', tempo: 0 }), 'cap').alloc), 'Tour Strike: CAP mode fields no strikers');
+    const runTo = (mode, seed, phase) => { const e = loadEngine(html), W = e.T.watchState; e.T.watchSetMode(mode); e.T.watchPacing.setPace('brisk'); e.T.startWatch(seed); e.clock.advance(0);
+      for (let i = 0; i < 400 && W.phase !== phase; i++) e.clock.advance(phase === 'wing' ? 100 : 250); return e; };
+    Object.keys(SEEDS).forEach(seed => {
+      const sc = SEEDS[seed], es = runTo('strike', seed, 'result'), eo = runTo('off', seed, 'result'), a = es.T.watchCompareStore().strike.summary, b = eo.T.watchCompareStore().off.summary, want = ROUND2[sc];
+      ok(JSON.stringify(a) === JSON.stringify(es.T.watchSummary(es.T.evalWing(es.T.st.rng), es.T.st.alloc)) && a.effects.toFixed(1) === want[0].toFixed(1) && b.effects.toFixed(1) === want[1].toFixed(1), 'Tour Strike ' + sc + ': effect with / without ' + a.effects.toFixed(1) + ' / ' + b.effects.toFixed(1) + ' reproduces the round-2 engine values');
+      ok(a.crewedLosses < b.crewedLosses && a.crewedLosses / a.effects < b.crewedLosses / b.effects && a.ccaLosses > 0, 'Tour Strike ' + sc + ': fewer expected crewed losses (' + a.crewedLosses.toFixed(2) + ' vs ' + b.crewedLosses.toFixed(2) + ') and fewer per 100 effect (' + (100 * a.crewedLosses / a.effects).toFixed(3) + ' vs ' + (100 * b.crewedLosses / b.effects).toFixed(3) + '); the CCAs carry ' + a.ccaLosses.toFixed(2) + ' losses of their own');
+      ok((es.el('watch-result').textContent + es.el('watch-compare').innerHTML).indexOf(es.T.watchTourAlloc(es.T.watchState.input, 'strike').label) >= 0, 'Tour Strike ' + sc + ': label on the watch panel');
+      const w = runTo('strike', seed, 'wing'), W = w.T, G = W.rosterGroups(), k = W.st.alloc.ccx || 0, tr = W.watchState.tour;
+      ok(W.watchState.phase === 'wing' && JSON.stringify(G[0].keys) === JSON.stringify(['ccx']) && /CCAs as strikers/.test(G[0].label) && G.slice(1).every(g => g.keys.indexOf('ccx') < 0), 'Tour Strike display ' + sc + ': the roster step opens with the CCAs-as-strikers group (' + k + ' CCX-1), not listed again under Strike');
+      const seg = w.el('spotbar').innerHTML.match(/<i title="CCX-1 Carrier CCA" style="width:([0-9.]+)%;background:[^"]+"><\/i>/);
+      ok(!!seg && Math.abs(+seg[1] - k * W.CAT.ccx.spots / W.getPool() * 100) < 1e-9, 'Tour Strike display ' + sc + ': the spot bar shades the CCX-1 strikers as their own segment');
+      const x = w.el('watch-explainer').textContent;
+      ok(x.indexOf(k + ' CCX-1 CCAs fly strike in place of ' + tr.replaced + ' F/A-18E/F') >= 0 && /a choice when crew losses matter most/.test(x) && /^Deck: /.test(x), 'Tour Strike display ' + sc + ': the explainer opens with the deck summary and names the swap ("' + x.slice(0, 60) + '...")');
+      W.stopWatch(); W.render && W.render();
+      ok(W.rosterGroups()[0].role === 'strike' && !W.rosterGroups()[0].tour && W.rosterGroups()[0].keys.indexOf('ccx') >= 0, 'Tour Strike display ' + sc + ': after Stop the roster returns to the standard groups');
+    });
   });
 
   group('Tour CAP: With CCAs ON, CCX-1 fly CAP in the CAP fighter spots (same deck; E-2 / EA-18G and every strike fighter unchanged; OFF = the v3.2 tour wing)', () => {
@@ -262,13 +300,31 @@ for (const html of builds()) {
       const runs = {};
       [true, false].forEach(on => { const e = loadEngine(html), W = e.T.watchState; e.T.setDeck(deck); e.T.watchSetCCAs(on); e.T.watchPacing.setPace('brisk'); e.T.startWatch(seeds[sc]); e.clock.advance(0);
         for (let i = 0; i < 400 && W.phase !== 'result'; i++) e.clock.advance(250);
-        runs[on] = { s: e.T.watchCompareStore()[on ? 'on' : 'off'].summary, eng: e.T.watchSummary(e.T.evalWing(e.T.st.rng), e.T.st.alloc), cap: e.el('watch-compare').innerHTML + e.el('watch-result').textContent + e.el('watch-caption').textContent, alloc: e.T.st.alloc, q: W.input }; });
+        runs[on] = { s: e.T.watchCompareStore()[on ? 'cap' : 'off'].summary, eng: e.T.watchSummary(e.T.evalWing(e.T.st.rng), e.T.st.alloc), cap: e.el('watch-compare').innerHTML + e.el('watch-result').textContent + e.el('watch-caption').textContent, alloc: e.T.st.alloc, q: W.input }; });
       const a = runs[true].s, b = runs[false].s, w = want(runs[true].q.alloc.cap || 0); results[deck + ' ' + sc] = { a, b };
       ok(JSON.stringify(a) === JSON.stringify(runs[true].eng) && JSON.stringify(b) === JSON.stringify(runs[false].eng), 'Tour CAP ' + sc + ' (' + deck + '): recorded with / without values equal the engine');
       ok(a.ccaAirframes === w.n && w.n > 0 && b.ccaAirframes === 0 && a.operators > 0 && b.operators === 0 && a.aircrewHours < b.aircrewHours && a.effects !== b.effects, 'Tour CAP ' + sc + ' (' + deck + '): non-zero comparison -- effect ' + a.effects.toFixed(1) + ' vs ' + b.effects.toFixed(1) + ', sorties ' + a.sorties.toFixed(1) + ' vs ' + b.sorties.toFixed(1) + ', aircrew ' + a.aircrewHours.toFixed(0) + ' vs ' + b.aircrewHours.toFixed(0) + ' h, operators ' + a.operators);
       ok(runs[true].cap.indexOf(w.label) >= 0 && runs[false].cap.indexOf('CCAs fly CAP') < 0, 'Tour CAP ' + sc + ' (' + deck + '): label shown on the watch panel ON only');
     });
     if (process.env.TOURCAP_REPORT) console.log('TOURCAP_REPORT ' + JSON.stringify({ seeds, results }));
+  });
+
+  group('Tour CAP display: the roster step (deck load) shows the CCAs on CAP whenever they are fielded; OFF unchanged', () => {
+    const SEEDS = ['tour-0-11491', 'tour-1-13234', 'tour-10-6114'];
+    const toWing = (on, seed) => { const e = loadEngine(html), W = e.T.watchState; e.T.watchSetCCAs(on); e.T.watchPacing.setPace('brisk'); e.T.startWatch(seed); e.clock.advance(0);
+      for (let i = 0; i < 200 && W.phase !== 'wing'; i++) e.clock.advance(100); return e; };
+    SEEDS.forEach(seed => {
+      const e = toWing(true, seed), T = e.T, n = T.st.alloc.ccxcap || 0, m = T.watchState.input.alloc.cap || 0, sc = T.watchState.input.scenario;
+      const G = typeof T.rosterGroups === 'function' ? T.rosterGroups() : [];
+      ok(T.watchState.phase === 'wing' && n > 0 && G.length > 0 && JSON.stringify(G[0].keys) === JSON.stringify(['ccxcap']) && /CCAs on CAP/.test(G[0].label), 'Tour CAP display ' + sc + ': on the roster step the deck-load roster opens with the CCAs-on-CAP group (' + n + ' CCX-1 on CAP)');
+      ok(G.length > 0 && G.slice(1).every(g => g.keys.indexOf('ccxcap') < 0), 'Tour CAP display ' + sc + ': the CCAs on CAP are listed once (not again under CAP)');
+      const bar = e.el('spotbar').innerHTML, w = n * T.CAT.ccxcap.spots / T.getPool() * 100;
+      const seg = bar.match(/<i title="CCX-1 on CAP" style="width:([0-9.]+)%;background:[^"]+"><\/i>/);
+      ok(!!seg && Math.abs(+seg[1] - w) < 1e-9, 'Tour CAP display ' + sc + ': the spot bar shades the CCAs on CAP as their own segment (' + (seg ? (+seg[1]).toFixed(2) : 'none') + '% of the deck)');
+      ok(new RegExp(n + ' CCX-1 CCAs fly CAP in place of ' + m + ' CAP fighters').test(e.el('watch-explainer').textContent), 'Tour CAP display ' + sc + ': the roster explainer names them ("' + e.el('watch-explainer').textContent + '")');
+      const off = toWing(false, seed), O = off.T, GO = typeof O.rosterGroups === 'function' ? O.rosterGroups() : [];
+      ok(GO.length > 0 && GO[0].role === 'strike' && GO.every(g => g.keys.indexOf('ccxcap') < 0) && !/CCX-1 on CAP/.test(off.el('spotbar').innerHTML) && !/CCX-1/.test(off.el('watch-explainer').textContent) && /^\d+ tanker spots support the wing/.test(off.el('watch-explainer').textContent), 'Tour CAP display ' + sc + ': OFF roster, spot bar and explainer carry no CCA (v3.2 view)');
+    });
   });
 
   group('reduced motion and post-scroll dwell start', () => {

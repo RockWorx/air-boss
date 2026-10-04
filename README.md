@@ -32,7 +32,7 @@ the cyclic-ops "ballet" run the day, read the sortie tally, see who survives und
   unit cost (APUC) and cost per delivered combat effect point; an unclosed or grounded design delivers zero
   effect, so its cost per effect is infinite.
 - **"Watch the Air Boss" Pacing Controls:** each card stays up at least 6 seconds (longer for longer text), with Relaxed / Normal / Brisk pace, Pause / Resume, Next, Space and Right Arrow keys, a pause while you read, and instant jumps for reduced motion.
-- **"With CCAs" Toggle:** watch the same seeded day with CCAs flying combat air patrol (CAP) in the CAP fighter deck spots (same deck; the strike fighters, tankers and E-2 / EA-18G stay as they are), or with the crewed-only wing, and compare effect, sorties, fuel, weapons, aircrew hours, operators, losses and cost per effect side by side. CCAs on CAP use the game's existing CAP model; they carry no ordnance to the target (illustrative).
+- **"With CCAs" Modes (Off / CAP / Strike):** watch the same seeded day three ways on the same deck: **Off**, the crewed-only wing; **CAP**, CCAs flying combat air patrol in the CAP fighter spots (the strike fighters, tankers and E-2 / EA-18G stay as they are: same strike wing, fewer crew in the air); or **Strike**, CCA strikers in place of Super Hornets, 4 for every 3 deck spots (less payload, fewer crew at risk). The deck-load step shows the CCAs on screen, and a side-by-side table compares effect, sorties, fuel, weapons, aircrew hours, operators, crewed and CCA losses (also per 100 effect points) and cost per effect (illustrative).
 
 ## What's New in Air Boss v3.2: The Logistics Pipeline
 - **Inverted Requirement Architecture ("Tempo is a Logistics Bill"):** Rather than treating fuel and ordnance
