@@ -9,6 +9,9 @@ the cyclic-ops "ballet" run the day, read the sortie tally, see who survives und
 **▶ Play it: https://rockworx.github.io/air-boss/**
 **▶ The Gouge — animated field guide: https://rockworx.github.io/air-boss/gouge.html**
 
+## What's New in Air Boss v3.4.2: Honest Disclaimer
+- **Disclaimer Corrected:** the page header, the Gouge footer and this README now state what is real, replacing an outdated blanket disclaimer: real aircraft use published program figures; the CCA and other values are notional or illustrative. Text only: no model numbers change.
+
 ## What's New in Air Boss v3.4.1: Watch Shows the Whole Deck
 - **Pinned Support-Mission Counts in Watch:** while "Watch the Air Boss" runs, a strip pinned to the bottom of the screen shows the CAP, tanker and ISR/EW counts (aircraft on deck and sorties per day) at every tour step, on desktop and phone. The tour's auto-scroll never reached those roster rows, so the deck looked under-used. Display only: no model numbers change.
 
@@ -121,9 +124,8 @@ the cyclic-ops "ballet" run the day, read the sortie tally, see who survives und
   then answer the question: *do you want to see the air wing surge?*
 - Help bubbles on every control, and an updated **Gouge**.
 
-It is a **reduced-order operations-analysis model**, deliberately abstracted for teaching — every
-coefficient is illustrative and not calibrated to real platforms. **Not operational analysis and not for
-planning.** A RockWorx give-away; contains no protected IP.
+It is a **reduced-order operations-analysis model**, deliberately abstracted for teaching.
+Illustrative teaching model, not operational analysis. Real aircraft use published program figures; the CCA and other values are notional or illustrative. Not for planning. A RockWorx give-away; contains no protected IP.
 
 ## Quick start
 
