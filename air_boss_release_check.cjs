@@ -32,4 +32,8 @@ run('air_boss_display_binding.test.cjs');
 run('air_boss_tour_pacing.test.cjs');
 // 6. Discriminatory physical closure gates (both builds)
 run('air_boss_discriminatory_gates.test.cjs');
-console.log('RELEASE CHECK PASSED: acceptance, logistics, designer, display / mutation, tour pacing and closure-gate suites on both builds. Other release approvals still required.');
+// 7. Content and version consistency: the field-guide label = the README's newest What's New version; Gouge notes (both builds)
+run('air_boss_content.test.cjs');
+// 8. v3.4 model honesty: fuel per sortie scales with radius, cost terms, approach lift, deck-reset ledger, footprint gate, caveats (both builds)
+run('air_boss_model_honesty.test.cjs');
+console.log('RELEASE CHECK PASSED: acceptance, logistics, designer, display / mutation, tour pacing, closure-gate, content / version-consistency and model-honesty suites on both builds. Other release approvals still required.');

@@ -306,7 +306,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     <button class="x" id="howtox" type="button" title="Dismiss">Got it &#10005;</button>
   </div>
 
-  <details id="local-guide" class="howto"><summary>Field guide - v3.1</summary><p>v3.1: a strike jet launches only when fuel (its own plus tanker gas it can actually receive) and weapons support the whole sortie; the rest are held on deck and the readout names the binding resource. The deck is limited per recovery window (about 16 traps in a routine 12-minute window, 29 in a surged 22-minute window) times the events flown, not by a daily wall. Functional check flights and aviator quals fly every day and deliver no effect. The 3-day Strait campaign shows the windowed daily average against a routine target of 120.</p><p>Choose a scenario or build a wing. Deck spots are finite. Strike rounds run out into a finite fallback stock. Time-sensitive coordinate targets favor prompt weapons; hardened targets favor heavy warheads.</p><p>Yo-Yo fills climb capacity. Strike tankers supply enroute deficits. Consolidation pairs transfer at 150 nm and extend the receiver's reachable orbit. Beyond single-tanker reach, a feasible pair can deliver fuel where a single tanker cannot; inside that reach, the pair costs two deck spots for less daily offload. Both retain return fuel and reserve. Adjust the receiver orbit to explore this boundary. The MQ-25 single reach is 1,400 nm, beyond the 900-nm UI limit, so MQ-25 consolidation cannot win by reach in play. Buddy relay is the teaching case: single reach 212.1 nm versus relay reach 274.2 nm; try a 250-nm orbit. Recovery fuel protects the returning force and cannot supply outbound strikes. Unreachable tracks supply no gas.</p><p>The organic cliff is the first 10-nm grid point with less than 90% fuel support, less than half peak effect, or effect below 100. Auto-Boss requires peak effect of 400. Theater fuel incurs a 10% yield penalty and 18% score charge only when accepted. This is an illustrative teaching game, not for planning. Coordinate-delay proxies do not describe real maritime terminal seekers.</p></details>
+  <details id="local-guide" class="howto"><summary>Field guide - v3.4</summary><p><b>Mission-Governed Launch &amp; Recovery:</b> A strike jet launches only when fuel (its own plus tanker gas it can actually receive), weapons, and a deck recovery slot support the whole sortie; the rest are held on deck and the readout names the binding resource (weapons, fuel, or deck). An unsupplied jet is never launched for zero effect. Deck throughput is limited per recovery window (about 16 traps in a routine 12-minute window, 29 in a surged 22-minute window) times the cyclic events flown, not by a daily wall. Functional check flights and aviator quals fly daily from crewed strike fighters, consuming deck slots and airframes while delivering no combat effect. The 3-day Strait campaign shows the windowed daily average against a routine target of 120.</p><p><b>Deck Spots &amp; Target Matching:</b> Choose a scenario or build a wing. Deck spots are finite (44 on Nimitz, 48 on Ford). Strike rounds run out into a finite fallback stock. Time-sensitive coordinate targets favor prompt Mach 5+ weapons; hardened command bunkers favor heavy penetrators.</p><p><b>Tanker Geometry &amp; Reach:</b> Yo-Yo fills climb capacity. Strike tankers supply enroute deficits. Consolidation pairs transfer at 150 nm and extend the receiver's reachable orbit. Beyond single-tanker reach, a feasible pair can deliver fuel where a single tanker cannot; inside that reach, the pair costs two deck spots for less daily offload. Both retain return fuel and reserve. Adjust the receiver orbit to explore this boundary. The MQ-25 single reach is 1,900 nm in this ledger, beyond the 900-nm UI limit, so MQ-25 consolidation cannot win by reach in play. MQ-25 give is anchored to its published requirement (at least 14,000 lb at 500 nm from the carrier, a threshold and current estimate; demonstrated performance TBD); give at other stations is an illustrative law. Buddy relay is the teaching case: single reach 212.1 nm versus relay reach 274.2 nm; try a 250-nm orbit. Recovery fuel protects the returning force and cannot supply outbound strikes. Unreachable tracks supply no gas.</p><p><b>The Organic Cliff &amp; Auto-Boss:</b> The organic cliff is the first 10-nm grid point with less than 90% fuel support, less than half peak effect, or effect below 100. Auto-Boss requires peak effect of 400. Theater fuel incurs a 10% yield penalty and 18% score charge only when accepted. This is an illustrative teaching game, not for planning. Coordinate-delay proxies do not describe real maritime terminal seekers.</p><p><b>v3.2/v3.4 Logistics Pipeline ("Tempo is a Logistics Bill"):</b> Sortie tempo solves for the daily logistics bill: fuel in gal/day and ordnance in short tons/day. Fuel per sortie rises with sortie duration and standoff radius (+54% from 200 to 500 nm under an illustrative scaling law, anchored roughly at 1,550 gal/sortie at 200 nm); the daily bill also depends on how many sorties fly, so it can fall as the sortie ceiling sags. Standoff distance stretches cyclic events (from 1.75 hr at 200 nm to 2.75 hr at 500 nm), and under this example cycle schedule the daily sortie ceiling can sag by 37.5% (from 120 down to 75 sorties on a 14-hour fly day); real air wings may double-cycle long sorties instead. Combat Logistics Force (CLF) supply shuttles are sized across transit distances (200 to 2,500 nm) to keep deliveries within usable stores and prevent reserve breaches. Aviator flight-time guidelines (daily, 7-day surge, 30-day sustained) and a player-tunable CCA supervisory control ratio (default 4 CCAs per operator) size the operator bill. Reconfiguring stealth fighters for external "beast mode" weapons incurs a mandatory 12-hour deck reset debited against the fly day: on a 14-hour fly day the reset day keeps 2 flying hours (1 event, 15 of 120 sorties); the return to Stealth is not charged in this model.</p><p><b>v3.3/v3.4 "Your Design" Conceptual Aircraft Closure:</b> An unclosed aircraft flies only in PowerPoint. Custom aircraft close only if carrier approach speed (V_PA &le; 135 kt), high-speed thrust margin (D/T &le; 0.85), wet-wing fuel volume, and deck spot footprint (Spot &le; 0.75) close simultaneously. Carrier approach lift is an illustrative assumption (C_L,app = 1.10) standing in for stall-onset and pitch-up limits on uncrewed swept wings, not a validated airworthiness value; it calls for enough wing area to satisfy arrestment limits. Choose Light, Mid, or Heavy dry turbofans with altitude thrust lapse; engine hardware is priced separately from the airframe, with development NRE amortized over fleet buy quantity. Sizing navigates the carrier wing-area pinch: a smaller wing cuts parasite drag but raises induced drag (so high-speed drag has a best wing area), while a larger wing is needed for approach speed and fuel volume. Autonomous CCAs either keep up with the nominal Mach 0.80 strike package or adopt doctrine departures (early launch, push-point loiter, or slower package ingress). Economic readout reports recurring flyaway unit cost, an APUC-style procurement unit cost and a PAUC-style unit cost incl. development (illustrative simplifications: no facilities, no development articles), and cost per delivered combat effect ($/effect, on the PAUC-style basis).</p><p><b>v3.3.1 Guided Tour &amp; CCA Force-Mix Modes:</b> "Watch the Air Boss" features adaptive reading-time pacing scaled to each explainer's word count (holding at least 6 s on Relaxed, 3.6 s on Normal, 2.1 s on Brisk, longer for longer explanations) with transport controls and three CCA tour modes on the same deck: <b>Off</b> flies the pure crewed baseline; <b>CAP</b> fields CCAs in place of crewed CAP fighters (same deck, same strike wing, fewer crew in the air &mdash; relieving 28 to 51 cockpit hours a day for defensive cover if one CCA on CAP counts as one crewed CAP fighter, an illustrative assumption); <b>Strike</b> swaps Super Hornets for CCX-1 strikers at 4 aircraft for every 3 deck spots (less payload per spot, fewer crew at risk &mdash; an operational choice when human aircrew attrition matters most). The comparative delta table evaluates effect, sorties, fuel, weapons, aircrew fatigue, operators, casualties, and cost per effect side by side.</p></details>
         <div class="presets scenario-cards" id="scenarios"><button class="preset" type="button" aria-pressed="false" data-scenario="strait_defense">Contested Strait Defense<small>Severe air opposition: protect the wing</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="war_at_sea">War at Sea<small>Moving targets: speed matters</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="deep_strike">Deep Strike Inland<small>Hardened targets: warhead matters</small></button><button class="preset" type="button" aria-pressed="false" data-scenario="strait_defense_3day">Contested Strait (3-Day)<small>Sustained campaign: magazines and crews over time</small></button></div>
         <p id="scenario-note" class="opt-note">Free play</p>
   <button id="scenario-objective" class="btn" type="button" hidden aria-pressed="false">Strait objective: Survivability</button>
@@ -423,10 +423,10 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
           <input type="range" id="s-target" min="0" max="2000" step="50" value="0" aria-label="Minimum effect index the wing must deliver">
         </div>
         <div class="opt-lab" style="margin-top:14px">Unit cost</div>
-        <div class="field"><div class="fh"><span class="fl">F-35C Lightning II <span style="color:var(--ink-faint);font-weight:500">&plusmn;15%</span></span><span class="fv" id="v-cf35">$102M</span></div>
-          <input type="range" id="s-cf35" min="87" max="117" step="1" value="102" aria-label="F-35C unit cost in millions"></div>
+        <div class="field"><div class="fh"><span class="fl">F-35C Lightning II <span style="color:var(--ink-faint);font-weight:500">&plusmn;15%</span></span><span class="fv" id="v-cf35">$93M</span></div>
+          <input type="range" id="s-cf35" min="79" max="107" step="1" value="93" aria-label="F-35C unit cost in millions"></div>
         <div class="field" style="margin-top:8px"><div class="fh"><span class="fl">Your Design <span style="color:var(--ink-faint);font-weight:500">(priced by the designer)</span></span><span class="fv" id="v-ccustom"></span></div></div>
-        <div class="opt-note">F-35C ~$102M contract-lot flyaway; the &plusmn;15% is a what-if control, not a sourced uncertainty. F/A-18E/F fixed $67M (FY23 was the last E/F buy; line shutdown funded). MQ-25 ~$184M (FY25). Your Design is priced by its closure model: airframe by weight, avionics, and the engine as separately priced hardware. Effect/$ uses illustrative flyaway cost only &mdash; not full life-cycle value.</div>
+        <div class="opt-note">F-35C $93M: U.S. carrier-variant unit recurring flyaway, air vehicle plus engine, in CY2012 dollars (published program unit costs); the &plusmn;15% is a what-if control, not a sourced uncertainty. F/A-18E/F fixed $63M flyaway in FY2013 then-year dollars (the last lot held; FY23 was the last E/F buy). MQ-25 $112M (illustrative, derived from the program's published average procurement unit cost). Catalog unit costs are rounded public or illustrative figures from different years and are not normalized to one dollar year: compare them for order of magnitude only. Your Design is priced by its closure model: airframe by weight, avionics, and the engine as separately priced hardware. Effect/$ uses illustrative recurring flyaway cost only &mdash; not full life-cycle value.</div>
         <button class="btn primary" id="autoselect" style="width:100%;margin-top:14px">Auto-select best wings &#9654;</button>
         <div class="opt-note">Searches the current deck, range, tempo &amp; wing mode. Includes your design; cliff search also samples tanker plans and requires peak effect of at least 400.</div>
       </div>
@@ -496,7 +496,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
         <input type="range" id="logi-transit" min="200" max="2500" step="50" value="750" aria-label="One-way transit to the forward logistics support hub in nautical miles"></div>
       <div class="field"><div class="fh"><span class="fl">Stealth fighter posture (day-level)</span></div>
         <div class="picker" id="logi-posture"><button type="button" id="logi-stealth" data-posture="stealth" aria-pressed="true">Stealth Ingress (Clean Internal Carriage)</button><button type="button" id="logi-beast" data-posture="beast" aria-pressed="false">Beast Mode (External Pylons Mounted)</button></div>
-        <p id="logi-lock" role="status"></p><button class="btn" type="button" id="logi-reset">Overnight deck reset (12 hr)</button></div>
+        <p id="logi-lock" role="status"></p><button class="btn" type="button" id="logi-reset">Deck reset (12 hr)</button></div>
       <div class="field"><div class="fh"><span class="fl">Strike doctrine</span></div>
         <div class="picker" id="logi-doctrine"><button type="button" id="logi-salvo" data-doctrine="salvo" aria-pressed="true">Salvo Doctrine (Pre-Planned Dual-Shot)</button><button type="button" id="logi-sls" data-doctrine="sls" aria-pressed="false">Shoot-Look-Shoot (BDA + Re-Attack)</button></div></div>
       <div class="field"><div class="fh"><span class="fl">Air wing composition</span></div>
@@ -528,8 +528,8 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   var REFWING={f35c:4,fa18:14,mq25:6,cap:6,isr:2};
   var REFDESC="Reference wing (fixed): 4 F-35C, 14 Super Hornet, 6 MQ-25, 6 CAP, 2 ISR/EW.";
   var CAT={
-    f35c: {name:"F-35C", role:"strike", pay:15000, surv:85, rate:1.00, note:"Stealth, long legs.",
-      desc:"<b>F-35C</b> &mdash; a carrier-based stealth strike-fighter archetype. Low-observable with long reach and high survivability, but a big deck footprint. Reaches deep, but the long legs stretch the sortie cycle."},
+    f35c: {name:"F-35C", role:"strike", pay:15000, surv:85, rate:1.00, note:"Stealth. Combat radius 600 nm (program current estimate = threshold); 667 nm demonstrated.",
+      desc:"<b>F-35C</b> &mdash; a carrier-based stealth strike-fighter archetype. Low-observable with long reach and high survivability, but a big deck footprint. Reaches deep, but the long legs stretch the sortie cycle. Combat radius: 600 nm is the program current estimate (equal to the threshold) and is the value the game flies; 667 nm is demonstrated performance, shown for reference only and not used in the model (F-35C program selected acquisition report, carrier variant)."},
     fa18: {name:"F/A-18E/F", role:"strike", pay:17750, surv:42, rate:1.06, note:"Heavy payload, fast deck turn.",
       desc:"<b>F/A-18E/F Super Hornet</b> &mdash; the workhorse strike-fighter archetype. Heavy payload and a fast, mature deck turn, but a conventional (non-stealth) signature. High-tempo &mdash; cheap sorties, but survivability drops against a defended target."},
     kf1:  {name:"CCA-Strike", role:"strike", pay:6200, surv:70, rate:1.30, concept:1, note:"Small, uncrewed, high tempo.",
@@ -538,8 +538,8 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       desc:"<b>CCA-Penetrator</b> &mdash; a RockWorx low-observable carrier concept. Stealth-shaped and uncrewed, trading raw payload for survivability and the ability to reach into defended airspace. Where the CCA-Strike brings tempo, the CCA-Penetrator brings penetration."},
     custom:{name:"Your Design", role:"strike", custom:true, concept:1, note:"Close your own carrier CCA below, then field it.",
       desc:"<b>Your Design</b> &mdash; a teaching-grade conceptual closure model of your own carrier CCA. Pick an engine class, wing area, ingress Mach, payload and fuel: the airplane only exists if approach speed, thrust margin, fuel volume and deck footprint all close at once. An unclosed airplane flies only in PowerPoint &mdash; it stays on deck. Illustrative, not for planning."},
-    mq25: {name:"MQ-25 Stingray", role:"tanker", offload:15000, note:"Purpose-built tanker archetype.",
-      desc:"<b>MQ-25 Stingray</b> &mdash; a carrier-based unmanned tanker: large offload, long endurance. It works both ends of the cycle &mdash; outbound strike tanker AND inbound recovery tanker &mdash; and is persistent enough that it never has to yo-yo. It exists to stop the fleet burning strike-fighters as gas trucks."},
+    mq25: {name:"MQ-25 Stingray", role:"tanker", offload:14000, note:"Purpose-built carrier tanker.",
+      desc:"<b>MQ-25 Stingray</b> &mdash; the Navy's carrier-based unmanned tanker: large offload, long endurance. It works both ends of the cycle &mdash; outbound strike tanker AND inbound recovery tanker &mdash; and is persistent enough that it never has to yo-yo. It exists to stop the fleet burning strike-fighters as gas trucks."},
     horn5:{name:"F/A-18 5-wet", role:"tanker", offload:3500, note:"A striker robbed for gas.",
       desc:"<b>F/A-18 5-wet</b> &mdash; a Super Hornet rigged as a buddy tanker. It flexes across the cycle: tops off strikers off the cat, then consolidates as the overhead recovery tanker for inbound and bolter jets &mdash; and can yo-yo (recover and relaunch). Less offload than a dedicated tanker, and every one is a striker you're not striking with, but always some value near the boat."},
     cap:  {name:"CAP fighter", role:"cap", note:"Defends the force &mdash; +survivability.",
@@ -547,12 +547,19 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     isr:  {name:"E-2 / EA-18G", role:"isr", note:"AEW + EW &mdash; +survivability at range.",
       desc:"<b>ISR / EW &mdash; airborne early warning + electronic warfare archetype</b> &mdash; sensors and jamming that raise your strikers' odds of getting through at range. Force multipliers that cost spots."}
   };
-  // Unit cost, $M/aircraft. f35c/fa18 = public flyaway ballpark (adjustable +/-15% below).
-  CAT.f35c.cost=102; CAT.fa18.cost=67; CAT.horn5.cost=67;      // F-35C ~$102M contract-lot flyaway ballpark; F/A-18E/F ~$67M (5-wet is a Super Hornet)
-  CAT.mq25.cost=184; CAT.cap.cost=70; CAT.isr.cost=110;         // MQ-25 ~$184M FY25 weapon-system unit; CAP fighter; E-2/EA-18G blend [EST]
+  // Unit cost, $M/aircraft (v3.4 cost check). NOT normalized to one dollar year: rounded public or illustrative figures.
+  CAT.f35c.cost=93; CAT.fa18.cost=63; CAT.horn5.cost=63;       // F-35C $93M [SOURCED] U.S. recurring flyaway, CY2012$ (air vehicle $82.1M + engine $11.3M; adjustable +/-15%); F/A-18E/F $63M flyaway, FY2013 then-year (last held lot; 5-wet is a Super Hornet)
+  CAT.mq25.cost=112; CAT.cap.cost=70; CAT.isr.cost=110;         // MQ-25 $112M [ILLUSTRATIVE, derived: MQ-25 MSAR FY2027 PB printed p. 15, APUC $136.840M CY2018 / 1.22] (was a $184M weapon-system figure); CAP fighter; E-2/EA-18G blend [EST]
   CAT.kf1.cost=28; CAT.ccap.cost=48;                           // notional RockWorx concepts (small/LO uncrewed)
   // Tier-2: type-specific clean radius (unrefueled combat radius, nm) + burn (lb fuel / extra nm round-trip)
-  CAT.f35c.clean=650; CAT.f35c.burn=13.5; CAT.fa18.clean=420; CAT.fa18.burn=16.5;
+  // Source audit (v3.4 round 3): F/A-18E/F 420 nm matches the F/A-18E/F SAR (Dec 2012, printed p. 10) interdiction mission
+  // radius current estimate, 419 nm (2 external tanks; threshold 390, demonstrated 444).
+  // v3.4 round 4 (release decision 2026-10-04: "Go with 600 nm, show 667 demonstrated"): F-35C 600 nm [SOURCED], F-35C program MSAR
+  // FY2027 PB (21 Apr 2026), printed p. 14, Combat Radius NM - CV Variant (KPP): current estimate 600 (= Production APB
+  // threshold 600; objective 730); demonstrated performance 667 (12/31/2025). Same basis as the F/A-18E/F 420 nm (a current
+  // estimate). 667 is display-only (roster note / description), never an engine input. Was 650 (unsourced). Burn rates are
+  // [ILLUSTRATIVE].
+  CAT.f35c.clean=600; CAT.f35c.burn=13.5; CAT.fa18.clean=420; CAT.fa18.burn=16.5;
   CAT.kf1.clean=550;  CAT.kf1.burn=8.0;   CAT.ccap.clean=720; CAT.ccap.burn=9.5;
   CAT.f35c.internal=1; CAT.kf1.internal=1; CAT.ccap.internal=1;  // LO internal-bay carriage (F-35C carries 2 MALICE internally); Super Hornet carries externally
   // v3.1 S6: generic carrier CCA archetype. Every value is a rounded teaching number [ILLUSTRATIVE]; no program data.
@@ -580,13 +587,18 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       mid:{key:'mid',name:'Class 2 Mid-Thrust Turbofan',short:'Mid-Thrust',tsls:8500,weight:1650,tsfc:.72,price:3.60,nre:250,nacelle:3.1},
       heavy:{key:'heavy',name:'Class 3 Heavy Core Turbofan',short:'Heavy Core',tsls:16500,weight:2750,tsfc:.82,price:6.80,nre:600,nacelle:4.2}};
     var C={rhoSL:.002377,ktFps:1.6878,etaInstall:.92,lapseSlope:.20,densityExp:.85,hIngress:30000,aKt:589.6,qCoef:440.76,
-      clApp:1.30,vpaMax:135.0,ar:4.20,oswald:.82,cd0k:.0032,wetSlope:2.10,wetFixed:380,mCrit:.72,waveK:.010,waveSpan:.12,dtMax:.85,
+      clApp:1.10,vpaMax:135.0,ar:4.20,oswald:.82,cd0k:.0032,wetSlope:2.10,wetFixed:380,mCrit:.72,waveK:.010,waveSpan:.12,dtMax:.85,
       wingAreal:18.5,payloadStruct:.35,fixedEmpty:1800,reserveFrac:.08,reserveFixed:400,fuelPerSqft:12.0,fuelBody:2200,
-      climbFrac:.05,loiterFrac:.06,cruiseWtFuelFrac:.40,foldFrac:.65,foldKnuckle:3.0,spotK:.01978,spotBase:.2000,spanMax:38.0,spotMax:1.60,
+      climbFrac:.05,loiterFrac:.06,cruiseWtFuelFrac:.40,foldFrac:.65,foldKnuckle:3.0,spanMax:38.0,spotMax:.75,
+      lenBase:28.0,lenPerSqft:.025,lenPerNacelle:1.5,spotRefLen:56.0,spotRefSpan:32.0,
       sMin:150,sMax:450,mPack:.80,feintMax:.40,packagePenalty:.25,fighterLoiterLbHr:4500,tankerOrbitNm:150,
-      thrustLow:.88,thrustHigh:1.08,airframeRate:1250,avionicsBase:3.50,avionicsSurv:2.50,airframeDev:350,tTarget:.50,tPattern:.35};
+      thrustLow:.88,thrustHigh:1.08,airframeRate:1250,avionicsBase:3.50,avionicsSurv:2.50,airframeDev:350,supportFrac:.15,tTarget:.50,tPattern:.35};
+    // v3.4: approach lift C_L,app 1.10 -- a flapless / tailless carrier CCA is pitch-up and stall-onset limited on approach, not
+    // C_Lmax limited [ILLUSTRATIVE TEACHING-GRADE]. Deck spot = overall length x folded span / a 56 x 32 ft strike-fighter
+    // footprint, limit 0.75 (4 CCAs in 3 spots); length = 28 + 0.025 S + 1.5 x nacelle diameter (ft) [ILLUSTRATIVE].
     C.K=1/(Math.PI*C.ar*C.oswald);                                   // induced-drag factor 1 / (pi AR e) = 0.09242
-    C.wlandPerS=.5*C.rhoSL*C.clApp*Math.pow(C.vpaMax*C.ktFps,2);    // 80.2144 lb of landing weight per sq ft at 135 kt
+    C.wlandPerS=.5*C.rhoSL*C.clApp*Math.pow(C.vpaMax*C.ktFps,2);    // 67.8738 lb of landing weight per sq ft at 135 kt
+    C.spotRef=C.spotRefLen*C.spotRefSpan;                            // 1,792 sq ft
     var DEFAULTS={engineClass:'mid',wingArea:285,ingressMach:.80,payload:2000,fuel:5620,buyQty:150,surv:.85,doctrine:'keep_up'};
     var RANGES={wingArea:[150,450],ingressMach:[.60,.88],payload:[1000,6000],fuel:[2000,7600],buyQty:[50,500],surv:[.50,.95]};
     var DOCTRINES=['keep_up','early_launch','loiter','slow_package'];
@@ -610,6 +622,12 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     function waveDrag(M){return M<=C.mCrit?0:C.waveK*Math.pow((M-C.mCrit)/C.waveSpan,3);}
     function vpa(wLand,S){return Math.sqrt(2*wLand/(C.rhoSL*S*C.clApp))/C.ktFps;}
     function sMinLanding(wLand){return wLand/C.wlandPerS;}
+    function foldedSpan(S,fold){var b=Math.sqrt(C.ar*S);return fold===false?b:C.foldFrac*b+C.foldKnuckle;}
+    function overallLength(e,S){e=engineOf(e);return C.lenBase+C.lenPerSqft*S+C.lenPerNacelle*e.nacelle;}
+    function spotFactor(e,S,fold){return overallLength(e,S)*foldedSpan(S,fold)/C.spotRef;}
+    // Largest deck-legal wing area: spot rises monotonically with S, so bisect spot = 0.75; also held to the folded-span limit.
+    function deckMaxArea(e,fold){var lo=1,hi=5000;if(spotFactor(e,hi,fold)<=C.spotMax)lo=hi;else for(var i=0;i<200&&hi-lo>1e-10;i++){var m=(lo+hi)/2;if(spotFactor(e,m,fold)<=C.spotMax)lo=m;else hi=m;}
+      var bLim=fold===false?C.spanMax:(C.spanMax-C.foldKnuckle)/C.foldFrac;return Math.min(lo,bLim*bLim/C.ar);}
     function weights(e,S,Wp,Wf){var empty=e.weight+C.wingAreal*S+C.payloadStruct*Wp+C.fixedEmpty,to=empty+Wp+Wf,res=C.reserveFrac*Wf+C.reserveFixed;
       return {empty:empty,to:to,reserveFuel:res,land:empty+Wp+res,cruise:to-C.cruiseWtFuelFrac*Wf,
         landFixed:e.weight+(1+C.payloadStruct)*Wp+C.reserveFrac*Wf+C.reserveFixed+C.fixedEmpty};}
@@ -643,23 +661,24 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
           'DESIGN FAILS TO CLOSE: Ingress D/T '+nf(dt,3)+' exceeds the '+nf(C.dtMax,2)+' limit (+'+nf((dt-C.dtMax)*100,1)+'% deficit). Select a larger engine, reduce S_wing or lower the ingress Mach.'),
         volume:gate('GATE_VOLUME','Internal Fuel Tank Packaging Exceeded',fin(fu)&&fin(fm)&&fu<=fm,fu,fm,(fu-fm)/fm,
           'DESIGN FAILS TO CLOSE: Internal fuel '+nf(fu,0)+' lb exceeds '+nf(fm,0)+' lb tank capacity (-'+nf(fu-fm,0)+' lb volume deficit). Increase wing area S_wing or carry less fuel.')};
-      var spanOk=fin(bf)&&bf<=C.spanMax,spotOk=fin(sp)&&sp<=C.spotMax;
+      var spanOk=fin(bf)&&bf<=C.spanMax,spotOk=fin(sp)&&sp<=C.spotMax,len=m.len;
       g.deck=gate('GATE_DECK','Flight Deck Footprint Exceeded',spanOk&&spotOk,sp,C.spotMax,Math.max((bf-C.spanMax)/C.spanMax,(sp-C.spotMax)/C.spotMax),
-        !spanOk?'GATE_DECK: Span '+nf(bf,1)+' ft exceeds '+nf(C.spanMax,1)+' ft elevator limit':'GATE_DECK: Spot factor '+nf(sp,3)+' exceeds '+nf(C.spotMax,2)+' limit with span '+nf(bf,1)+' ft <= '+nf(C.spanMax,1)+' ft');
+        !spanOk?'GATE_DECK: Span '+nf(bf,1)+' ft exceeds '+nf(C.spanMax,1)+' ft elevator limit':'GATE_DECK: Spot factor '+nf(sp,3)+' exceeds '+nf(C.spotMax,2)+' limit ('+(fin(len)?nf(len,1)+' ft long x ':'')+nf(bf,1)+' ft folded span; 4 CCAs must fit in 3 spots)');
       g.deck.span=bf;g.deck.spanLimit=C.spanMax;
       var binding=null,worst=-1;['approach','thrust','volume','deck'].forEach(function(k){if(!g[k].pass&&g[k].deficitRatio>worst){worst=g[k].deficitRatio;binding=k;}});
       g.doesClose=!binding;g.bindingKey=binding;g.bindingGate=binding?g[binding].code:null;g.bindingMessage=binding?g[binding].message:'';
       return g;}
+    // v3.4: the adverse case is a deterministic x0.88 thrust-sensitivity check, not a hot-day atmosphere or waveoff model.
     function robustness(doesClose,dt){var low=dt/C.thrustLow,cat=!doesClose?'infeasible':low<=C.dtMax?'robust':'marginal';
-      return {category:cat,dtLow:low,dtHigh:dt/C.thrustHigh,text:cat==='robust'?'ROBUST CLOSURE: All gates pass under Adverse / Hot-Day Thrust':
-        cat==='marginal'?'MARGINAL CLOSURE: High vulnerability to hot-day aborts (D/T_low > 0.85)':'INFEASIBLE: Nominal gate violation'};}
+      return {category:cat,dtLow:low,dtHigh:dt/C.thrustHigh,text:cat==='robust'?'ROBUST CLOSURE: All gates pass the x0.88 thrust-sensitivity check':
+        cat==='marginal'?'MARGINAL CLOSURE: Fails the x0.88 thrust-sensitivity check (D/T_low > 0.85)':'INFEASIBLE: Nominal gate violation'};}
     // ---- Doctrine vs the M0.80 strike package (spec 5) ----
     function launchOffsetMin(R,M){var vc=M*C.aKt,vp=C.mPack*C.aKt;return vc>=vp-1e-9?0:R*(1/vc-1/vp)*60;}
     function effectiveDoctrine(sel,M){if(M>=C.mPack-1e-9)return 'keep_up';return sel==='keep_up'||DOCTRINES.indexOf(sel)<0?'early_launch':sel;}
     function feintFactor(M){return 1-C.feintMax*Math.min(1,Math.max(0,(C.mPack-M)/(C.mPack-.60)));}
     function packageFactor(M){return Math.min(1,Math.max(0,1-C.packagePenalty*(C.mPack-M)/.20));}
     function loiterFuel(n,dtMin){return n*(dtMin/60)*C.fighterLoiterLbHr;}
-    function tankerOffload(){return tankerLedger('mq25',C.tankerOrbitNm,false).offload;}   // the shipped MQ-25 ledger (12,500 lb at 150 nm)
+    function tankerOffload(){return tankerLedger('mq25',C.tankerOrbitNm,false).offload;}   // the shipped MQ-25 ledger (17,500 lb at 150 nm; 14,000 lb at 500 nm)
     function tankersRequired(fuel,offload){offload=offload||tankerOffload();return fuel>0?Math.ceil(fuel/offload-1e-9):0;}
     function plural(n,w){return n+' '+w+(n===1?'':'s');}
     // Event-by-event schedule. Event 1 has no prior window: an early launch makes the package hold at the push point for
@@ -691,27 +710,30 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     function eventsSpanned(R,V){return Math.ceil(sortieHours(R,V)/carrierEvent(R)-1e-9);}
     function evaluate(p,opt){opt=opt||{};var mg=opt.raw?{state:Object.assign({},DEFAULTS,p)}:migrate(p),s=mg.state,e=ENGINES[s.engineClass]||ENGINES.mid,
         S=s.wingArea,Wp=s.payload,Wf=s.fuel,M=s.ingressMach,ae=aero(e,S,Wp,Wf,M),w=ae.w,V=M*C.aKt,fuelMax=C.fuelPerSqft*S+C.fuelBody;
-      var bUn=Math.sqrt(C.ar*S),bF=opt.fold===false?bUn:C.foldFrac*bUn+C.foldKnuckle,spot=C.spotK*bF+C.spotBase,v=vpa(w.land,S);
-      var gates=evaluateGates({vpa:v,dt:ae.DT,fuel:Wf,fuelMax:fuelMax,bFolded:bF,spot:spot});
+      var fold=opt.fold!==false,bUn=Math.sqrt(C.ar*S),bF=foldedSpan(S,fold),len=overallLength(e,S),spot=spotFactor(e,S,fold),v=vpa(w.land,S);
+      var gates=evaluateGates({vpa:v,dt:ae.DT,fuel:Wf,fuelMax:fuelMax,bFolded:bF,spot:spot,len:len});
       var br=breguet({wTO:w.to,wFuel:Wf,tsfc:e.tsfc,ld:ae.LD,v:V}),tw=thrustWindow(e,Wp,Wf,M);
-      var sMinApp=w.landFixed/(C.wlandPerS-C.wingAreal),sMinVol=Math.max(C.sMin,(Wf-C.fuelBody)/C.fuelPerSqft),
-        bMax=Math.min(C.spanMax,(C.spotMax-C.spotBase)/C.spotK),sMaxDeck=Math.pow(opt.fold===false?bMax:(bMax-C.foldKnuckle)/C.foldFrac,2)/C.ar;
+      var sMinApp=w.landFixed/(C.wlandPerS-C.wingAreal),sMinVol=Math.max(C.sMin,(Wf-C.fuelBody)/C.fuelPerSqft),sMaxDeck=deckMaxArea(e,fold);
       var lower=tw?Math.max(C.sMin,sMinApp,sMinVol,tw.lo):Infinity,upper=tw?Math.min(C.sMax,tw.hi,sMaxDeck):-Infinity;
       var deltaPinch=tw?tw.hi-Math.max(sMinApp,tw.lo):-Infinity,rb=robustness(gates.doesClose,ae.DT);
       var eff=effectiveDoctrine(s.doctrine,M),dk=Math.min(1,Math.max(0,(C.mPack-M)/(C.mPack-.60)));
+      // v3.4 cost terms (simplifications of the official definitions, labelled "-style" for the player): recurring flyaway
+      // (hardware only; official flyaway adds one-time production and test costs); APUC-style = recurring flyaway x 1.15
+      // [ILLUSTRATIVE] support and initial spares, no development; PAUC-style = APUC-style + development / Q (no facilities, no
+      // separate development articles, so here it is never below APUC-style -- not a general property of PAUC); program = Q x PAUC-style.
       var airframe=(w.empty-e.weight)*C.airframeRate/1e6,avionics=C.avionicsBase+s.surv*C.avionicsSurv,flyaway=airframe+avionics+e.price,
-        apuc=flyaway+(C.airframeDev+e.nre)/s.buyQty;
+        apuc=flyaway*(1+C.supportFrac),devTotal=C.airframeDev+e.nre,devPerUnit=devTotal/s.buyQty,pauc=apuc+devPerUnit;
       var d={input:s,migrated:mg.migrated,legacy:mg.legacy,engine:e,engineClass:e.key,S:S,M:M,V_cruise:V,W_payload:Wp,W_fuel:Wf,W_empty:w.empty,W_TO:w.to,
         W_land:w.land,W_cruise:w.cruise,reserveFuel:w.reserveFuel,w:w,fuelMax:fuelMax,q:ae.q,CL:ae.CL,CD0:ae.CD0,CDi:ae.CDi,CDwave:ae.CDwave,CD:ae.CD,
         D:ae.D,T:ae.T,DT:ae.DT,LD:ae.LD,T_low:ae.T*C.thrustLow,T_high:ae.T*C.thrustHigh,DT_low:rb.dtLow,DT_high:rb.dtHigh,
-        vpa:v,malw:C.wlandPerS*S,bUnfolded:bUn,bFolded:bF,deckSpotFactor:spot,breguet:br,R_clean:br.radius,burnRate:ae.D*e.tsfc*2/V,
+        vpa:v,malw:C.wlandPerS*S,bUnfolded:bUn,bFolded:bF,L_overall:len,deckSpotFactor:spot,breguet:br,R_clean:br.radius,burnRate:ae.D*e.tsfc*2/V,
         sMinApp:sMinApp,sMinVol:sMinVol,sMaxDeck:sMaxDeck,thrustWindow:tw,sMinThrust:tw?tw.lo:null,sMaxThrust:tw?tw.hi:null,
         deltaPinch:deltaPinch,pinchedOut:!tw||deltaPinch<0,feasible:tw&&lower<=upper?[lower,upper]:null,
         gates:gates,doesClose:gates.doesClose,bindingGate:gates.bindingGate,bindingMessage:gates.bindingMessage,
         robustness:rb.category,robustnessText:rb.text,doctrineSelected:s.doctrine,doctrine:eff,feintDk:dk,
         effectiveSurv:eff==='early_launch'?s.surv*(1-C.feintMax*dk):s.surv,packageSurvFactor:eff==='slow_package'?packageFactor(M):1,
         costs:{airframe:airframe,avionics:avionics,engineFlyaway:e.price,engineNre:e.nre,engineNrePerUnit:e.nre/s.buyQty,engineUnit:engineUnitCost(e,s.buyQty),
-          airframeDev:C.airframeDev,flyaway:flyaway,apuc:apuc,program:s.buyQty*apuc,buyQty:s.buyQty}};
+          airframeDev:C.airframeDev,flyaway:flyaway,supportFrac:C.supportFrac,apuc:apuc,devTotal:devTotal,devPerUnit:devPerUnit,pauc:pauc,program:s.buyQty*pauc,buyQty:s.buyQty}};
       d.statusText=d.doesClose?'STATUS: DESIGN CLOSES -- '+rb.text:'STATUS: '+rb.text+' ('+d.bindingGate+'). '+d.bindingMessage+
         (d.pinchedOut?' PINCHED OUT: No feasible wing area satisfies approach speed and high-speed thrust simultaneously.':'');
       return d;}
@@ -727,6 +749,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
         'cv-surv':fmt(d.input.surv,2),
         'cv-doctrine':DOCTRINE_NAMES[d.doctrineSelected]+(d.doctrine!==d.doctrineSelected?' (flies as '+DOCTRINE_NAMES[d.doctrine]+' at Mach '+fmt(d.M,2)+')':'')};}
     function row(t,cls){return '<div class="dz-row'+(cls?' '+cls:'')+'">'+t+'</div>';}
+    function CAVEAT(key,t){return '<p class="lnote caveat" data-caveat="'+key+'">'+t+'</p>';}   // v3.4 public model caveat
     function gateRow(g,label,text){return '<div class="dz-gate '+(g.pass?'pass':'fail')+'"><b>[ '+(g.pass?'PASS':'FAIL')+' ]</b> '+label+' : '+esc(text)+'</div>';}
     // The "Does it close?" diagnostic and the doctrine / price-vs-value readout (spec 7, 8, 9.1). ctx comes from the
     // shipped evaluator (designerContext): the scheduled doctrine rows, delivered custom effect and cost per effect.
@@ -735,12 +758,15 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       h+=gateRow(g.approach,'CARRIER APPROACH SPEED',fmt(d.vpa,1)+' kt '+(g.approach.pass?'<=':'>')+' 135.0 kt limit '+(g.approach.pass?'(margin +'+fmt(C.vpaMax-d.vpa,1)+' kt)':'(exceeded by +'+fmt(d.vpa-C.vpaMax,1)+' kt)'));
       h+=gateRow(g.thrust,'INGRESS THRUST MARGIN','D/T '+fmt(d.DT,2)+' '+(g.thrust.pass?'<=':'>')+' 0.85 limit '+(g.thrust.pass?'(margin +'+fmt((C.dtMax-d.DT)*100,1)+'%)':'(+'+fmt((d.DT-C.dtMax)*100,1)+'% over)'));
       h+=gateRow(g.volume,'FUEL VOLUME PACKAGING',fmt(d.W_fuel,0)+' lb '+(g.volume.pass?'<=':'>')+' '+fmt(d.fuelMax,0)+' lb capacity '+(g.volume.pass?'('+fmt(d.W_fuel/d.fuelMax*100,0)+'% full)':'(volume deficit -'+fmt(d.W_fuel-d.fuelMax,0)+' lb)'));
-      h+=gateRow(g.deck,'CARRIER SPOT FOOTPRINT',g.deck.pass?fmt(d.deckSpotFactor,2)+' spots ('+fmt(d.bFolded,1)+' ft span folded | compatible)':g.deck.message);
+      h+=gateRow(g.deck,'CARRIER SPOT FOOTPRINT',g.deck.pass?fmt(d.deckSpotFactor,2)+' spots <= '+fmt(C.spotMax,2)+' limit ('+fmt(d.L_overall,1)+' ft long x '+fmt(d.bFolded,1)+' ft span folded | compatible)':g.deck.message);
       h+='<div class="dz-status '+(d.robustness==='robust'?'ok':d.robustness==='marginal'?'warn':'bad')+'" role="status">'+esc(d.statusText)+'</div>';
-      h+=row('Installed thrust scenarios (illustrative, not a probability): adverse x0.88 D/T '+fmt(d.DT_low,3)+' | nominal '+fmt(d.DT,3)+' | favorable x1.08 '+fmt(d.DT_high,3));
+      h+=row('Thrust-sensitivity check (deterministic; not a hot-day model, not a probability): adverse x0.88 D/T '+fmt(d.DT_low,3)+' | nominal '+fmt(d.DT,3)+' | favorable x1.08 '+fmt(d.DT_high,3));
       h+=row(d.feasible?'Wing-area window: '+fmt(d.feasible[0],1)+' - '+fmt(d.feasible[1],1)+' sq ft closes (approach &gt;= '+fmt(d.sMinApp,1)+', fuel volume &gt;= '+fmt(d.sMinVol,1)+', thrust '+fmt(d.sMinThrust,1)+' - '+fmt(d.sMaxThrust,1)+')':
         d.thrustWindow?'Wing-area window: none for this payload and fuel (approach &gt;= '+fmt(d.sMinApp,1)+', fuel volume &gt;= '+fmt(d.sMinVol,1)+', thrust '+fmt(d.sMinThrust,1)+' - '+fmt(d.sMaxThrust,1)+')':
         'Wing-area window: none -- no wing area from 150 to 450 sq ft meets D/T 0.85 at Mach '+fmt(d.M,2),d.feasible?'':'warn');
+      h+=CAVEAT('approach-lift','<b>Carrier Approach Lift Grounding:</b> Approach speed (V_PA &le; '+fmt(C.vpaMax,0)+' kt) uses an illustrative approach lift coefficient for a carrier-suitable swept wing (C_L,app = '+fmt(C.clApp,2)+'): an assumption, not a validated airworthiness value. Without complex multi-element mechanical flaps and horizontal trim surfaces, uncrewed configurations can encounter pitch-up and stall-onset constraints at high approach angles, which calls for a larger wing area to meet flight deck arrestment limits.');
+      h+=CAVEAT('deck-footprint','<b>Flight Deck Footprint Gate (Spot &le; '+fmt(C.spotMax,2)+'):</b> Enforces carrier CCA deck compactness (4 aircraft in 3 spots) with an illustrative rectangular footprint: overall length times folded span against a 56 x 32 ft strike-fighter reference, plus a 38-ft folded-span limit. It does not establish elevator or deck-handling compatibility. Heavy airframes with oversized wings exceed the compactness limit.');
+      h+=CAVEAT('thrust-sensitivity','<b>Thrust Sensitivity Check:</b> The adverse thrust condition (&times;'+fmt(C.thrustLow,2)+') provides a deterministic stress check on high-speed thrust margin. It represents installed engine performance variation rather than a full thermodynamic hot-day atmospheric and waveoff climb model.');
       h+='<div class="dz-h">4 &middot; Doctrine &amp; performance</div>';
       h+=row('Combat radius (clean, Breguet): '+fmt(d.R_clean,0)+' nm '+(R?(d.R_clean>=R?'(reaches the '+fmt(R,0)+' nm target organically)':'(the '+fmt(R,0)+' nm target needs tanker gas beyond '+fmt(d.R_clean,0)+' nm)'):''));
       if(R)h+=row('Cruise burn '+fmt(d.burnRate,2)+' lb per nm of radius. Isolated sortie at '+fmt(R,0)+' nm: '+fmt(sortieHours(R,d.V_cruise),2)+' hr (staged '+fmt(stagingCycle(sortieHours(R,d.V_cruise)),2)+' hr); the carrier event is '+fmt(carrierEvent(R),2)+' hr from the sortie-sag table.');
@@ -750,19 +776,25 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       else if(d.doctrine==='loiter')docTxt='Push-Point Loiter: the fighters hold '+fmt(dt,1)+' min every event on spare tanker gas';
       else docTxt='Slower Package Speed: the whole package flies Mach '+fmt(d.M,2)+' (every strike sortie survival x'+fmt(d.packageSurvFactor,3)+')';
       h+=row('Ingress doctrine: '+docTxt);
+      h+=CAVEAT('mission-timing','<b>Mission Timing Boundary:</b> The requirement that aircraft cannot launch prior to scheduled flight quarters is a simulation modeling boundary. Real-world flight plans can advance launch times or adjust carrier position to synchronize arrival on target without incurring tanker loiter penalties.');
+      h+=CAVEAT('tanker-archetype','<b>MQ-25 Tanker Ledger:</b> The MQ-25 Stingray offload is anchored to the published MQ-25 air-refueling requirement: at least 14,000 lb of fuel given at 500 nm from the carrier (threshold; objective 16,000 lb; current estimate at least 14,000 lb). That is a requirement and an estimate, not demonstrated performance: the same published table lists demonstrated performance as TBD. Give at other stations is an illustrative game law (14,000 lb plus 10 lb for every nm closer than 500 nm; the source gives no curve). Near-boat and recovery sorties are credited 14,000 lb (illustrative). Actual offload varies with launch weight, mission radius and required fuel reserves.');
       if(n>0&&sch&&d.doesClose){var w=sch.rows.filter(function(r){return r.status==='withheld';}),r1=sch.rows[0];
         if(w.length)h+=row('<b>CCA withheld from '+plural(w.length,'event')+':</b> '+esc(sch.reason)+'. Crewed strike fighters push on schedule'+(w[0].rejoinEvent?'; the CCA joins at Event '+w[0].rejoinEvent+'.':'.'),'warn');
         else if(r1&&r1.tankersUsed>0)h+=row('Event 1'+(d.doctrine==='loiter'?' (and every event)':'')+': '+plural(r1.tankersUsed,'spare tanker sortie')+' of loiter gas cover the '+fmt(r1.fighterDelayMin,1)+'-min package hold ('+fmt(sch.tankersUsed,0)+' per day).');}
       else if(n>0&&!d.doesClose)h+=row('Unclosed: the CCA is held on deck and flies no event.','warn');
       else h+=row('Not fielded: assign deck spots to Your Design to fly it in the wing.');
-      h+=row('Unit flyaway cost: $'+fmt(c.flyaway,2)+'M | Program APUC ('+fmt(c.buyQty,0)+' a/c): $'+fmt(c.apuc,2)+'M');
+      h+=row('Unit recurring flyaway cost: $'+fmt(c.flyaway,2)+'M | APUC-style (procurement, incl. '+fmt(c.supportFrac*100,0)+'% support and spares [illustrative]): $'+fmt(c.apuc,2)+'M');
+      h+=row('Development: $'+fmt(c.devTotal,0)+'M (airframe $'+fmt(c.airframeDev,0)+'M + engine $'+fmt(c.engineNre,0)+'M) = $'+fmt(c.devPerUnit,2)+'M per aircraft over '+fmt(c.buyQty,0)+' | PAUC-style (incl. development, excl. facilities): $'+fmt(c.pauc,2)+'M');
       h+=row('Engine per aircraft: $'+fmt(c.engineFlyaway,2)+'M hardware + $'+fmt(c.engineNrePerUnit,2)+'M amortized development = $'+fmt(c.engineUnit,2)+'M');
-      h+=row('Fleet program cost: $'+fmt(c.program,0)+'M | Cost per combat effect: '+(n<=0?'-- (not fielded)':!d.doesClose?'infinite -- an unclosed design delivers zero effect':
+      h+=row('Fleet program cost (PAUC-style x '+fmt(c.buyQty,0)+'): $'+fmt(c.program,0)+'M | Cost per combat effect (PAUC-style basis; not comparable with the wing\'s recurring flyaway $ per effect point): '+(n<=0?'-- (not fielded)':!d.doesClose?'infinite -- an unclosed design delivers zero effect':
         !(ctx.customEffect>0)?'infinite -- zero delivered effect':'$'+fmt(ctx.costPerEffect,0)+' / effect point ('+n+' fielded, effect '+fmt(ctx.customEffect,1)+')'));
+      h+=CAVEAT('cost-breakdown','<b>Cost terms (illustrative).</b> <i>Recurring flyaway:</i> the build price of one ready-to-fly aircraft (structure, engine, mission avionics). Official flyaway also includes some one-time production and test costs, which this game omits. <i>Procurement unit cost (APUC-style):</i> recurring flyaway plus '+fmt(C.supportFrac*100,0)+'% [illustrative] for support equipment and initial spares. It excludes development. That allowance runs about 15-25% in one published program. <i>Unit acquisition cost (PAUC-style):</i> procurement unit cost plus development divided by the number bought. It excludes facilities and assumes no separate development articles. <i>Basis:</i> this design&rsquo;s cost per effect uses the PAUC-style unit cost; the wing&rsquo;s $ per effect point uses recurring flyaway, so the two are not like-for-like. <i>Catalog:</i> unit costs are rounded public or illustrative figures from different years and are not normalized to one dollar year. Compare them only for order of magnitude.');
+      h+=CAVEAT('calibration','<b>Conceptual Design Calibration:</b> Aerodynamic and structural coefficients are derived from classical aeronautical scaling relationships for illustrative educational exploration rather than proprietary wind-tunnel or flight-test data for specific airframes.');
       h+='<p class="opt-note">Illustrative teaching-grade closure model: generic engine classes, textbook relations, rounded constants. Not for planning.</p>';
       return h;}
     return {ENGINES:ENGINES,C:C,DEFAULTS:DEFAULTS,RANGES:RANGES,DOCTRINES:DOCTRINES,DOCTRINE_NAMES:DOCTRINE_NAMES,migrate:migrate,
-      densityRatio:densityRatio,thrustAvail:thrustAvail,waveDrag:waveDrag,vpa:vpa,sMinLanding:sMinLanding,weights:weights,aero:aero,
+      densityRatio:densityRatio,thrustAvail:thrustAvail,waveDrag:waveDrag,vpa:vpa,sMinLanding:sMinLanding,foldedSpan:foldedSpan,overallLength:overallLength,
+      spotFactor:spotFactor,deckMaxArea:deckMaxArea,weights:weights,aero:aero,
       thrustWindow:thrustWindow,breguet:breguet,engineUnitCost:engineUnitCost,costPerEffect:costPerEffect,evaluateGates:evaluateGates,
       robustness:robustness,launchOffsetMin:launchOffsetMin,effectiveDoctrine:effectiveDoctrine,feintFactor:feintFactor,packageFactor:packageFactor,
       loiterFuel:loiterFuel,tankerOffload:tankerOffload,tankersRequired:tankersRequired,doctrineSchedule:doctrineSchedule,
@@ -806,7 +838,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     {role:"isr",chip:"c-isr",col:"#41c46a",label:"ISR / EW",keys:["isr"]}
   ];
   var WINGROLES=[["strike","tanker"],["strike","tanker","cap"],["strike","tanker","cap","isr"]];
-  var st={targetPosture:"integrated",threat:null,tankerMode:"organic",strikeOrbit:350,relayOrbit:500,tankerTactics:{yoyo:20,strike:60,consolidation:0,recovery:20},wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:102}, weapon:"amraam", strike:"mixed",
+  var st={targetPosture:"integrated",threat:null,tankerMode:"organic",strikeOrbit:350,relayOrbit:500,tankerTactics:{yoyo:20,strike:60,consolidation:0,recovery:20},wing:1,play:0,rng:500,tempo:0, open:{}, rankBy:"effect", target:0, cost:{f35c:93}, weapon:"amraam", strike:"mixed",
           custom:{engineClass:"mid",wingArea:285,ingressMach:.80,payload:2000,fuel:5620,buyQty:150,surv:.85,doctrine:"keep_up"},
           alloc:{f35c:6,fa18:14,ccx:0,kf1:0,ccap:0,custom:0,mq25:5,horn5:0,cap:6,isr:3}};
 
@@ -856,7 +888,14 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     fleeting:{name:'Time-sensitive',defeat:{direct:.90,mace:1,mixed:.95,standoff:1},decay:.035},
     integrated:{name:'Defended',defeat:{direct:.75,mace:1,mixed:.85,standoff:.95},decay:.010}
   };
-  var TANKERS={mq25:{capacity:16000,burn:10,reserve:2000,near:14000,recovery:12000},
+  // MQ-25 ledger, anchored to the program requirement: KPP 2 Air Refueling, threshold >= 14,000 lb of give at 500 nm from
+  // the carrier (objective >= 16,000 lb; current estimate >= 14,000 lb; demonstrated performance TBD), MQ-25 SAR / MSAR
+  // FY2027 PB (21 Apr 2026), printed p. 12. The source gives ONE point, not a curve. Game law [ILLUSTRATIVE]: single-station
+  // give = 14,000 + 10 x (500 - orbit nm) lb, i.e. the shipped 10 lb per nm of station radius (round trip) and 2,000-lb
+  // reserve kept, with the ledger fuel term set to 21,000 lb so the 500-nm point equals the threshold (21,000 is a game
+  // ledger term, not a published fuel capacity). Near-boat yo-yo and overhead recovery sorties are credited the 14,000-lb
+  // threshold give [ILLUSTRATIVE]. Round 2 ledger (16,000 / recovery 12,000) gave 9,000 lb at 500 nm, 36% below threshold.
+  var TANKERS={mq25:{capacity:21000,burn:10,reserve:2000,near:14000,recovery:14000},
     horn5:{capacity:5000,burn:16.5,reserve:1500,near:3500,recovery:3000}};
   var FALLBACK={sleth:.80,ssurv:-.10,standoff_nm:25,tof_min:3};
   var TACTIC_PLANS={balanced:{yoyo:20,strike:60,consolidation:0,recovery:20},
@@ -1040,7 +1079,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       deckCeiling:sch.deckCeiling,recPerEvent:sch.recPerEvent,recoveryWindow:sch.recoveryWindow,deckScale:deckScale,
       fuelBurned:byType.reduce(function(s,x){return s+(x.primary+x.fallback)*range*burnFor(x.key);},0),
       doctrine:doctrine,loiterTankerSorties:loiterTankers,packageFactor:pkgFactor,customExcluded:customExcluded,customEffect:customEffect,
-      customCostPerEffect:cxRow?DESIGNER.costPerEffect(syncCustom().costs.apuc,customEffect,cxRow.n,CAT.custom.doesClose):null};
+      customCostPerEffect:cxRow?DESIGNER.costPerEffect(syncCustom().costs.pauc,customEffect,cxRow.n,CAT.custom.doesClose):null};
   }
   // ---- v3.1 D3: multi-day campaign recurrence (pure; magazines, fatigue and attrition carry day to day) ----
   function evalCampaign(range,alloc,options){
@@ -1147,7 +1186,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
   function renderDesigner(r){var d=syncCustom(),v=DESIGNER.valuesText(d);
     Object.keys(v).forEach(function(id){var n=el(id);if(n)n.textContent=v[id];});
     var out=el("c-readout");if(out)out.innerHTML=DESIGNER.panelHTML(d,designerContext(r));
-    var cc=el("v-ccustom");if(cc)cc.textContent="$"+fmt(d.costs.flyaway,1)+"M flyaway";}
+    var cc=el("v-ccustom");if(cc)cc.textContent="$"+fmt(d.costs.flyaway,1)+"M recurring flyaway";}
 
   function drawCurve(){
     var c=el("curve"),dpr=Math.min(2,window.devicePixelRatio||1),W=c.clientWidth||640,H=230;
@@ -1560,7 +1599,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       o:{0:"Sustained: a pace-yourself flying day (~1.5 sorties/jet)",1:"Surge: a max-effort day (~2.6 sorties/jet)"},
       m:{amraam:"AMRAAM (AIM-120): medium reach, deepest magazine — best raw effect",gunslinger:"GUNSLINGER (AIM-174B): SM-6 — longest reach / deepest standoff, scarce & heavy",malice:"MALICE (AIM-424): LRAAM — bay-compatible, sustainable middle"},
       s:{direct:"Direct Attack (JDAM/SDB II): many aimpoints, but you overfly the target",mixed:"Mixed: balanced bombs + standoff",standoff:"Standoff (JASSM-ER/LRASM): launch outside the defenses, survive to reach"},
-      r:{effect:"Rank by total effect index",perspot:"Rank by effect per deck spot (efficiency)",surv:"Rank by how much of the strike survives",gas:"Rank by least tanker gas per unit effect",dollar:"Rank by effect per illustrative flyaway dollar"}
+      r:{effect:"Rank by total effect index",perspot:"Rank by effect per deck spot (efficiency)",surv:"Rank by how much of the strike survives",gas:"Rank by least tanker gas per unit effect",dollar:"Rank by effect per illustrative recurring flyaway dollar"}
     };
     Object.keys(T).forEach(function(a){document.querySelectorAll("[data-"+a+"]").forEach(function(b){
       var v=b.getAttribute("data-"+a); if(T[a][v]!=null)b.title=T[a][v];});});
@@ -1793,12 +1832,18 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     function d(a,k,n,get){var x=(get?get(a):a[k])-(get?get(b):b[k]);if(isFinite(x)&&Math.round(Math.abs(x)*Math.pow(10,n))===0)x=0;return isFinite(x)?(x>=0?'+':'')+fmt(x,n):'--';}   // a delta that rounds to zero shows +0, never -0
     var defs=[['Delivered combat effect','effects',0],['Total sorties flown','sorties',0],['JP-5 for strike sorties (gal)','fuelGal',0],['Weapons expended','weapons',0],
       ['Aircrew flight hours (day)','aircrewHours',0],['Aircrew status','binding',-1],['CCA operators assigned','operators',0],['Expected crewed strike losses','crewedLosses',1],
-      ['Crewed losses per 100 effect','per100',2,per100],['Expected CCA losses','ccaLosses',1],['Wing flyaway $ per effect point','dollarsPerEffect',0]];
+      ['Crewed losses per 100 effect','per100',2,per100],['Expected CCA losses','ccaLosses',1],['Wing recurring flyaway $ per effect point','dollarsPerEffect',0]];
     var head='<tr><th></th>'+have.map(function(m){return '<th>'+WATCH_MODE_NAMES[m]+'</th>';}).join('')+(b?cca.map(function(m){return '<th>Delta '+(m==='cap'?'CAP':'strike')+'</th>';}).join(''):'')+'</tr>';
     var rows=defs.map(function(r){var cells=have.map(function(m){var x=c[m].summary;if(r[2]<0)return x[r[1]];var val=v(r[3]?r[3](x):x[r[1]],r[2]);return r[1]==='sorties'&&m!=='off'?val+' ('+v(x.ccaSorties,0)+' CCA)':val;});
       var deltas=b?cca.map(function(m){return r[2]<0?'':d(c[m].summary,r[1],r[2],r[3]);}):[];
       return '<tr><td>'+r[0]+'</td>'+cells.concat(deltas).map(function(t){return '<td>'+t+'</td>';}).join('')+'</tr>';}).join('');
-    return '<p><b>With vs without CCAs</b> (latest watched run of each mode; '+have.map(function(m){return WATCH_MODE_NAMES[m]+': '+c[m].label;}).join('; ')+'). Illustrative.</p><table>'+head+rows+'</table>'+prompt;}
+    // v3.4 public model caveats beside the comparison: CAP equivalence (when a CAP run is compared), symmetric CAP attrition,
+    // and the crewed-loss row as a relative exposure index.
+    function cv(key,t){return '<p class="lnote caveat" data-caveat="'+key+'">'+t+'</p>';}
+    var notes=(c.cap?cv('cap-equivalence','<b>CAP Equivalence Assumption:</b> The defensive CAP model assumes one uncrewed aircraft provides the defensive coverage of one crewed fighter airframe. Depending on the design, a CCA may carry fewer air-to-air missiles and may rely on offboard sensor cueing, datalinks and command-and-control support to match a crewed fighter&#39;s barrier persistence. The cockpit hours saved in CAP mode rest on this assumption.'):'')+
+      cv('cap-attrition','<b>Air Defense Attrition Notice:</b> Defensive combat air patrol sorties are modeled without attrition for both crewed and uncrewed aircraft. While uncrewed aircraft eliminate cockpit casualties, forward barrier CAP aircraft remain exposed to opposing long-range air-to-air threats.')+
+      cv('exposure-index','<b>Combat Exposure Metric:</b> Crewed losses per delivered effect is a comparative tactical exposure index reflecting relative cockpit risk across force mixes, rather than an empirical casualty forecast.');
+    return '<p><b>With vs without CCAs</b> (latest watched run of each mode; '+have.map(function(m){return WATCH_MODE_NAMES[m]+': '+c[m].label;}).join('; ')+'). Illustrative.</p><table>'+head+rows+'</table>'+notes+prompt;}
   function watchCompareStore(){return watchCompare;}
   // The five-step cycle: Scenario Setup (1) -> Roster Spotting (2) -> Ordnance Loadout (3) -> Tanker Plan (4) ->
   // Day Flight Operations & Results (5) -> Next Cycle (1).
@@ -1886,7 +1931,11 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     // Default CCA control ratio R_ctrl: CCAs one shipboard operator supervises at launch and recovery. Player-tunable 1..8.
     // [PLACEHOLDER -- real value to be supplied; a teaching assumption]. Change this one line to set the default.
     var CCA_CONTROL_RATIO_DEFAULT=4;
-    var C={rho:6.8,galPerSortie:1250,                       // fleet-average 8,500 lb JP-5 per sortie [ILLUSTRATIVE]
+    // v3.4: fuel per sortie scales with sortie duration (radius) under an [ILLUSTRATIVE] scaling law. Base 1,550 gal at the 200-nm
+    // reference sortie is a rough mixed-basis anchor: a published carrier surge record gives ~1,592 gal per FIXED-WING sortie, but
+    // its fuel total includes helicopters (1,026 hookups). The 30% fixed / 70% sortie-time split and the 500-nm value are
+    // teaching assumptions, not from that source. Sortie time 2R/450 + 0.85 hr.
+    var C={rho:6.8,galBase:1550,fFixed:.30,rRef:200,
       fuelCap:3000000,fuelReserve:.25,magCap:2100,magReserve:.20,   // carrier stores and safety floors [PUBLIC SOURCED, rounded]
       clfFuel:2500000,clfMag:1500,vTransit:18,tLoad:2.0,tUnrep:1.0,tBuffer:.5,
       vCruise:450,tTarget:.50,tPattern:.35,tOverhead:.75,tCap:1.5,burnStrike:7000,
@@ -1894,7 +1943,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       strikeLbPerSortie:.20*(2*2200)+.60*(2*1060)+.20*(4*285),capLbPerSortie:.25*420+.50*335+.10*190,
       strikeWpnPerSortie:.20*2+.60*2+.20*4,capWpnPerSortie:.25+.50+.10,bombLb:1060,
       fighters:44,crewRatio:1.48,medDown:.05,hrs7:30,hrs30:65,hrs90:165,dailyHrs:6.5,dailySorties:3,
-      ccaActive:12,ccaStrikeShare:.20,ctrlRatio:CCA_CONTROL_RATIO_DEFAULT,ctrlRatioMin:1,ctrlRatioMax:8,shifts:3,shiftHours:8,relief:1.5,shortDayHours:8,shortDayMax:60,waveTargets:50,bombPk:.80,targetValidity:.90,reconfigHours:12};
+      ccaActive:12,ccaStrikeShare:.20,ctrlRatio:CCA_CONTROL_RATIO_DEFAULT,ctrlRatioMin:1,ctrlRatioMax:8,shifts:3,shiftHours:8,relief:1.5,shortDayHours:8,shortDayMax:60,waveTargets:50,bombPk:.80,targetValidity:.90,reconfigHours:12,reconfigMinHours:0};
     // Reference sortie allocation (spec 3.2 table); intermediate tempos interpolate, strike takes the remainder.
     var ALLOC=[[0,{cap:0,tanker:0,aew:0,fcf:0,cq:0}],[115,{cap:16,tanker:14,aew:9,fcf:3,cq:3}],
       [180,{cap:24,tanker:22,aew:12,fcf:4,cq:2}],[240,{cap:34,tanker:28,aew:12,fcf:4,cq:2}]];
@@ -1914,9 +1963,10 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
         ['cap','tanker','aew','fcf','cq'].forEach(function(k){o[k]=Math.round(lo[1][k]+(hi[1][k]-lo[1][k])*t);});
         o.fcf=Math.max(1,o.fcf);}
       o.overhead=o.fcf+o.cq;o.strike=Math.max(0,S-o.cap-o.tanker-o.aew-o.overhead);o.mission=S-o.overhead;return o;}
-    function dailyBill(S){var a=allocate(S),gal=a.total*C.galPerSortie,ov=a.overhead*C.tOverhead*C.burnStrike/C.rho,
+    function galPerSortie(R){R=fin(+R)&&+R>0?+R:C.rRef;return C.galBase*(C.fFixed+(1-C.fFixed)*sortieDuration(R)/sortieDuration(C.rRef));}
+    function dailyBill(S,R){var a=allocate(S),gps=galPerSortie(R),gal=a.total*gps,ov=a.overhead*C.tOverhead*C.burnStrike/C.rho,
       lb=a.strike*C.strikeLbPerSortie+a.cap*C.capLbPerSortie;
-      return {alloc:a,fuelGalDay:gal,fuelLbDay:gal*C.rho,fuelGalWeek:7*gal,overheadFuelGal:ov,missionFuelGal:gal-ov,
+      return {alloc:a,radius:fin(+R)&&+R>0?+R:C.rRef,galPerSortie:gps,fuelGalDay:gal,fuelLbDay:gal*C.rho,fuelGalWeek:7*gal,overheadFuelGal:ov,missionFuelGal:gal-ov,
         ordLbDay:lb,ordTonsDay:lb/2000,ordTonsWeek:7*lb/2000,weaponsDay:a.strike*C.strikeWpnPerSortie+a.cap*C.capWpnPerSortie,weaponsWeek:7*(a.strike*C.strikeWpnPerSortie+a.cap*C.capWpnPerSortie),overheadWeapons:0};}
     function daysOfSupply(b){var uf=C.fuelCap*(1-C.fuelReserve),um=C.magCap*(1-C.magReserve),
       f=b.fuelGalDay>0?uf/b.fuelGalDay:Infinity,m=b.ordTonsDay>0?um/b.ordTonsDay:Infinity;
@@ -1938,6 +1988,9 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     function flyDayProfile(S){return S>200?{name:'max effort',hours:24,spot:24}:S>120?{name:'surge',hours:18,spot:20}:{name:'normal',hours:14,spot:15};}
     function sortieSag(R,p){p=p||{hours:14,spot:15};var te=eventLength(R),n=Math.floor(p.hours/te+1e-9);
       return {radius:R,tSortie:sortieDuration(R),tEvent:te,events:n,ceiling:n*p.spot,flyDay:p.hours,spot:p.spot};}
+    // v3.4: the 12-hour posture reset is debited against the fly day it falls in: available hours = max(h_min, fly day - 12).
+    function reconfigDay(R,p){p=p||{hours:14,spot:15};var avail=Math.max(C.reconfigMinHours,p.hours-C.reconfigHours),te=eventLength(R),n=Math.floor(avail/te+1e-9);
+      return {active:true,hours:C.reconfigHours,flyHours:p.hours,availHours:avail,tEvent:te,events:n,ceiling:n*p.spot};}
     function weaponsRequired(o){var d=o.pk*o.pSurv*o.pValid,w=Math.ceil(o.targets*(o.hits||1)/d-1e-9);return {divisor:d,weapons:w,ratio:o.targets>0?w/o.targets:0};}
     // Salvo: two weapons per target in one wave. Shoot-look-shoot: one weapon per surviving target per wave,
     // re-attacking after BDA until the salvo-equivalent number of targets is defeated (like-for-like comparison).
@@ -1971,24 +2024,26 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       k=n?(shifts==null?C.shifts:Math.max(0,shifts|0)):0,w=Math.ceil(consoles*C.relief-1e-9);
       return {active:n,mode:ship?'shipboard':'delegated',ratio:R,consoles:consoles,onWatch:w,enRoute:0,shifts:k,operators:w*k};}
     function solve(s){s=Object.assign({},DEFAULT_STATE,s||lst);var S=Math.max(0,Math.round(+s.tempo||0)),R=+s.radius,D=+s.transit,
-      bill=dailyBill(S),dos=daysOfSupply(bill),pipe=pipeline(bill,D),prof=flyDayProfile(S),sag=sortieSag(R,prof),sagStd=sortieSag(R),
+      bill=dailyBill(S,R),dos=daysOfSupply(bill),pipe=pipeline(bill,D),prof=flyDayProfile(S),sag=sortieSag(R,prof),sagStd=sortieSag(R),
       P=POSTURES[s.posture]||POSTURES.stealth,a=bill.alloc,collab=s.wing==='collaborative',
       strikeManned=a.strike*(collab?1-C.ccaStrikeShare:1),manned=strikeManned+a.cap+a.overhead,
       hrsDay=strikeManned*sag.tSortie+a.cap*C.tCap+a.overhead*C.tOverhead,crew=aircrew({tSortie:manned>0?hrsDay/manned:sag.tSortie}),
       avg7=crew.ready>0?hrsDay*7/crew.ready:0,win=flightOpsWindow(S,R),cca=ccaOperators(collab&&S>0?C.ccaActive:0,s.mumt,win.shifts,s.ctrlRatio),
-      pHit=C.bombPk*C.targetValidity,eff=strikeDoctrine(s.doctrine,{targets:C.waveTargets,pHit:pHit,perSortie:P.bombs,fuelLbPerSortie:C.galPerSortie*C.rho+(P.burn-C.burnStrike)*1.5});
+      pHit=C.bombPk*C.targetValidity,eff=strikeDoctrine(s.doctrine,{targets:C.waveTargets,pHit:pHit,perSortie:P.bombs,fuelLbPerSortie:bill.galPerSortie*C.rho+(P.burn-C.burnStrike)*1.5});
       eff.posture=POSTURES[s.posture]?s.posture:'stealth';eff.pSurv=P.pSurv;eff.task=postureWave(eff.posture,Math.ceil(60/P.bombs-1e-9));eff.task.sorties=Math.ceil(60/P.bombs-1e-9);eff.expectedLosses=eff.sorties*(1-P.pSurv);eff.targets=C.waveTargets;eff.pHit=pHit;
       eff.shipDaysPer100=eff.kills>0?(eff.fuelGal/C.clfFuel+eff.weapons*C.bombLb/2000/C.clfMag)*pipe.cycleDays*100/eff.kills:0;
       // Sustainable tempo (spec 9): the lowest of the target, the deck ceiling and every aircrew limit that applies over
       // the evaluation horizon (daily + 7-day for a 7-day surge; daily + 7-day + 30-day for a 30-day sustained period).
       // Fuel and weapons do not bind here: the reserve-safe shuttle above is sized to source the tempo.
-      var H=HORIZONS[s.horizon]?String(s.horizon):'30',scale=function(c){return manned>c?S*c/manned:Infinity;},
-        limits={deck:sag.ceiling,aircrewDay:scale(crew.ceilDay),aircrew7:scale(crew.ceil7)};
+      // Beast Mode carries one transition day per horizon (the reset that set it up): the deck ledger is the mean daily ceiling.
+      var H=HORIZONS[s.horizon]?String(s.horizon):'30',scale=function(c){return manned>c?S*c/manned:Infinity;},days=+H,
+        rc=s.posture==='beast'?reconfigDay(R,prof):{active:false};if(rc.active){rc.horizonDays=days;rc.ceilingAvg=((days-1)*sag.ceiling+rc.ceiling)/days;}
+      var limits={deck:rc.active?rc.ceilingAvg:sag.ceiling,aircrewDay:scale(crew.ceilDay),aircrew7:scale(crew.ceil7)};
       if(H==='30')limits.aircrew30=scale(crew.ceil30);
       var sustain=S,binding='none',keyName={deck:'deck',aircrewDay:'aircrew-day',aircrew7:'aircrew-7',aircrew30:'aircrew-30'};
       Object.keys(limits).forEach(function(k){if(limits[k]<sustain){sustain=limits[k];binding=keyName[k];}});
       var aircrewBind=crew.ceil30<=crew.ceil7&&H==='30'?'30':'7',aircrewCeil=aircrewBind==='30'?crew.ceil30:crew.ceil7;
-      return {state:s,tempo:S,bill:bill,dos:dos,pipe:pipe,profile:prof,sag:sag,sagStd:sagStd,crew:crew,avg7:avg7,mannedSorties:manned,
+      return {state:s,tempo:S,bill:bill,dos:dos,pipe:pipe,profile:prof,sag:sag,sagStd:sagStd,reconfig:rc,crew:crew,avg7:avg7,mannedSorties:manned,
         exhausted:manned>crew.ceil7||manned>crew.ceil30,opsWindow:win,cca:cca,effects:eff,horizon:H,horizonLabel:HORIZONS[H],limits:limits,
         aircrewBinding:{window:aircrewBind,ceiling:aircrewCeil,exceeded:manned>aircrewCeil},
         sustainable:sustain,binding:binding,bindingLabel:BINDING_LABELS[binding]};}
@@ -1997,29 +2052,40 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     function bar(daysLeft,cycle,reserve){var w=fin(daysLeft)&&daysLeft>0?Math.max(0,Math.min(1,1-cycle/daysLeft)):(fin(daysLeft)?0:1);
       return '<div class="lbar" role="img" aria-label="Usable stores left when the shuttle returns: '+Math.round(w*100)+'%"><i class="lres" style="width:'+reserve*100+'%"></i><i class="'+(w>0?'lok':'lout')+'" style="width:'+(w*(1-reserve)*100).toFixed(1)+'%"></i></div>';}
     function row(k,v){return '<div class="lrow"><span>'+k+'</span><b>'+v+'</b></div>';}
+    function caveat(key,t){return '<p class="lnote caveat" data-caveat="'+key+'">'+t+'</p>';}   // v3.4 public model caveat
+    // Per-sortie fuel rises with radius; the daily bill is per-sortie fuel x sorties flown, so at each radius's example ceiling it can FALL.
+    function fuelNote(){var c2=sortieSag(200).ceiling,c5=sortieSag(500).ceiling;
+      return caveat('fuel-scaling','<b>Fuel Planning Scaling:</b> Fuel per sortie rises with sortie flight duration and standoff radius under an illustrative scaling law: '+f(galPerSortie(200),0)+' gal per sortie at 200 nm (a rough anchor from a published carrier surge record of about 1,590 gal per fixed-wing sortie, whose fuel total also includes helicopters) and '+f(galPerSortie(500),0)+' gal at 500 nm (+'+f((galPerSortie(500)/galPerSortie(200)-1)*100,0)+'%). The daily fuel bill is fuel per sortie times sorties flown, so it can fall as the sortie ceiling sags: at this example schedule\'s ceilings it is '+f(dailyBill(c2,200).fuelGalDay,0)+' gal/day at 200 nm ('+c2+' sorties) and '+f(dailyBill(c5,500).fuelGalDay,0)+' at 500 nm ('+c5+' sorties).');}
+    function reconfigNote(){var r0=reconfigDay(200,{hours:14,spot:15});return caveat('reconfig-penalty','<b>Flight Deck Reconfiguration Penalty:</b> Re-hanging external weapon pylons and loading heavy ordnance requires a mandatory '+C.reconfigHours+'-hour flight deck and hangar reset, debited against the fly day: on a 14-hour fly day at 200 nm the reset day keeps '+f(r0.availHours,0)+' flying hours ('+r0.events+' event, '+r0.ceiling+' sorties instead of '+sortieSag(200).ceiling+'). The model charges one such transition day per evaluation horizon; the return to Stealth is not charged.');}
     function cardsHTML(s){var b=s.bill,a=b.alloc,d=s.dos,p=s.pipe,e=s.effects,c=s.crew,g=s.sagStd,h='';
       h+='<div class="lcard" id="logi-card-a"><h3>A &middot; The Daily Bill</h3>'+
-        row('JP-5 fuel burn',f(b.fuelGalDay,0)+' gal/day <small>('+f(b.fuelLbDay/1e6,2)+' million lb/day; '+f(b.fuelGalWeek,0)+' gal/week)</small>')+
+        row('JP-5 fuel burn',f(b.fuelGalDay,0)+' gal/day <small>('+f(b.fuelLbDay/1e6,2)+' million lb/day; '+f(b.fuelGalWeek,0)+' gal/week; '+f(b.galPerSortie,0)+' gal per sortie at '+f(b.radius,0)+' nm)</small>')+
         row('Aviation ordnance',f(b.ordTonsDay,1)+' short tons/day <small>('+f(Math.round(b.weaponsDay),0)+' weapons/day, '+f(Math.round(b.weaponsWeek),0)+' weapons/week; '+f(b.ordTonsWeek,1)+' tons/week)</small>')+
         row('Non-effect overhead',a.overhead+' sorties/day ('+a.fcf+' FCF + '+a.cq+' CQ) <small>0 weapons; '+f(b.overheadFuelGal,0)+' gal of the fuel bill</small>')+
-        '<p class="lnote">Sortie mix: '+a.strike+' strike, '+a.cap+' CAP/escort, '+a.tanker+' tanker, '+a.aew+' AEW/C2, '+a.overhead+' overhead = '+a.total+'.</p></div>';
+        '<p class="lnote">Sortie mix: '+a.strike+' strike, '+a.cap+' CAP/escort, '+a.tanker+' tanker, '+a.aew+' AEW/C2, '+a.overhead+' overhead = '+a.total+'.</p>'+
+        fuelNote()+'</div>';
       h+='<div class="lcard" id="logi-card-b"><h3>B &middot; Sortie Sag &amp; Geography</h3>'+
         row('One-way strike radius',f(g.radius,0)+' nm <small>(sortie '+f(g.tSortie,2)+' hr)</small>')+
         row('Event duration',f(g.tEvent,2)+' hours ('+hm(g.tEvent)+' cycle)')+
         row('Maximum deck events',g.events+' events / day <small>(14-hr fly day, 15 aircraft per event)</small>')+
-        row('Distance-degraded sortie ceiling',g.ceiling+' sorties / day <small>(120 at 200 nm)</small>')+
-        (s.profile.hours!==14?'<p class="lnote">'+s.profile.name.charAt(0).toUpperCase()+s.profile.name.slice(1)+' fly day ('+s.profile.hours+' hr, '+s.profile.spot+' per event): '+s.sag.events+' events, '+s.sag.ceiling+' sorties / day.</p>':'')+'</div>';
+        row('Distance-degraded sortie ceiling',g.ceiling+' sorties / day <small>(example cycle schedule; 120 at 200 nm)</small>')+
+        (s.profile.hours!==14?'<p class="lnote">'+s.profile.name.charAt(0).toUpperCase()+s.profile.name.slice(1)+' fly day ('+s.profile.hours+' hr, '+s.profile.spot+' per event): '+s.sag.events+' events, '+s.sag.ceiling+' sorties / day.</p>':'')+
+        (s.reconfig&&s.reconfig.active?row('12-hour deck reset (transition day)',f(s.reconfig.availHours,0)+' of '+f(s.reconfig.flyHours,0)+' fly-day hours left: '+s.reconfig.events+' event'+(s.reconfig.events===1?'':'s')+', '+s.reconfig.ceiling+' sorties that day <small>('+s.reconfig.horizonDays+'-day ledger: '+f(s.reconfig.ceilingAvg,1)+' sorties / day average)</small>'):'')+
+        caveat('sortie-generation','<b>Sortie Generation Notice:</b> The distance-degraded sortie ceiling models the mathematical impact of extended flight duration. In actual carrier flight operations, deep standoff strikes are managed through discrete double-cycle events (launching in Event 1, bypassing Event 2, and recovering in Event 3) rather than stretching universal recovery windows for the entire air wing.')+
+        reconfigNote()+'</div>';
       h+='<div class="lcard" id="logi-card-c"><h3>C &middot; Onboard Endurance</h3>'+
         row('Days of supply (fuel)',(fin(d.fuel)?f(d.fuel,1)+' days':'no draw'))+bar(d.fuel,p.cycleDays,C.fuelReserve)+
         row('Days of supply (magazine)',(fin(d.mag)?f(d.mag,1)+' days':'no draw'))+bar(d.mag,p.cycleDays,C.magReserve)+
         '<p class="lnote">'+(d.binding==='none'?'No consumption: nothing depletes.':'<b class="lwarn">'+(d.binding==='fuel'?'Fuel binds first':'Magazine binds first')+'</b> (day '+f(d.endurance,1)+'). ')+
-        (d.binding!=='none'&&d.endurance<p.cycleDays?' Stores reach the safety floor before one shuttle round trip, so supply ships are staggered (Card D).':'')+' Bars: stores left above the safety floor ('+C.fuelReserve*100+'% fuel, '+C.magReserve*100+'% magazine, shaded) when the shuttle returns.</p></div>';
+        (d.binding!=='none'&&d.endurance<p.cycleDays?' Stores reach the safety floor before one shuttle round trip, so supply ships are staggered (Card D).':'')+' Bars: stores left above the safety floor ('+C.fuelReserve*100+'% fuel, '+C.magReserve*100+'% magazine, shaded) when the shuttle returns.</p>'+
+        caveat('ordnance-throughput','<b>Ordnance Assembly Throughput:</b> Magazine sustainability reflects total stored explosive tonnage. In high-tempo combat operations, sortie generation is frequently bounded by weapons build rates in assembly areas and elevator transfer capacity rather than total deep magazine depth.')+'</div>';
       h+='<div class="lcard" id="logi-card-d"><h3>D &middot; Combat Logistics Force Shuttle</h3>'+
         row('Round-trip cycle time',f(p.cycleDays,1)+' days <small>('+f(p.transit,0)+' nm each way)</small>')+
         row('Required UNREP cadence (reserve-safe)',(fin(p.cadenceFuel)?'1 Oiler every '+f(p.cadenceFuel,1)+' days; 1 Ammo ship every '+f(p.cadenceMag,1)+' days':'none (no consumption)'))+
         row('Dedicated supply ships',p.oilers+' Fleet Oiler'+(p.oilers===1?'':'s')+' + '+p.ammo+' Ammunition Ship'+(p.ammo===1?'':'s')+' <small>('+p.total+' total)</small>')+
         (fin(p.cadenceFuel)?'<p class="lnote">The cadence never exceeds the carrier\'s usable stores above the safety floor (fuel '+f(d.fuel,1)+' days, magazine '+f(d.mag,1)+' days) or one ship\'s cargo (oiler '+f(p.cargoDaysFuel,1)+' days, ammunition ship '+f(p.cargoDaysMag,1)+' days). '+
-          (p.total>2?'Staggered ships arrive every ':'Supply ships arrive every ')+f(p.arrivalFuel,1)+' days (fuel) and '+f(p.arrivalMag,1)+' days (ordnance).</p>':'')+'</div>';
+          (p.total>2?'Staggered ships arrive every ':'Supply ships arrive every ')+f(p.arrivalFuel,1)+' days (fuel) and '+f(p.arrivalMag,1)+' days (ordnance).</p>':'')+
+        caveat('replenishment','<b>Replenishment Availability Notice:</b> Supply shuttles are sized assuming underway deliveries occur as scheduled. In real-world carrier operations, alongside connected replenishment (fueling and highline cargo) can be conducted concurrently with flight operations when sea state and wind alignment permit; however, helicopter vertical replenishment (VERTREP) is suspended during active launch and recovery. Adverse weather or tactical course restrictions can delay replenishment evolutions.')+'</div>';
       h+='<div class="lcard" id="logi-card-e"><h3>E &middot; Effects Delivered vs Logistics Tail</h3>'+
         '<p class="lnote">Strike vignette, scoped apart from the daily fleet bill (Cards A and B): '+e.targets+'-target strike set, guided bombs (hit probability '+f(e.pHit,2)+'), '+(POSTURES[e.posture]||POSTURES.stealth).name+', '+(e.mode==='sls'?'shoot-look-shoot':'salvo')+'. Kills count weapons released; the posture\'s survival penalty shows as expected losses.</p>'+
         row('Confirmed targets defeated',e.kills+' targets <small>('+e.weapons+' weapons, '+e.sorties+' sorties)</small>')+
@@ -2034,7 +2100,9 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
         row('Aircrew flight limits','7-Day Limit: '+f(c.ceil7,1)+' sorties/day | 30-Day Limit: '+f(c.ceil30,1)+' sorties/day <small>(manned; '+f(s.mannedSorties,0)+' manned sorties/day scheduled)</small>')+
         row('Binding aircrew constraint',(s.aircrewBinding.window==='30'?'30-Day Limit':'7-Day Limit')+' <small>('+(s.aircrewBinding.exceeded?'exceeded':'within limit')+'; '+s.horizonLabel+' horizon)</small>')+
         row('CCA console watchstanders',s.cca.operators+' assigned ('+s.cca.onWatch+' on watch, '+s.cca.shifts+' shift'+(s.cca.shifts===1?'':'s')+') <small>('+(s.cca.active?s.cca.active+' CCAs, MUMT quarterback: '+(s.cca.mode==='shipboard'?'none -- shipboard control, 1 operator per CCA':'delegated, 1 operator per '+f(s.cca.ratio,0)+' CCAs [teaching assumption]')+'; 0 en route; '+f(s.opsWindow.hours,0)+'-hr flight-ops window':'no CCAs in this wing')+'; illustrative)</small>')+
-        (s.exhausted?'<p class="lnote"><b class="lwarn">Human exhaustion:</b> manned sorties exceed what the ready pilots can fly inside '+(s.mannedSorties>c.ceil7?'the 7-day (30-hour) and 30-day (65-hour) limits':'the 30-day (65-hour) limit')+'.</p>':'')+'</div>';
+        (s.exhausted?'<p class="lnote"><b class="lwarn">Flight-hour guideline exceeded:</b> scheduled manned sorties exceed what the modeled fighter-pilot pool can fly inside '+(s.mannedSorties>c.ceil7?'the 7-day (30-hour) and 30-day (65-hour) guidelines':'the 30-day (65-hour) guideline')+'. This is not a fatigue diagnosis or a full roster: support aircrews and non-flying duties are not counted.</p>':'')+
+        caveat('aircrew-endurance','<b>Aircrew Endurance Planning:</b> Daily, 7-day, and 30-day flight hour ceilings reflect standard naval aviation safety guidelines. In wartime combat conditions, commanders possess operational waiver authority; practical endurance is typically limited by circadian disruption and acute sleep fatigue rather than administrative ledgers.')+
+        caveat('c2-capacity','<b>Command and Control Capacity:</b> The '+f(C.ctrlRatio,0)+':1 supervisory ratio models shipboard operator workload during launch and recovery. With the airborne handoff, en-route supervision is transferred outside this count, and total support labor (maintenance, handling, intelligence) is not counted. In operational environments, uncrewed capacity is often constrained by command console availability, topside antenna apertures, and datalink bandwidth under electronic interference.')+'</div>';
       h+='<div class="lcard lsum" id="logi-summary"><h3>Sustainable tempo &middot; '+s.horizonLabel+' horizon</h3>'+
         row('Lowest of target, deck and every aircrew limit',f(s.sustainable,0)+' of '+s.tempo+' sorties / day <small>(binding: '+s.bindingLabel+'; fuel and weapons are sourced by the reserve-safe shuttle above)</small>')+'</div>';
       return h;}
@@ -2042,15 +2110,16 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       t.push('Over a '+(s.horizon==='7'?'7-day surge':'30-day sustained')+' horizon the wing sustains '+f(s.sustainable,0)+' of '+s.tempo+' sorties a day'+(s.binding==='none'?', with no limit binding.':': '+s.bindingLabel+' binds.'));
       if(s.pipe.total>2)t.push('Distance multiplies the pipeline: at '+fmt(s.pipe.transit,0)+' nm the shuttle round trip ('+f(s.pipe.cycleDays,1)+' days) outlasts what the carrier can hold between deliveries, so '+s.pipe.total+' ships must cycle, staggered, to keep it above its safety floor.');
       if(s.dos.binding!=='none'&&s.dos.endurance<s.pipe.cycleDays)t.push('Stores run down faster than the shuttle can return. If the supply ships are interdicted, the strike stops within days.');
-      if(s.binding==='deck')t.push('Aircraft do not teleport: at '+fmt(s.state.radius,0)+' nm each event stretches, and the deck can launch only '+s.sag.ceiling+' sorties in this fly day.');
-      if(s.exhausted)t.push('The flight deck surges in steel; the campaign endures in human flesh. Pilots reach their flight-hour limits before the catapults fail.');
+      if(s.binding==='deck')t.push('Aircraft do not teleport: at '+fmt(s.state.radius,0)+' nm, under this example cycle schedule each event stretches and the fly day plans '+s.sag.ceiling+' sorties (double-cycling long sorties is another policy).');
+      if(s.exhausted)t.push('The modeled fighter pilots reach the selected flight-hour guidelines before the deck reaches its schedule limit.');
       if(s.cca.active&&s.cca.mode==='shipboard')t.push('Without airborne handoff every CCA needs its own console at each launch and recovery: '+s.cca.onWatch+' on watch, '+s.cca.operators+' operators to berth and feed.');
       t.push(s.effects.mode==='sls'?'Shoot-look-shoot saves weapons, but every miss returns as a re-attack sortie, more fuel and more exposure.':'Salvo doctrine buys a fast, single-wave result with two weapons per target and a heavier magazine draw.');
       return 'Air Boss Gouge: '+t.join(' ');}
     function getState(){return Object.assign({},lst);}
-    function postureStatus(){return 'Current Posture: '+POSTURES[lst.posture].name+' (active). Pending Posture: '+(lst.pendingPosture?POSTURES[lst.pendingPosture].name+' (requested; locked until the '+C.reconfigHours+'-hour overnight deck reset).':'none. A change takes a '+C.reconfigHours+'-hour overnight deck reset.');}
+    function postureStatus(){return 'Current Posture: '+POSTURES[lst.posture].name+' (active). Pending Posture: '+(lst.pendingPosture?POSTURES[lst.pendingPosture].name+' (requested; locked until the '+C.reconfigHours+'-hour deck reset; '+(lst.pendingPosture==='beast'?'entering Beast Mode is debited against the fly day':'the return to Stealth is not charged in this model')+').':'none. A change takes a '+C.reconfigHours+'-hour deck reset; entering Beast Mode is debited against the fly day, the return to Stealth is not charged in this model.');}
     function setState(o){Object.keys(o||{}).forEach(function(k){if(k in DEFAULT_STATE)lst[k]=o[k];});if(o&&o.posture&&!('pendingPosture' in o))lst.pendingPosture=null;return getState();}
-    // Day-level posture: a change made during the fly day is pending until a 12-hour overnight deck reset.
+    // Day-level posture: a change made during the fly day is pending until a 12-hour deck reset (v3.4: entering Beast Mode is
+    // debited against the fly day; the return to Stealth is not charged).
     function requestPosture(p){if(!POSTURES[p])return {applied:false,leadHours:C.reconfigHours,state:getState()};lst.pendingPosture=p===lst.posture?null:p;
       return {applied:false,leadHours:C.reconfigHours,state:getState()};}
     function overnightReset(hours){hours=hours==null?C.reconfigHours:+hours;var ok=!!lst.pendingPosture&&hours>=C.reconfigHours;
@@ -2085,7 +2154,7 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
       document.querySelectorAll('#logi-horizon button').forEach(function(b){b.addEventListener('click',function(){lst.horizon=b.dataset.horizon;render();});});
       render();}
     return {C:C,CCA_CONTROL_RATIO_DEFAULT:CCA_CONTROL_RATIO_DEFAULT,ctrlRatio:ctrlRatio,POSTURES:POSTURES,TIERS:TIERS,DEFAULT_STATE:DEFAULT_STATE,allocate:allocate,dailyBill:dailyBill,daysOfSupply:daysOfSupply,
-      shuttleCycle:shuttleCycle,pipeline:pipeline,sortieDuration:sortieDuration,eventLength:eventLength,flyDayProfile:flyDayProfile,sortieSag:sortieSag,
+      shuttleCycle:shuttleCycle,pipeline:pipeline,sortieDuration:sortieDuration,eventLength:eventLength,flyDayProfile:flyDayProfile,sortieSag:sortieSag,galPerSortie:galPerSortie,reconfigDay:reconfigDay,
       weaponsRequired:weaponsRequired,strikeDoctrine:strikeDoctrine,postureWave:postureWave,aircrew:aircrew,ccaOperators:ccaOperators,flightOpsWindow:flightOpsWindow,postureStatus:postureStatus,HORIZONS:HORIZONS,
       solve:solve,cardsHTML:cardsHTML,gougeText:gougeText,getState:getState,setState:setState,requestPosture:requestPosture,
       overnightReset:overnightReset,setView:setView,getView:function(){return view;},render:render,wire:wire};
@@ -2129,10 +2198,10 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     's-spots':'Set the available deck spots. Try fewer spots to see which aircraft you keep.',
     's-rng':'Set target distance. Drag outward to find where fuel limits effects.',
     's-target':'Set the minimum effect for optimizer candidates. Start at zero, then raise the floor.',
-    's-cf35':'Set the illustrative F-35C price. Try a higher price when ranking effect per dollar.',
+    's-cf35':'Set the F-35C price (default: the published CY2012 recurring flyaway). Try a higher price when ranking effect per dollar.',
     'c-engine-light':'Class 1 light dry turbofan: cheap and economical, but little thrust at altitude. Try it with a small wing at Mach 0.70.',
     'c-engine-mid':'Class 2 mid-thrust dry turbofan: the balanced pick. Compare its unit cost with the light and heavy classes.',
-    'c-engine-heavy':'Class 3 heavy core: thrust to spare, but heavy, thirsty and $600M of development. Try a small buy and watch APUC.',
+    'c-engine-heavy':'Class 3 heavy core: thrust to spare, but heavy, thirsty and $600M of development. Try a small buy and watch PAUC (unit cost incl. development).',
     'c-qty':'Set the fleet buy. Development cost is spread over it: try 50 and 500 with the heavy engine.',
     'c-wing':'Set wing area: too small and the approach speed fails; too big and drag eats the thrust margin. Find the window.',
     'c-mach':'Set the ingress Mach. Below 0.80 the CCA cannot keep up with the strike package; above about 0.80 wave drag climbs fast.',
@@ -2170,10 +2239,10 @@ body.view-logistics .wrap>:not(header):not(#viewtabs-wrap):not(#logistics):not(f
     'logi-t180':'Snap to a combat surge of 180 sorties a day. Compare the days of supply with Normal.',
     'logi-t240':'Snap to a maximum-effort surge of 240 sorties a day. It can be held only a day or two.',
     'logi-radius':'Set the one-way strike radius. Drag outward to see each event stretch and the daily sortie ceiling sag.',
-    'logi-transit':'Set the distance to the forward logistics hub. At a 180-sortie surge a second oiler is needed from about 1,450 nm and a second ammunition ship from about 1,550 nm.',
-    'logi-stealth':'Request internal carriage for tomorrow: fewer bombs per sortie, better survival. Takes effect after the overnight reset.',
-    'logi-beast':'Request external pylons for tomorrow: three times the bombs per sortie, more fuel and lower survival. Takes effect after the overnight reset.',
-    'logi-reset':'Run the 12-hour overnight deck reset so a requested posture change takes effect.',
+    'logi-transit':'Set the distance to the forward logistics hub. At a 180-sortie surge a second oiler is needed from about 990 nm and a second ammunition ship from about 1,550 nm.',
+    'logi-stealth':'Request internal carriage for tomorrow: fewer bombs per sortie, better survival. Takes effect after the 12-hour deck reset.',
+    'logi-beast':'Request external pylons for tomorrow: three times the bombs per sortie, more fuel and lower survival. Takes effect after the 12-hour deck reset, which is debited against the fly day.',
+    'logi-reset':'Run the 12-hour deck reset so a requested posture change takes effect. Entering Beast Mode is charged against the fly day; the return to Stealth is not charged in this model.',
     'logi-salvo':'Assign two weapons to every target in one wave. Compare the weapon and fuel bill with shoot-look-shoot.',
     'logi-sls':'Drop one weapon per target, assess damage, then re-attack survivors. Fewer weapons, more sorties.',
     'logi-standard':'A wing of crewed fighters: pilots fly every strike sortie and no CCA consoles are needed.',

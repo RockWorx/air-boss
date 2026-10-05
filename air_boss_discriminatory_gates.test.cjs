@@ -1,4 +1,4 @@
-/* Air Boss v3.3 discriminatory closure-gate suite (spec 4.4, 7.1, 10.4, 13 Gate 6): PASS and FAIL fixtures for every
+/* Air Boss v3.3 / v3.4 discriminatory closure-gate suite (v3.4: C_L,app 1.10; length-augmented spot <= 0.75) (spec 4.4, 7.1, 10.4, 13 Gate 6): PASS and FAIL fixtures for every
  * gate (each failure isolated from the other three), the injected spot-ceiling branch, non-finite input guards and
  * unclosed-airframe zero-effect assertions. Executes the SHIPPED engine via window.__airbossTest.
  * Run: node air_boss_discriminatory_gates.test.cjs [build.html]   (no argument: every build present; exit 0 = PASS)
@@ -17,11 +17,11 @@ for (const html of builds()) {
 
   group('GATE_APPROACH', () => {
     const pass = D.evaluateGates({ vpa: D.vpa(12272.1, 285), dt: .5, fuel: 5000, fuelMax: 5620, bFolded: 25.5, spot: .7 });
-    ok(near(D.vpa(12272.1, 285), 98.9, .05) && pass.approach.pass && near(pass.approach.margin, 36.1, .05), 'PASS W_land 12,272.1 lb at 285 sq ft: 98.9 kt (+36.1)');
+    ok(near(D.vpa(12272.1, 285), 107.48, .05) && pass.approach.pass && near(pass.approach.margin, 27.5, .05), 'PASS W_land 12,272.1 lb at 285 sq ft: 107.5 kt (+27.5)');
     const fail = D.evaluateGates({ vpa: D.vpa(14000, 150), dt: .5, fuel: 5000, fuelMax: 5620, bFolded: 25.5, spot: .7 });
-    ok(!fail.approach.pass && near(fail.approach.value - 135, 10.62, .005) && JSON.stringify(failing(fail)) === '["approach"]' && fail.bindingGate === 'GATE_APPROACH', 'FAIL W_land 14,000 lb at 150 sq ft: 145.62 kt (+10.62), only GATE_APPROACH fails');
-    const b = D.evaluateGates({ vpa: 135, dt: .5, fuel: 1, fuelMax: 1, bFolded: 38, spot: 1.6 });
-    ok(b.doesClose, 'equality on every limit closes (135.0 kt, D/T 0.85-, fuel = capacity, 38.0 ft, 1.60 spots)');
+    ok(!fail.approach.pass && near(fail.approach.value - 135, 23.31, .005) && JSON.stringify(failing(fail)) === '["approach"]' && fail.bindingGate === 'GATE_APPROACH', 'FAIL W_land 14,000 lb at 150 sq ft: 158.31 kt (+23.31), only GATE_APPROACH fails');
+    const b = D.evaluateGates({ vpa: 135, dt: .5, fuel: 1, fuelMax: 1, bFolded: 38, spot: .75 });
+    ok(b.doesClose, 'equality on every limit closes (135.0 kt, D/T 0.85-, fuel = capacity, 38.0 ft, 0.75 spots)');
     const phys = design({ engineClass: 'light', wingArea: 150, payload: 6000, fuel: 4000, ingressMach: .60 });
     ok(!phys.gates.approach.pass && phys.gates.volume.pass && phys.gates.deck.pass, 'reachable design fails approach while volume and deck pass');
   });
@@ -45,15 +45,18 @@ for (const html of builds()) {
   });
 
   group('GATE_DECK', () => {
-    const pass = design({ wingArea: 450 });
-    ok(pass.gates.deck.pass && near(pass.bFolded, 31.26, .01) && near(pass.deckSpotFactor, .818, .001), 'PASS slider max 450 sq ft: 31.26 ft folded, 0.818 spots');
+    const pass = design({ engineClass: 'light', wingArea: 450 });
+    ok(pass.gates.deck.pass && near(pass.bFolded, 31.26, .01) && near(pass.deckSpotFactor, 42.7 * pass.bFolded / 1792, 1e-9) && near(pass.deckSpotFactor, .745, .001), 'PASS light engine at the 450-sq-ft slider max: 42.7 ft x 31.26 ft folded = 0.745 spots');
+    const heavy = design({ engineClass: 'heavy', wingArea: 450 });
+    ok(!heavy.gates.deck.pass && near(heavy.deckSpotFactor, .795, .001) && JSON.stringify(failing(heavy.gates)) === '["deck"]' && heavy.bindingGate === 'GATE_DECK', 'FAIL heavy core at 450 sq ft: 0.795 spots > 0.75, only GATE_DECK fails (reachable inside the sliders)');
     const span = design({ wingArea: 450 }, { fold: false });
     ok(!span.gates.deck.pass && near(span.bFolded, 43.47, .01) && span.gates.deck.message === 'GATE_DECK: Span 43.5 ft exceeds 38.0 ft elevator limit' && JSON.stringify(failing(span.gates)) === '["deck"]', 'FAIL no-fold malfunction at 450 sq ft: "' + span.gates.deck.message + '"');
-    const spot = D.evaluateGates({ vpa: 100, dt: .5, fuel: 1, fuelMax: 2, bFolded: 30.0, spot: 1.650 });
-    ok(!spot.deck.pass && spot.deck.message === 'GATE_DECK: Spot factor 1.650 exceeds 1.60 limit with span 30.0 ft <= 38.0 ft' && !spot.doesClose && spot.bindingGate === 'GATE_DECK', 'FAIL injected spot 1.650 with compliant 30.0-ft span: spot branch live and independent');
+    const spot = D.evaluateGates({ vpa: 100, dt: .5, fuel: 1, fuelMax: 2, bFolded: 30.0, spot: .800 });
+    ok(!spot.deck.pass && spot.deck.message === 'GATE_DECK: Spot factor 0.800 exceeds 0.75 limit (30.0 ft folded span; 4 CCAs must fit in 3 spots)' && !spot.doesClose && spot.bindingGate === 'GATE_DECK', 'FAIL injected spot 0.800 with compliant 30.0-ft span: spot branch live and independent');
     const giant = design({ wingArea: 650 }, { raw: true, fold: false });
-    ok(!giant.gates.deck.pass && near(giant.bFolded, 52.25, .01) && near(giant.deckSpotFactor, 1.233, .001) && giant.deckSpotFactor <= 1.6, 'FAIL out-of-domain 650 sq ft unfolded: span 52.25 ft fails, spot 1.233 passes');
-    ok(near(.01978 * 38 + .2, .95164, 1e-9) && D.evaluateGates({ vpa: 100, dt: .5, fuel: 1, fuelMax: 2, bFolded: 38, spot: .95164 }).deck.pass, 'physical fold: at the 38-ft span limit spot is 0.95164 << 1.60');
+    ok(!giant.gates.deck.pass && near(giant.bFolded, 52.25, .01) && giant.gates.deck.message === 'GATE_DECK: Span 52.2 ft exceeds 38.0 ft elevator limit' && giant.deckSpotFactor > .75, 'FAIL out-of-domain 650 sq ft unfolded: span 52.25 ft fails first (spot ' + giant.deckSpotFactor.toFixed(3) + ' is also over)');
+    const spanArea = Math.pow((38 - 3) / .65, 2) / 4.2;
+    ok(['light', 'mid', 'heavy'].every(e => D.deckMaxArea(e) < spanArea && near(D.spotFactor(e, D.deckMaxArea(e)), .75, 1e-9)), 'with folding wings the spot ceiling, not the 38-ft span (' + spanArea.toFixed(0) + ' sq ft), sets the largest deck-legal wing for every engine');
   });
 
   group('non-finite input guards (fail closed)', () => {

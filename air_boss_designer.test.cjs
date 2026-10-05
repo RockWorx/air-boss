@@ -38,16 +38,16 @@ for (const html of builds()) {
       D.ENGINES.light.nre === 120 && D.ENGINES.mid.nre === 250 && D.ENGINES.heavy.nre === 600, 'D2 hardware price and NRE per table 3.1');
     ok(near(D.engineUnitCost('heavy', 50) - 6.80, 12.0, 1e-9) && near(D.engineUnitCost('heavy', 300) - 6.80, 2.0, 1e-9), 'D2 heavy core: +$12.0M per aircraft at 50, +$2.0M at 300');
     const d = design({ buyQty: 50 }), d2 = design({ buyQty: 500 });
-    ok(near(d.costs.flyaway, d2.costs.flyaway, 1e-12) && d.costs.apuc > d2.costs.apuc, 'D2 NRE moves APUC, never recurring flyaway');
+    ok(near(d.costs.flyaway, d2.costs.flyaway, 1e-12) && near(d.costs.apuc, d2.costs.apuc, 1e-12) && d.costs.pauc > d2.costs.pauc, 'D2 NRE moves PAUC (v3.4), never APUC or recurring flyaway');
   });
 
   group('D3 carrier approach speed limit', () => {
-    [[150, 145.62, false], [220, 120.24, true], [280, 106.58, true]].forEach(([s, v, pass]) => {
+    [[150, 158.31, false], [220, 130.72, true], [280, 115.87, true]].forEach(([s, v, pass]) => {   // v3.4: C_L,app 1.10
       const x = D.vpa(14000, s);
       ok(near(x, v, .01) && (x <= 135) === pass, 'D3 W_land 14,000 lb at ' + s + ' sq ft: V_PA ' + x.toFixed(3) + ' kt = ' + v + (pass ? ' PASS (margin ' + (135 - x).toFixed(2) + ')' : ' FAIL'));
     });
-    ok(near(D.sMinLanding(14000), 174.53, .1), 'D3 minimum closing wing area ' + D.sMinLanding(14000).toFixed(3) + ' = 174.53 +/- 0.1 sq ft');
-    ok(near(D.C.wlandPerS, 80.2144, 1e-4), 'D3 coupled approach coefficient 80.2144 lb per sq ft');
+    ok(near(D.sMinLanding(14000), 206.27, .1), 'D3 minimum closing wing area ' + D.sMinLanding(14000).toFixed(3) + ' = 206.27 +/- 0.1 sq ft (v3.4)');
+    ok(near(D.C.wlandPerS, 67.8737, 1e-4), 'D3 coupled approach coefficient 67.8737 lb per sq ft (v3.4: C_L,app 1.10)');
   });
 
   group('D4 high-speed ingress drag and thrust margin', () => {
@@ -63,7 +63,7 @@ for (const html of builds()) {
   group('D5 pinch detection (infeasible envelope)', () => {
     const p = { engineClass: 'light', payload: 4000, fuel: 4500, ingressMach: .82 };
     const d = design(Object.assign({ wingArea: 285 }, p));
-    ok(near(d.sMinApp, 143, .3), 'D5 S_min,app ' + d.sMinApp.toFixed(2) + ' = 143 sq ft');
+    ok(near(d.sMinApp, 178.44, .3), 'D5 S_min,app ' + d.sMinApp.toFixed(2) + ' = 178.44 sq ft (v3.4: 11,020 lb fixed landing weight / (67.87 - 18.5))');
     let minDT = Infinity; for (let s = 150; s <= 450; s += .5) minDT = Math.min(minDT, raw(Object.assign({ wingArea: s }, p)).DT);
     ok(minDT >= .926 - 5e-4 && minDT > .85, 'D5 thrust fails across 150-450 sq ft: min D/T ' + minDT.toFixed(4) + ' >= 0.926');
     ok(near(raw(Object.assign({ wingArea: 120 }, p)).DT, .887040, 5e-6), 'D5 at 120 sq ft D/T ' + raw(Object.assign({ wingArea: 120 }, p)).DT.toFixed(6) + ' = 0.887040 > 0.85');
@@ -77,9 +77,12 @@ for (const html of builds()) {
     ok(near(dt, 14.677486692, 5e-9), 'D6 M0.65 at 500 nm: launch ' + dt.toFixed(9) + ' min early');
     ok(near(D.loiterFuel(12, dt), 13209.738023, 5e-7), 'D6 12 fighters loiter fuel ' + D.loiterFuel(12, dt).toFixed(6) + ' lb');
     const off = T.tankerLedger('mq25', 150, false).offload;
-    ok(off === 12500 && D.tankerOffload() === off, 'D6 loiter tanker offload is the shipped MQ-25 ledger at 150 nm: ' + off + ' lb');
-    ok(D.tankersRequired(D.loiterFuel(12, dt)) === 2 && D.tankersRequired(D.loiterFuel(11, dt)) === 1, 'D6 required tanker sorties: 12 fighters -> 2; 11 fighters (12,108.9 lb) -> 1');
-    const sch = n => D.doctrineSchedule({ events: 5, doctrine: 'early_launch', mach: .65, range: 500, fightersPerEvent: 12, spareTankers: n, nCustom: 4, doesClose: true });
+    // v3.4 round 3: the MQ-25 ledger is anchored to the published 14,000 lb at 500 nm; at the 150-nm station it gives
+    // 14,000 + 10 x (500 - 150) = 17,500 lb (was 12,500). 12 fighters (13,209.7 lb) now need 1 sortie, so the withhold
+    // fixture moves from 12 to 16 fighters (16 x 1,100.81 = 17,613.0 lb -> 2 sorties) to keep the 0/1 vs 2/3 boundary.
+    ok(off === 17500 && D.tankerOffload() === off, 'D6 loiter tanker offload is the shipped MQ-25 ledger at 150 nm: ' + off + ' lb');
+    ok(D.tankersRequired(D.loiterFuel(12, dt)) === 1 && D.tankersRequired(D.loiterFuel(16, dt)) === 2 && D.tankersRequired(D.loiterFuel(15, dt)) === 1 && near(D.loiterFuel(16, dt), 17612.984031, 5e-6), 'D6 required tanker sorties (17,500 lb each): 12 fighters -> 1; 16 fighters (' + D.loiterFuel(16, dt).toFixed(1) + ' lb) -> 2; 15 fighters (' + D.loiterFuel(15, dt).toFixed(1) + ' lb) -> 1');
+    const sch = n => D.doctrineSchedule({ events: 5, doctrine: 'early_launch', mach: .65, range: 500, fightersPerEvent: 16, spareTankers: n, nCustom: 4, doesClose: true });
     [0, 1].forEach(n => {
       const s = sch(n), e1 = s.rows[0];
       ok(e1.status === 'withheld' && !e1.customFlies && e1.reason === 'early launch needs 2 tanker sorties of loiter gas; ' + n + ' available', 'D6 ' + n + ' spare -> Event 1 WITHHELD: "' + e1.reason + '"');
@@ -92,14 +95,14 @@ for (const html of builds()) {
       ok(e1.status === 'early_launch' && e1.customFlies && e1.tankersUsed === 2 && near(e1.fighterDelayMin, dt, 1e-12) && e1.reason === '', 'D6 ' + n + ' spare -> supported: 2 tanker sorties used, fighters hold ' + dt.toFixed(3) + ' min with tanker cover');
       ok(s.flownEvents === 5 && s.tankersUsed === 2, 'D6 ' + n + ' spare: all events flown, finite draw 2');
     });
-    const lo = D.doctrineSchedule({ events: 5, doctrine: 'loiter', mach: .65, range: 500, fightersPerEvent: 12, spareTankers: 2, nCustom: 4, doesClose: true });
-    const lo0 = D.doctrineSchedule({ events: 5, doctrine: 'loiter', mach: .65, range: 500, fightersPerEvent: 12, spareTankers: 1, nCustom: 4, doesClose: true });
+    const lo = D.doctrineSchedule({ events: 5, doctrine: 'loiter', mach: .65, range: 500, fightersPerEvent: 16, spareTankers: 2, nCustom: 4, doesClose: true });
+    const lo0 = D.doctrineSchedule({ events: 5, doctrine: 'loiter', mach: .65, range: 500, fightersPerEvent: 16, spareTankers: 1, nCustom: 4, doesClose: true });
     ok(lo.rows.every(r => r.status === 'loiter' && r.tankersUsed === 2) && lo.tankersUsed === 10 && lo0.flownEvents === 0 && lo0.rows.every(r => r.status === 'withheld' && r.reason === 'push-point loiter needs 2 tanker sorties of loiter gas; 1 available'), 'D6 Option B: 2 tanker sorties every event (10/day); short of gas -> withheld every event');
-    const sp = D.doctrineSchedule({ events: 5, doctrine: 'slow_package', mach: .65, range: 500, fightersPerEvent: 12, spareTankers: 0, nCustom: 4, doesClose: true });
+    const sp = D.doctrineSchedule({ events: 5, doctrine: 'slow_package', mach: .65, range: 500, fightersPerEvent: 16, spareTankers: 0, nCustom: 4, doesClose: true });
     ok(sp.flownEvents === 5 && sp.tankersUsed === 0 && sp.rows.every(r => near(r.packageFactor, 1 - .25 * .15 / .20, 1e-12)), 'D6 Option C: common launch, no tanker draw, package survival x' + (1 - .25 * .15 / .2).toFixed(4));
     ok(D.effectiveDoctrine('keep_up', .65) === 'early_launch' && D.effectiveDoctrine('loiter', .80) === 'keep_up' && D.effectiveDoctrine('slow_package', .86) === 'keep_up', 'D6 doctrine normalization: keep_up below M0.80 -> early_launch; at or above M0.80 -> keep_up');
-    const none = D.doctrineSchedule({ events: 5, doctrine: 'early_launch', mach: .65, range: 500, fightersPerEvent: 12, spareTankers: 0, nCustom: 0, doesClose: true });
-    const shut = D.doctrineSchedule({ events: 5, doctrine: 'early_launch', mach: .65, range: 500, fightersPerEvent: 12, spareTankers: 0, nCustom: 4, doesClose: false });
+    const none = D.doctrineSchedule({ events: 5, doctrine: 'early_launch', mach: .65, range: 500, fightersPerEvent: 16, spareTankers: 0, nCustom: 0, doesClose: true });
+    const shut = D.doctrineSchedule({ events: 5, doctrine: 'early_launch', mach: .65, range: 500, fightersPerEvent: 16, spareTankers: 0, nCustom: 4, doesClose: false });
     ok([none, shut].every(s => s.rows.every(r => r.fighterDelayMin === 0 && r.tankersUsed === 0 && r.packageFactor === 1 && !r.customFlies)), 'D6 zero participation (no CCAs / unclosed): doctrine has zero effect on the strike package');
   });
 
@@ -107,10 +110,10 @@ for (const html of builds()) {
     function setup() { Object.assign(T.st, { wing: 2, tempo: 0, strike: 'standoff', weapon: 'amraam', targetPosture: 'integrated', threat: null, tankerMode: 'organic', strikeOrbit: 350, relayOrbit: 500, tankerTactics: T.TACTIC_PLANS.balanced, scenario: null }); T.setDeck('nimitz'); }
     setup(); T.st.custom = Object.assign(def(), { ingressMach: .65, doctrine: 'early_launch' });
     const wing = { fa18: 12, f35c: 4, custom: 6, mq25: 4, cap: 6, isr: 2 };
-    const run = n => T.evalWing(500, wing, { doctrineFixture: { fightersPerEvent: 12, spareTankers: n } });
+    const run = n => T.evalWing(500, wing, { doctrineFixture: { fightersPerEvent: 16, spareTankers: n } });
     const r0 = run(0), r2 = run(2), r1 = run(1), r3 = run(3), cx = r => r.byType.filter(x => x.key === 'custom')[0];
     const E = r0.events;
-    ok(r0.doctrine && r0.doctrine.rows[0].status === 'withheld' && r0.doctrine.reason === 'early launch needs 2 tanker sorties of loiter gas; 0 available', 'D6 evalWing Event 1 / M0.65 / 500 nm / 12 fighters / 0 spare: withheld with the UI reason');
+    ok(r0.doctrine && r0.doctrine.rows[0].status === 'withheld' && r0.doctrine.reason === 'early launch needs 2 tanker sorties of loiter gas; 0 available', 'D6 evalWing Event 1 / M0.65 / 500 nm / 16 fighters / 0 spare: withheld with the UI reason');
     ok(r1.doctrine.rows[0].status === 'withheld' && r2.doctrine.rows[0].status === 'early_launch' && r3.doctrine.rows[0].status === 'early_launch', 'D6 evalWing availability 0/1 -> withheld; 2/3 -> supported');
     ok(near(cx(r0).ss, cx(r0).ssScheduled * (E - 1) / E, 1e-9) && near(cx(r2).ss, cx(r2).ssScheduled, 1e-9) && cx(r0).ssScheduled > 0, 'D6 evalWing: withheld event removes exactly 1/' + E + ' of the CCA sorties (' + cx(r0).ssScheduled.toFixed(3) + ' -> ' + cx(r0).ss.toFixed(3) + '); re-entry from Event 2 keeps the rest');
     ok(r0.loiterTankerSorties === 0 && r2.loiterTankerSorties === 2 && r3.loiterTankerSorties === 2 && near(r2.tankerSorties - r0.tankerSorties, 2, 1e-9), 'D6 evalWing finite draw: 0 extra tanker sorties when withheld, exactly 2 when supported (counted in deck launches)');
@@ -118,7 +121,7 @@ for (const html of builds()) {
     const f0 = r0.byType.filter(x => x.key === 'fa18')[0], fk = T.evalWing(500, Object.assign({}, wing, { custom: 0 })).byType.filter(x => x.key === 'fa18')[0];
     ok(near(f0.ssScheduled, fk.ssScheduled, 1e-9), 'D6 evalWing: crewed fighter schedule identical to the wing without CCAs (no silent change)');
     // Pinned sortie path (sortiesPerJet) uses the same scheduler.
-    const p0 = T.evalWing(500, wing, { sortiesPerJet: 1.5, doctrineFixture: { fightersPerEvent: 12, spareTankers: 0 } });
+    const p0 = T.evalWing(500, wing, { sortiesPerJet: 1.5, doctrineFixture: { fightersPerEvent: 16, spareTankers: 0 } });
     ok(near(cx(p0).ss, 6 * 1.5 * (E - 1) / E, 1e-9) && p0.doctrine.rows[0].status === 'withheld', 'D6 pinned path: 9 scheduled -> ' + cx(p0).ss.toFixed(3) + ' (Event 1 withheld)');
     // Finite resources derived from the wing itself (no fixture): idle MQ-25 airframes and deck slack per event.
     setup(); T.st.custom = Object.assign(def(), { ingressMach: .65, doctrine: 'early_launch' });
@@ -130,7 +133,7 @@ for (const html of builds()) {
     ok(dd.fightersPerEvent === Math.ceil(dd.crewedPerEvent - 1e-9) && (dd.rows[0].status === 'withheld') === (dd.spareTankers < dd.rows[0].tankersRequired), 'D6 participating fighters per event ' + dd.fightersPerEvent + '; withheld iff spare < required (' + dd.rows[0].tankersRequired + ')');
     // Option B and C through evalWing.
     T.st.custom.doctrine = 'loiter';
-    const lb = T.evalWing(500, wing, { doctrineFixture: { fightersPerEvent: 12, spareTankers: 2 } }), lb1 = T.evalWing(500, wing, { doctrineFixture: { fightersPerEvent: 12, spareTankers: 1 } });
+    const lb = T.evalWing(500, wing, { doctrineFixture: { fightersPerEvent: 16, spareTankers: 2 } }), lb1 = T.evalWing(500, wing, { doctrineFixture: { fightersPerEvent: 16, spareTankers: 1 } });
     ok(lb.loiterTankerSorties === 2 * E && cx(lb1).ss === 0 && lb1.doctrine.withheldEvents === E && lb1.loiterTankerSorties === 0, 'Option B in evalWing: ' + 2 * E + ' loiter tanker sorties/day; short of gas -> CCA withheld every event, 0 drawn');
     T.st.custom.doctrine = 'slow_package';
     const sp = T.evalWing(500, wing), lbF = lb.byType.filter(x => x.key === 'f35c')[0], spF = sp.byType.filter(x => x.key === 'f35c')[0];
@@ -185,34 +188,35 @@ for (const html of builds()) {
 
   group('D11 discrete thrust scenarios', () => {
     const r = D.robustness(true, .81);
-    ok(near(r.dtLow, .81 / .88, 1e-12) && near(r.dtLow, .920, 5e-4) && r.category === 'marginal' && r.text === 'MARGINAL CLOSURE: High vulnerability to hot-day aborts (D/T_low > 0.85)', 'D11 D/T_nom 0.81 -> D/T_low ' + r.dtLow.toFixed(4) + ' > 0.85: Marginal Closure with the UI warning');
+    ok(near(r.dtLow, .81 / .88, 1e-12) && near(r.dtLow, .920, 5e-4) && r.category === 'marginal' && r.text === 'MARGINAL CLOSURE: Fails the x0.88 thrust-sensitivity check (D/T_low > 0.85)', 'D11 D/T_nom 0.81 -> D/T_low ' + r.dtLow.toFixed(4) + ' > 0.85: Marginal Closure (v3.4 label: thrust-sensitivity check)');
     ok(D.robustness(true, .70).category === 'robust' && D.robustness(false, .70).category === 'infeasible', 'D11 robust when D/T_low <= 0.85; infeasible on any nominal gate failure');
     const d = design();
-    ok(near(d.T_low, .88 * d.T, 1e-9) && near(d.T_high, 1.08 * d.T, 1e-9) && d.robustness === 'robust' && d.statusText.indexOf('ROBUST CLOSURE: All gates pass under Adverse / Hot-Day Thrust') >= 0, 'D11 wireframe: adverse x0.88 / favorable x1.08 band, robust closure');
+    ok(near(d.T_low, .88 * d.T, 1e-9) && near(d.T_high, 1.08 * d.T, 1e-9) && d.robustness === 'robust' && d.statusText.indexOf('ROBUST CLOSURE: All gates pass the x0.88 thrust-sensitivity check') >= 0, 'D11 wireframe: adverse x0.88 / favorable x1.08 band, robust closure');
   });
 
   group('D12 cost per combat effect', () => {
     ok(near(D.costPerEffect(20, 800, 1, true), 25000, 1e-6) && near(D.costPerEffect(10, 120, 1, true), 83333.33, .01), 'D12 A $25,000 / point; B $83,333 / point');
     ok(D.costPerEffect(10, 0, 1, true) === Infinity && D.costPerEffect(10, 500, 1, false) === Infinity, 'D12 C unclosed or zero effect: infinite');
     ok(near(D.costPerEffect(10, 120, 1, true) / D.costPerEffect(20, 800, 1, true), 3.333, .001), 'D12 cheap compromised drone 3.3x worse');
-    ok(near(D.costPerEffect(22.940625, 800, 1, true), D.costPerEffect(22.940625, 9600, 12, true), 1e-9), 'D12 normalized by airframe count: N=1 and N=12 agree');
+    ok(near(D.costPerEffect(25.78171875, 800, 1, true), D.costPerEffect(25.78171875, 9600, 12, true), 1e-9), 'D12 normalized by airframe count: N=1 and N=12 agree');
   });
 
   group('Section 9.1 unified wireframe and 4.5 lower-root fixture', () => {
     const d = design();
-    ok(near(d.vpa, 98.9, .05) && near(135 - d.vpa, 36.1, .05) && near(d.DT, .482, .001) && near((.85 - d.DT) * 100, 36.8, .05), 'W V_PA 98.9 kt (+36.1), D/T 0.48 (+36.8%)');
-    ok(d.W_fuel === 5620 && d.fuelMax === 5620 && near(d.bFolded, 25.5, .05) && near(d.deckSpotFactor, .704, .001), 'W fuel 5,620 / 5,620 lb; folded span 25.5 ft; 0.70 spots');
-    ok(near(d.costs.flyaway, 18.940625, 1e-9) && near(d.costs.apuc, 22.940625, 1e-9) && near(d.costs.program, 3441.09375, 1e-6) && near(d.costs.engineNrePerUnit, 1.6667, 1e-4), 'W flyaway $18.94M, APUC $22.94M, program $3,441M, amortized engine dev +$1.67M/unit');
-    ok(near(D.costPerEffect(d.costs.apuc, 800, 1, true), 28675.78, .01) && d.doesClose && d.robustness === 'robust', 'W $28,676 / effect point at E=800, N=1; robust closure');
-    const p = { engineClass: 'light', payload: 6000, fuel: 4000, ingressMach: .60 }, sApp = design(Object.assign({ wingArea: 285 }, p)).sMinApp;
-    ok(near(sApp, 185.85630356, 5e-8), 'Sec 4.5 S_min,app ' + sApp.toFixed(8));
-    const lo = raw(Object.assign({ wingArea: sApp }, p));
-    ok(near(lo.w.cruise, 16588.341616, 5e-7) && near(lo.q, 158.6736, 5e-7) && near(lo.CL, .562498023, 5e-10) && near(lo.CDi, .029243475, 5e-10) && near(lo.CD, .042506164, 5e-10) && near(lo.D, 1253.527565, 5e-7) && near(lo.T, 1474.280268, 5e-7) && near(lo.DT, .850264086, 5e-10), 'Sec 4.5 intermediates at the approach bound: D/T 0.850264086 FAILS');
-    const w = design(Object.assign({ wingArea: 285 }, p));
-    ok(near(w.sMinThrust, 186.09275292, 5e-8) && raw(Object.assign({ wingArea: w.sMinThrust - .01 }, p)).DT > .85 && raw(Object.assign({ wingArea: w.sMinThrust + .01 }, p)).DT <= .85 && raw(Object.assign({ wingArea: 187 }, p)).DT <= .85, 'Sec 4.5 lower thrust root ' + w.sMinThrust.toFixed(8) + ' sq ft bracketed by +/-0.01');
+    ok(near(d.vpa, 107.48, .05) && near(135 - d.vpa, 27.5, .05) && near(d.DT, .482, .001) && near((.85 - d.DT) * 100, 36.8, .05), 'W V_PA 107.5 kt (+27.5; v3.4 C_L,app 1.10), D/T 0.48 (+36.8%)');
+    ok(d.W_fuel === 5620 && d.fuelMax === 5620 && near(d.bFolded, 25.5, .05) && near(d.L_overall, 39.775, 1e-9) && near(d.deckSpotFactor, 39.775 * d.bFolded / 1792, 1e-12) && near(d.deckSpotFactor, .566, .001), 'W fuel 5,620 / 5,620 lb; folded span 25.5 ft x 39.8 ft long; 0.57 spots (v3.4 footprint)');
+    ok(near(d.costs.flyaway, 18.940625, 1e-9) && near(d.costs.apuc, 21.78171875, 1e-9) && near(d.costs.pauc, 25.78171875, 1e-9) && near(d.costs.program, 3867.2578125, 1e-6) && near(d.costs.engineNrePerUnit, 1.6667, 1e-4), 'W flyaway $18.94M, APUC $21.78M, PAUC $25.78M, program $3,867M, amortized engine dev +$1.67M/unit');
+    ok(near(D.costPerEffect(d.costs.pauc, 800, 1, true), 32227.15, .01) && d.doesClose && d.robustness === 'robust', 'W $32,227 / effect point at E=800, N=1 (PAUC basis); robust closure');
+    const p = { engineClass: 'light', payload: 6000, fuel: 4000, ingressMach: .60 }, sApp0 = design(Object.assign({ wingArea: 285 }, p)).sMinApp, w0 = design(Object.assign({ wingArea: 285 }, p));
+    ok(near(sApp0, 11470 / (.5 * .002377 * 1.10 * Math.pow(135 * 1.6878, 2) - 18.5), 1e-9) && near(sApp0, 232.31, .005) && near(w0.sMinThrust, 186.09275292, 5e-8) && near(w0.feasible[0], sApp0, 1e-12), 'Sec 4.5 original inputs at v3.4: approach bound ' + sApp0.toFixed(2) + ' sq ft now lies above the unchanged thrust root 186.09, so the window starts at the approach bound');
+    const lo = raw(Object.assign({ wingArea: 185.85630356 }, p));
+    ok(near(lo.w.cruise, 16588.341616, 5e-7) && near(lo.q, 158.6736, 5e-7) && near(lo.CL, .562498023, 5e-10) && near(lo.CDi, .029243475, 5e-10) && near(lo.CD, .042506164, 5e-10) && near(lo.D, 1253.527565, 5e-7) && near(lo.T, 1474.280268, 5e-7) && near(lo.DT, .850264086, 5e-10), 'Sec 4.5 drag intermediates at 185.856 sq ft unchanged by C_L,app: D/T 0.850264086 FAILS');
+    const q = { engineClass: 'light', payload: 6000, fuel: 5000, ingressMach: .60 }, sApp = design(Object.assign({ wingArea: 285 }, q)).sMinApp, w = design(Object.assign({ wingArea: 285 }, q));
+    ok(near(sApp, 11550 / (.5 * .002377 * 1.10 * Math.pow(135 * 1.6878, 2) - 18.5), 1e-9) && near(sApp, 233.93, .005) && raw(Object.assign({ wingArea: sApp }, q)).DT > .85, 'Sec 4.5 v3.4 fixture (fuel 5,000 lb): approach bound ' + sApp.toFixed(2) + ' sq ft, where D/T ' + raw(Object.assign({ wingArea: sApp }, q)).DT.toFixed(4) + ' FAILS');
+    ok(near(w.sMinThrust, 238.12, .005) && raw(Object.assign({ wingArea: w.sMinThrust - .01 }, q)).DT > .85 && raw(Object.assign({ wingArea: w.sMinThrust + .01 }, q)).DT <= .85 && raw(Object.assign({ wingArea: 239 }, q)).DT <= .85, 'Sec 4.5 lower thrust root ' + w.sMinThrust.toFixed(4) + ' sq ft bracketed by +/-0.01');
     ok(w.feasible && near(w.feasible[0], w.sMinThrust, 1e-12) && w.feasible[0] > sApp, 'Sec 4.5 feasible interval starts at the thrust root, not the approach bound');
-    const at = design(Object.assign({ wingArea: 185.85630356 }, p)), at187 = design(Object.assign({ wingArea: 187 }, p));
-    ok(!at.doesClose && at.bindingGate === 'GATE_THRUST' && at187.doesClose, 'Sec 4.5 at 185.86 sq ft: does not close (thrust); at 187 sq ft: closes');
+    const at = design(Object.assign({ wingArea: 235 }, q)), at239 = design(Object.assign({ wingArea: 239 }, q));
+    ok(!at.doesClose && at.bindingGate === 'GATE_THRUST' && at239.doesClose, 'Sec 4.5 at 235 sq ft (approach passes): does not close (thrust); at 239 sq ft: closes');
   });
 
   group('Section 10.2 state migration and sanitization', () => {
@@ -238,7 +242,7 @@ for (const html of builds()) {
     ok(c.pay === d.W_payload && c.pay === 2000 && near(c.surv, d.effectiveSurv * 100, 1e-12) && c.spots === d.deckSpotFactor && c.rate === 1 && c.doesClose === true && c.bindingGate === null, 'legacy pay key maps to W_payload; surv in percentage points; spots = deck spot factor; rate = 1.00 (dimensionless)');
     ok(T.statsFor('custom').pay === 2000 && T.statsFor('custom').rate === 1, 'statsFor("custom") reads the adapter');
     const rr = T.recoveryRisk('custom', true, 0), re = T.recoveryRisk('custom', false, 0);
-    ok(near(rr.malw, 80.2144 * 285, .05) && near(rr.malw, d.malw, 1e-9) && near(rr.wTrap, d.W_empty + 2000 + .08 * 5620 + 400, 1e-9) && near(re.wTrap, d.W_empty + 200 + .08 * 5620 + 400, 1e-9) && rr.pBolter === .02, 'recovery: MALW 80.2144 x S, trap weight with / without bring-back, bolter 2%');
+    ok(near(rr.malw, 67.8737 * 285, .05) && near(rr.malw, d.malw, 1e-9) && near(rr.wTrap, d.W_empty + 2000 + .08 * 5620 + 400, 1e-9) && near(re.wTrap, d.W_empty + 200 + .08 * 5620 + 400, 1e-9) && rr.pBolter === .02, 'recovery: MALW 67.87 x S (v3.4), trap weight with / without bring-back, bolter 2%');
     T.st.custom = Object.assign(def(), { payload: 6000, wingArea: 150, fuel: 3800 });
     const heavy = T.syncCustom(), hb = T.recoveryRisk('custom', true, 0);
     ok(hb.overweight > 0 && near(hb.pBolter, Math.min(.25, .02 + .10 * hb.overweight / 1000), 1e-12), 'recovery: overweight bring-back raises bolter risk (' + hb.overweight.toFixed(0) + ' lb over)');
@@ -270,8 +274,8 @@ for (const html of builds()) {
     T.st.custom = def(); const d = T.syncCustom();
     const r = T.evalWing(500, { fa18: 12, custom: 6, mq25: 4, cap: 6 }), x = r.byType.filter(y => y.key === 'custom')[0];
     ok(r.customEffect > 0 && near(r.customEffect, x.primaryEffect + x.fallbackEffect, 1e-12), 'custom delivered effect read from the shipped evaluator: ' + r.customEffect.toFixed(2));
-    ok(near(r.customCostPerEffect, 6 * d.costs.apuc * 1e6 / r.customEffect, 1e-6), 'cost per effect = N x APUC / E_custom = $' + T.fmt(r.customCostPerEffect, 0));
-    ok(near(r.cost, 12 * 67 + 6 * d.costs.flyaway + 4 * 184 + 6 * 70, 1e-9), 'wing cost uses the designer flyaway for the custom airframe');
+    ok(near(r.customCostPerEffect, 6 * d.costs.pauc * 1e6 / r.customEffect, 1e-6), 'cost per effect = N x PAUC / E_custom = $' + T.fmt(r.customCostPerEffect, 0));
+    ok(near(r.cost, 12 * 63 + 6 * d.costs.flyaway + 4 * 112 + 6 * 70, 1e-9), 'wing cost uses the designer recurring flyaway for the custom airframe (catalog after the cost check: F/A-18E/F $63M, tanker $112M)');
     const none = T.evalWing(500, { fa18: 12, mq25: 4 });
     ok(none.customEffect === 0 && none.customCostPerEffect === null, 'no custom airframes fielded: no cost-per-effect claim');
   });
@@ -282,8 +286,8 @@ for (const html of builds()) {
     ok(html === D.panelHTML(d, T.designerContext(r)) && html.length > 200, 'designer readout equals panelHTML(engine)');
     const v = D.valuesText(d);
     ok(['cv-engine', 'cv-qty', 'cv-wing', 'cv-mach', 'cv-payload', 'cv-fuel', 'cv-surv', 'cv-doctrine'].every(id => el(id).textContent === v[id]), 'every designer value label is bound to the engine');
-    ok(v['cv-wing'] === '285 sq ft (V_PA 98.9 kt | margin +36.1 kt)' && v['cv-mach'] === 'Mach 0.80 (D/T 0.48 | margin +36.8%)' && v['cv-fuel'] === '5,620 lb (max 5,620 lb | 100% full)' && v['cv-qty'] === '150 a/c (amortized engine dev +$1.67M/unit)', 'wireframe value labels');
-    ['[ PASS ] CARRIER APPROACH SPEED', '98.9 kt &lt;= 135.0 kt', 'D/T 0.48 &lt;= 0.85', '5,620 lb &lt;= 5,620 lb', '0.70 spots (25.5 ft span folded', 'ROBUST CLOSURE', '$18.94M', '$22.94M', '$3,441M', '1,005 nm'].forEach(s => ok(text.indexOf(s) >= 0, 'readout shows ' + s));
+    ok(v['cv-wing'] === '285 sq ft (V_PA 107.5 kt | margin +27.5 kt)' && v['cv-mach'] === 'Mach 0.80 (D/T 0.48 | margin +36.8%)' && v['cv-fuel'] === '5,620 lb (max 5,620 lb | 100% full)' && v['cv-qty'] === '150 a/c (amortized engine dev +$1.67M/unit)', 'wireframe value labels');
+    ['[ PASS ] CARRIER APPROACH SPEED', '107.5 kt &lt;= 135.0 kt', 'D/T 0.48 &lt;= 0.85', '5,620 lb &lt;= 5,620 lb', '0.57 spots &lt;= 0.75 limit (39.8 ft long x 25.5 ft span folded', 'ROBUST CLOSURE', '$18.94M', '$21.78M', '$25.78M', '$3,867M', '1,005 nm'].forEach(s => ok(text.indexOf(s) >= 0, 'readout shows ' + s));
     ok(!/NaN|undefined|Infinity/.test(html), 'readout has no NaN / undefined / Infinity');
     T.st.custom = Object.assign(def(), { ingressMach: .65, doctrine: 'early_launch' }); T.st.alloc = { fa18: 26, custom: 6, cap: 6 }; T.render();
     const h2 = el('c-readout').innerHTML, r2 = T.evalWing(T.st.rng);
@@ -299,7 +303,7 @@ for (const html of builds()) {
     if (!g) { ok(true, 'no Gouge file next to this build (skipped)'); return; }
     const text = fs.readFileSync(g, 'utf8'), d = design(), pinch = design({ engineClass: 'light', payload: 4000, fuel: 4500, ingressMach: .82 });
     ok(text.indexOf('flies only in PowerPoint') >= 0, 'Gouge v3.3 event present');
-    [T.fmt(d.vpa, 1) + ' kt', 'D/T ' + T.fmt(d.DT, 2), T.fmt(d.R_clean, 0) + ' nm', '$' + T.fmt(d.costs.flyaway, 2) + 'M', '$' + T.fmt(d.costs.apuc, 2) + 'M', T.fmt(pinch.sMinApp, 0) + ' sq ft', '13,210 lb', '2 tanker sorties', '6 seconds'].forEach(s => ok(text.indexOf(s) >= 0, 'Gouge quotes engine figure "' + s + '"'));
+    [T.fmt(d.vpa, 1) + ' kt', 'D/T ' + T.fmt(d.DT, 2), T.fmt(d.R_clean, 0) + ' nm', '$' + T.fmt(d.costs.flyaway, 2) + 'M', '$' + T.fmt(d.costs.apuc, 2) + 'M', '$' + T.fmt(d.costs.pauc, 2) + 'M', T.fmt(d.deckSpotFactor, 2) + ' deck spots', T.fmt(pinch.sMinApp, 0) + ' sq ft', '13,210 lb', D.tankersRequired(D.loiterFuel(12, D.launchOffsetMin(500, .65))) + ' MQ-25 sortie (' + T.fmt(D.tankerOffload(), 0) + ' lb at the 150-nm station)', '6 seconds'].forEach(s => ok(text.indexOf(s) >= 0, 'Gouge quotes engine figure "' + s + '"'));
   });
   bad += S.done(path.basename(html));
 }
