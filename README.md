@@ -9,6 +9,9 @@ the cyclic-ops "ballet" run the day, read the sortie tally, see who survives und
 **▶ Play it: https://rockworx.github.io/air-boss/**
 **▶ The Gouge — animated field guide: https://rockworx.github.io/air-boss/gouge.html**
 
+## What's New in Air Boss v3.4.1: Watch Shows the Whole Deck
+- **Pinned Support-Mission Counts in Watch:** while "Watch the Air Boss" runs, a strip pinned to the bottom of the screen shows the CAP, tanker and ISR/EW counts (aircraft on deck and sorties per day) at every tour step, on desktop and phone. The tour's auto-scroll never reached those roster rows, so the deck looked under-used. Display only: no model numbers change.
+
 ## What's New in Air Boss v3.4: "Model Honesty"
 - **Fuel per Sortie Scales with Distance:** Under an illustrative scaling law, fuel per sortie is 1,550 gal at the 200-nm
   reference (a rough anchor from a published carrier surge record of about 1,590 gal per fixed-wing sortie, whose fuel

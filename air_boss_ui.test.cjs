@@ -6,7 +6,7 @@
 const fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url'),assert=require('node:assert/strict');
 (async()=>{
  const endpoint=process.env.CDP_ENDPOINT||'http://127.0.0.1:9336';
- const tabs=await(await fetch(endpoint+'/json')).json(),tab=tabs.find(t=>t.type==='page');assert(tab,'browser page target');
+ const tabs=await(await fetch(endpoint+'/json')).json(),tab=tabs.find(t=>t.type==='page'&&!/^(edge|chrome|chrome-untrusted|chrome-extension|devtools):/.test(t.url));assert(tab,'browser page target');
  const ws=new WebSocket(tab.webSocketDebuggerUrl);await new Promise((r,j)=>{ws.addEventListener('open',r,{once:true});ws.addEventListener('error',j,{once:true});});
  let seq=0,pending=new Map(),errors=[],requests=[],checks=0;
  ws.addEventListener('message',e=>{let m=JSON.parse(e.data);if(m.id){let p=pending.get(m.id);if(!p)return;clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(m.error):p.resolve(m.result);}
@@ -29,6 +29,49 @@ const fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('n
   await check('!!window.__airbossTest','real model initialized');
   await agreement('default immediate');
   await check("document.getElementById('trade').textContent.includes('100% fuel-demand coverage.')",'default coverage sentence is complete');
+  // ---- v3.4.1 (backlog B-3): during Watch the CAP / tanker / ISR count rows are ON SCREEN at EVERY step, at 1440 x 1000 and
+  // 390 x 844. A role counts as seen when one of its count rows (the pinned Watch strip, or that role's roster row) is fully
+  // inside the viewport and not covered (elementFromPoint), checked when each step's dwell starts (after the scroll settles).
+  // The roster fallback makes the check judge real visibility, so it also runs (and fails) on a build without the strip.
+  // A mutant with the fix removed must fail it at both sizes.
+  {
+   const pageFile=path.resolve(process.argv[2]||path.join(__dirname,'air_boss_public.html')),SNAP=`(()=>{const A=__airbossTest,roles=['cap','tanker','isr'],out={phase:A.watchState.phase};
+     function seen(n){if(!n||n.closest('[hidden]'))return false;const b=n.getBoundingClientRect();if(b.width<=0||b.height<=0||b.left<0||b.top<0||b.right>innerWidth+1||b.bottom>innerHeight+1)return false;
+       const h=document.elementFromPoint(Math.min(innerWidth-1,b.left+Math.min(b.width/2,40)),b.top+b.height/2);return !!h&&(h===n||n.contains(h));}
+     const r=A.evalWing(A.st.rng),sorties={cap:r.capSorties,tanker:r.tankerSorties,isr:r.isrSorties},label={cap:'CAP',tanker:'Tanker',isr:'ISR/EW'};
+     roles.forEach(role=>{const keys=Object.keys(A.CAT).filter(k=>A.CAT[k].role===role),names=keys.map(k=>A.CAT[k].name),strip=[...document.querySelectorAll('#watch-counts [data-role="'+role+'"]')],
+       roster=[...document.querySelectorAll('#roster .ac')].filter(n=>names.some(m=>n.querySelector('.ac-nm').textContent.startsWith(m))),n=keys.reduce((s,k)=>s+Math.max(0,A.st.alloc[k]||0),0);
+       out[role]=strip.concat(roster).some(seen);out[role+'Bound']=strip.length===1&&strip[0].textContent===label[role]+': '+A.fmt(n,0)+' aircraft, '+A.fmt(sorties[role]||0,0)+' sorties/day';});
+     return out;})()`;
+   const watchCounts=async(url,tag,shots)=>{
+     await send('Emulation.setDeviceMetricsOverride',{width:tag==='phone'?390:1440,height:tag==='phone'?844:1000,deviceScaleFactor:1,mobile:tag==='phone'});
+     await send('Page.navigate',{url});await js("new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true}))");
+     await change('watch-pace','brisk');await js(`__airbossTest.startWatch('counts-${tag}')`);
+     const steps={};
+     for(let i=0;i<8&&!steps.result;i++){
+       const ph=await js(`new Promise((res,rej)=>{const A=__airbossTest,done=${JSON.stringify(Object.keys(steps))},end=Date.now()+60000;(function f(){const p=A.watchState.phase;if(A.watchState.active&&done.indexOf(p)<0&&(A.watchPacing.ctx.running||A.dayRunning()))return res(p);if(Date.now()>end)return rej(Error('Watch step timeout'));setTimeout(f,40);})();})`);
+       const s=await js(SNAP);if(s.phase!==ph)throw Error('Watch step moved on before the count check: '+ph);steps[ph]=s;
+       if(shots)await shot('v341-watch-counts-'+ph+'-'+tag);}
+     await js('__airbossTest.stopWatch()');return steps;};
+   const allSeen=steps=>['scenario','wing','weapons','tankers','launch','result'].every(p=>steps[p]&&steps[p].cap&&steps[p].tanker&&steps[p].isr);
+   const url=pathToFileURL(pageFile).href;
+   for(const tag of ['desktop','phone']){const steps=await watchCounts(url,tag,true);
+     assert(allSeen(steps),'v3.4.1 Watch '+tag+': CAP / tanker / ISR count rows on screen at every step '+JSON.stringify(steps));checks++;
+     console.log('PASS v3.4.1 Watch '+tag+': CAP / tanker / ISR count rows inside the viewport and uncovered at all 6 steps');
+     assert(Object.values(steps).every(s=>s.capBound&&s.tankerBound&&s.isrBound),'v3.4.1 Watch '+tag+': count rows read the engine '+JSON.stringify(steps));checks++;
+     console.log('PASS v3.4.1 Watch '+tag+': count rows read the shipped engine (aircraft on deck, sorties/day) at all 6 steps');}
+   // Mutant: the fix removed (the strip is never filled or shown). It must FAIL the same check at both sizes.
+   const src=fs.readFileSync(pageFile,'utf8'),mutSrc=src.replace("watchStatusText();watchCounts(wr);}","watchStatusText();}"),
+     mutFile=path.join(require('node:os').tmpdir(),'air_boss_v341_mutant_'+process.pid+'.html');
+   assert(mutSrc!==src,'v3.4.1 mutant anchor present (the fix call exists in the shipped page)');fs.writeFileSync(mutFile,mutSrc);
+   try{for(const tag of ['desktop','phone']){const steps=await watchCounts(pathToFileURL(mutFile).href,tag,false);
+     assert(!allSeen(steps),'v3.4.1 mutant (fix removed) must fail at '+tag);checks++;
+     console.log('PASS v3.4.1 mutant without the pinned counts FAILS the Watch visibility check at '+tag+' (missed: '+Object.entries(steps).flatMap(([p,s])=>['cap','tanker','isr'].filter(r=>!s[r]).map(r=>p+'/'+r)).slice(0,6).join(', ')+')');}}
+   finally{fs.rmSync(mutFile,{force:true});}
+   await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+   await send('Page.navigate',{url});await js("new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true}))");
+   await check('!!window.__airbossTest&&!__airbossTest.watchState.active','fresh page restored after the v3.4.1 Watch checks');
+  }
   // ---- v3.2 Logistics Pipeline & Bill view: every card and the callout read the SHIPPED solver ----
   const deckState=await js('JSON.stringify(__airbossTest.st)');
   const bound=label=>check(`(()=>{const L=__airbossTest.logistics,s=L.solve(),t=document.createElement('div');t.innerHTML=L.cardsHTML(s);return document.getElementById('logi-cards').textContent===t.textContent&&document.getElementById('logi-gouge').textContent===L.gougeText(s)&&!/NaN|Infinity|undefined/.test(document.getElementById('logistics').textContent);})()`,'v3.2 cards and Gouge callout bound to solver: '+label);
@@ -99,7 +142,7 @@ const fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('n
   await check("document.getElementById('local-guide').textContent.includes('Buddy relay is the teaching case')",'field guide explains reachable relay case');
   // v3.3.2 Field guide: the label tracks the newest release notes and the body covers v3.1 to v3.3.1; readable when open at
   // desktop and phone width (no horizontal overflow).
-  await check(`document.querySelector('#local-guide summary').textContent==='Field guide - v3.4'`,'field guide label reads Field guide - v3.4');
+  await check(`document.querySelector('#local-guide summary').textContent==='Field guide - v3.4.1'`,'field guide label reads Field guide - v3.4.1');
   await check(`(()=>{const t=document.getElementById('local-guide').textContent;return ['v3.2/v3.4 Logistics Pipeline','v3.3/v3.4 "Your Design" Conceptual Aircraft Closure','v3.3.1 Guided Tour & CCA Force-Mix Modes','Off flies the pure crewed baseline','fewer crew at risk','C_L,app = 1.10'].every(s=>t.includes(s))&&!/\\bv3\\.1:/.test(t);})()`,'field guide covers v3.2 to v3.4 (Off / CAP / Strike) without the v3.1 prefix');
   for(const [vw,vh,tag] of [[1440,1000,'desktop'],[390,844,'phone']]){
     await send('Emulation.setDeviceMetricsOverride',{width:vw,height:vh,deviceScaleFactor:1,mobile:tag==='phone'});

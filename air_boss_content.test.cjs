@@ -71,18 +71,18 @@ for (const html of builds()) {
 
   group('V1 version rule: field-guide label = README newest What\'s New = Gouge note', () => {
     ok(readme != null && gouge != null, 'README.md and the Gouge sit next to the build');
-    ok(fg && fg.summary === 'Field guide - v3.4', 'field-guide label reads "Field guide - v3.4"');
+    ok(fg && fg.summary === 'Field guide - v3.4.1', 'field-guide label reads "Field guide - v3.4.1"');
     const why = versionRule(page, readme, gouge);
     ok(why.length === 0, 'field-guide label version equals the newest README What\'s New version (' + (why.join('; ') || 'v' + readmeNewest(readme)) + ')');
     // The rule discriminates (in-memory mutants of the shipped files).
     const stale = page.replace(/<summary>Field guide - v[\d.]+<\/summary>/, '<summary>Field guide - v3.1</summary>');
-    ok(stale !== page && versionRule(stale, readme, gouge).some(w => /label v3\.1 != README/.test(w)), 'rule FAILS a stale label (v3.1 against README v3.4)');
+    ok(stale !== page && versionRule(stale, readme, gouge).some(w => /label v3\.1 != README/.test(w)), 'rule FAILS a stale label (v3.1 against README v3.4.1)');
     const unlabeled = page.replace(/<summary>Field guide - v[\d.]+<\/summary>/, '<summary>Field guide</summary>');
     ok(versionRule(unlabeled, readme, gouge).some(w => /not "Field guide - v/.test(w)), 'rule FAILS an unversioned label');
     const newer = (readme || '').replace(/^(#{2,3}\s+What's New in Air Boss v)[\d.]+/m, '$13.5');
     ok(newer !== readme && versionRule(page, newer, gouge).some(w => /!= README newest What's New v3\.5/.test(w)), 'rule FAILS when the README gains a newer What\'s New (v3.5) the label lacks');
     ok(versionRule(page, '# Air Boss\n', gouge).some(w => /README has no/.test(w)), 'rule FAILS a README with no What\'s New section (fail-closed)');
-    ok(versionRule(page, readme, (gouge || '').replace(/New in v3\.4(?![\d.]*\d)/g, 'New in vX')).some(w => /Gouge has no "New in v3\.4"/.test(w)), 'rule FAILS a Gouge without a note for the newest version');
+    ok(versionRule(page, readme, (gouge || '').replace(/New in v3\.4\.1(?![\d.]*\d)/g, 'New in vX')).some(w => /Gouge has no "New in v3\.4\.1"/.test(w)), 'rule FAILS a Gouge without a note for the newest version');
     ok(readmeNewest('## What\'s New in Air Boss v3.3\n## What\'s New in Air Boss v3.2\n## New in v3.1\n') === '3.3' && readmeNewest('### What\'s New in Air Boss v3.10: x\n### What\'s New in Air Boss v3.9: y\n') === '3.10', 'README newest is numeric (v3.10 > v3.9), public "##" layout read');
   });
 
@@ -170,7 +170,7 @@ for (const html of builds()) {
       ok(b.startsWith(a) && /^\n<script>if\(location\.protocol === "file:"\)[^\n]*<\/script>\n$/.test(b.slice(a.length)), 'gouge.html is the current build of air_boss_gouge.html (source + the offline return-link script)');
     }
     const notes = gouge ? [...gouge.matchAll(/<p class="sc-p"[^>]*>[\s\S]*?<\/p>|<div class="sc-row hint">[\s\S]*?<\/div>/g)].map(x => x[0]).filter(x => /New in v|Watch the Air Boss \(|Carrier CCAs:|Mission-governed launch/.test(x)) : [];
-    ok(notes.length === 6 && notes.every(x => /^[\x20-\x7e]*$/.test(x)), 'the six new / reworded Gouge notes are ASCII (' + notes.length + ' found)');
+    ok(notes.length === 7 && notes.every(x => /^[\x20-\x7e]*$/.test(x)), 'the seven new / reworded Gouge notes (v3.4.1 adds one) are ASCII (' + notes.length + ' found)');
   });
 
   bad += S.done(path.basename(html));

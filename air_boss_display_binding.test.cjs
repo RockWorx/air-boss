@@ -96,7 +96,7 @@ try {
       ['M62 Strike tour buries the strikers in the roster',"if(typeof watchState!=='undefined'&&watchState&&watchState.active&&watchState.mode==='strike'","if(false&&typeof watchState!=='undefined'&&watchState&&watchState.active&&watchState.mode==='strike'",1,'opens with the CCAs-as-strikers group','P'],
       ['M63 comparison drops the crewed losses per 100 effect row',"['Crewed losses per 100 effect','per100',2,per100],",'',1,'crewed losses per 100 effect row is engine-derived','P'],
       ['M64 Strike explainer omits the swap',"else if(tour&&tour.fielded>0&&tour.mode==='strike'&&(a.ccx||0)>0)lead=",'else if(false)lead=',1,'the explainer opens with the deck summary and names the swap','P'],
-      ['M65 field-guide label left at an older version','<summary>Field guide - v3.4</summary>','<summary>Field guide - v3.1</summary>',1,'field-guide label version equals the newest README','C'],
+      ['M65 field-guide label left at an older version','<summary>Field guide - v3.4.1</summary>','<summary>Field guide - v3.1</summary>',1,'field-guide label version equals the newest README','C'],
       ['M66 field guide drops the v3.3.1 tour and CCA-mode section','<p><b>v3.3.1 Guided Tour &amp; CCA Force-Mix Modes:</b>','<p><b>Guided Tour:</b>',1,'section: v3.3.1 Guided Tour','C'],
       ['M67 field guide restores the imprecise sag figure','sag by 37.5% (from 120 down to 75','sag by up to 40% (from 120 down to 75',1,'sortie sag','C'],
       ['M68 field guide restores the unqualified 6-s reading-time promise',"pacing scaled to each explainer's word count (holding at least 6 s on Relaxed, 3.6 s on Normal, 2.1 s on Brisk, longer for longer explanations)","pacing (&ge; 6 s scaled to explainer word count)",1,'Field Guide makes no unqualified','C'],
