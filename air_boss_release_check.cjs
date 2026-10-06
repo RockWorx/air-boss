@@ -36,4 +36,6 @@ run('air_boss_discriminatory_gates.test.cjs');
 run('air_boss_content.test.cjs');
 // 8. v3.4 model honesty: fuel per sortie scales with radius, cost terms, approach lift, deck-reset ledger, footprint gate, caveats (both builds)
 run('air_boss_model_honesty.test.cjs');
+// v3.5 Realistic Deck: specification checks and deliberately broken controls.
+run('air_boss_v35.test.cjs');
 console.log('RELEASE CHECK PASSED: acceptance, logistics, designer, display / mutation, tour pacing, closure-gate, content / version-consistency and model-honesty suites on both builds. Other release approvals still required.');

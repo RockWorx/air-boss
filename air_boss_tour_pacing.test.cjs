@@ -239,7 +239,7 @@ for (const html of builds()) {
   group('Tour Strike: CCX-1 strikers replace F/A-18E/F 4-for-3 on the same deck (F-35C, tankers, CAP and E-2 / EA-18G unchanged)', () => {
     const E = loadEngine(html), T = E.T; T.st.wing = 2;
     const SEEDS = { 'tour-0-11491': 'strait_defense', 'tour-1-13234': 'war_at_sea', 'tour-10-6114': 'deep_strike' };
-    const ROUND2 = { strait_defense: [398.8, 587.0], war_at_sea: [599.8, 760.8], deep_strike: [317.3, 352.0] };   // round-2 engine values, same seeds
+    const ROUND2 = { strait_defense: [269.8, 452.9], war_at_sea: [459.1, 743.6], deep_strike: [234.1, 283.8] };   // v3.5 regression values (41 spots and whole fighter sections), same seeds
     Object.keys(SEEDS).forEach(seed => {
       const q = T.watchCycle(seed, 0, { deck: 'nimitz', tempo: 0 }), f = q.alloc.fa18 || 0, r = Math.min(9, 3 * Math.floor(f / 3)), n = Math.min(12, Math.round(r / 0.75)), t = T.watchTourAlloc(q, 'strike'), sc = q.scenario;
       const lab = r > 0 ? 'Same deck: ' + n + ' CCX-1 strikers replace ' + r + ' F/A-18E/F -- less payload per spot, fewer crew at risk' + (r < 9 ? ' (only ' + f + ' F/A-18E/F spot' + (f === 1 ? '' : 's') + ' to trade)' : '') : 'Same deck: no F/A-18E/F spots to trade for CCX-1 strikers';
@@ -254,7 +254,7 @@ for (const html of builds()) {
       for (let i = 0; i < 400 && W.phase !== phase; i++) e.clock.advance(phase === 'wing' ? 100 : 250); return e; };
     Object.keys(SEEDS).forEach(seed => {
       const sc = SEEDS[seed], es = runTo('strike', seed, 'result'), eo = runTo('off', seed, 'result'), a = es.T.watchCompareStore().strike.summary, b = eo.T.watchCompareStore().off.summary, want = ROUND2[sc];
-      ok(JSON.stringify(a) === JSON.stringify(es.T.watchSummary(es.T.evalWing(es.T.st.rng), es.T.st.alloc)) && a.effects.toFixed(1) === want[0].toFixed(1) && b.effects.toFixed(1) === want[1].toFixed(1), 'Tour Strike ' + sc + ': effect with / without ' + a.effects.toFixed(1) + ' / ' + b.effects.toFixed(1) + ' reproduces the round-2 engine values');
+      ok(JSON.stringify(a) === JSON.stringify(es.T.watchSummary(es.T.evalWing(es.T.st.rng), es.T.st.alloc)) && a.effects.toFixed(1) === want[0].toFixed(1) && b.effects.toFixed(1) === want[1].toFixed(1), 'Tour Strike ' + sc + ': effect with / without ' + a.effects.toFixed(1) + ' / ' + b.effects.toFixed(1) + ' reproduces the v3.5 regression values (41 spots and whole fighter sections)');
       ok(a.crewedLosses < b.crewedLosses && a.crewedLosses / a.effects < b.crewedLosses / b.effects && a.ccaLosses > 0, 'Tour Strike ' + sc + ': fewer expected crewed losses (' + a.crewedLosses.toFixed(2) + ' vs ' + b.crewedLosses.toFixed(2) + ') and fewer per 100 effect (' + (100 * a.crewedLosses / a.effects).toFixed(3) + ' vs ' + (100 * b.crewedLosses / b.effects).toFixed(3) + '); the CCAs carry ' + a.ccaLosses.toFixed(2) + ' losses of their own');
       ok((es.el('watch-result').textContent + es.el('watch-compare').innerHTML).indexOf(es.T.watchTourAlloc(es.T.watchState.input, 'strike').label) >= 0, 'Tour Strike ' + sc + ': label on the watch panel');
       const w = runTo('strike', seed, 'wing'), W = w.T, G = W.rosterGroups(), k = W.st.alloc.ccx || 0, tr = W.watchState.tour;

@@ -28,10 +28,10 @@ try {
       ['M4 CAP coverage for recovery coverage','C=r.recoveryCoverage','C=r.coverage',1,'D3 campaign control recovery-only: strike losses fall'],
       ['M5 one recovery risk for all types','.95*recoveryRisk(k,false,C).pLoss+.05*recoveryRisk(k,true,C).pLoss',".95*recoveryRisk('fa18',false,C).pLoss+.05*recoveryRisk('fa18',true,C).pLoss",1,'D3 campaign control base: day-1 losses'],
       ['M6 day-3 fatigue never triggers','fatigue.availMult=.95;','fatigue.availMult=1;',1,'S2 day-3 fatigue control'],
-      ['M7 fractional overhead','Math.floor(eligible+1e-9)','eligible',1,'S3 integer overhead'],
+      ['M7 fractional overhead','Math.floor(eligible+1e-9)','eligible',1,'S3 overhead FCF and qual are integers'],
       ['M8 no bring-back share in campaign losses','+.05*recoveryRisk(k,true,C).pLoss','+0*recoveryRisk(k,true,C).pLoss',1,'D3 campaign control base: day-1 losses'],
       // Reverting the Strait effect requirement to 200 must fail the raised-floor ranking pins.
-      ['M9 Strait effect requirement reverted to 200','effectFloor:350,range:500','effectFloor:200,range:500',1,'S4 raised floor: minimalist strike wing 59.91'],
+      ['M9 Strait effect requirement reverted to 200','effectFloor:350,range:500','effectFloor:200,range:500',1,'S4 raised floor: minimalist strike wing'],
       // v3.2 logistics mutation controls: each must fail its named L-test control.
       ['M10 Card A shows lb under the gal/day label',"f(b.fuelGalDay,0)+' gal/day","f(b.fuelLbDay,0)+' gal/day",1,'L UI Card A fuel gal/day'],
       ['M11 supply ships rounded instead of ceiling','no=fin(cf)?Math.ceil(cyc/cf-1e-9):0','no=fin(cf)?Math.round(cyc/cf):0',1,'L3 pipeline doubles'],
@@ -96,7 +96,7 @@ try {
       ['M62 Strike tour buries the strikers in the roster',"if(typeof watchState!=='undefined'&&watchState&&watchState.active&&watchState.mode==='strike'","if(false&&typeof watchState!=='undefined'&&watchState&&watchState.active&&watchState.mode==='strike'",1,'opens with the CCAs-as-strikers group','P'],
       ['M63 comparison drops the crewed losses per 100 effect row',"['Crewed losses per 100 effect','per100',2,per100],",'',1,'crewed losses per 100 effect row is engine-derived','P'],
       ['M64 Strike explainer omits the swap',"else if(tour&&tour.fielded>0&&tour.mode==='strike'&&(a.ccx||0)>0)lead=",'else if(false)lead=',1,'the explainer opens with the deck summary and names the swap','P'],
-      ['M65 field-guide label left at an older version','<summary>Field guide - v3.4.2</summary>','<summary>Field guide - v3.1</summary>',1,'field-guide label version equals the newest README','C'],
+      ['M65 field-guide label left at an older version','<summary>Field guide - v3.5</summary>','<summary>Field guide - v3.1</summary>',1,'field-guide label version equals the newest README','C'],
       ['M66 field guide drops the v3.3.1 tour and CCA-mode section','<p><b>v3.3.1 Guided Tour &amp; CCA Force-Mix Modes:</b>','<p><b>Guided Tour:</b>',1,'section: v3.3.1 Guided Tour','C'],
       ['M67 field guide restores the imprecise sag figure','sag by 37.5% (from 120 down to 75','sag by up to 40% (from 120 down to 75',1,'sortie sag','C'],
       ['M68 field guide restores the unqualified 6-s reading-time promise',"pacing scaled to each explainer's word count (holding at least 6 s on Relaxed, 3.6 s on Normal, 2.1 s on Brisk, longer for longer explanations)","pacing (&ge; 6 s scaled to explainer word count)",1,'Field Guide makes no unqualified','C'],

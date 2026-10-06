@@ -3,6 +3,7 @@
  * CDP_ENDPOINT may override the local endpoint. No browser packages or network assets required.
  */
 'use strict';
+if(process.env.AIR_BOSS_V35_UI==='1'){require('./air_boss_v35_ui.test.cjs');return;}
 const fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url'),assert=require('node:assert/strict');
 (async()=>{
  const endpoint=process.env.CDP_ENDPOINT||'http://127.0.0.1:9336';

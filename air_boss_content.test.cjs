@@ -60,7 +60,7 @@ function disclaimerRule(page, gouge, readme) {
   }
   return why;
 }
-// v3.4.2 round 2 loss-label rule (Captain: "Go with Potential crewed aircraft losses...better wording"): the player-facing
+// v3.4.2 round 2 loss-label rule (Chief Engineer: "Go with Potential crewed aircraft losses...better wording"): the player-facing
 // text (markup text, attribute values and JS string literals; code comments and identifiers such as expectedLosses are
 // ignored) of the page, the Gouge and the README shows no "Expected ... loss" label, and the page carries the "Potential"
 // labels. Numbers and the engine are untouched; the label counts aircraft (a relative index, not casualties).
@@ -118,7 +118,7 @@ for (const html of builds()) {
 
   group('V1 version rule: field-guide label = README newest What\'s New = Gouge note', () => {
     ok(readme != null && gouge != null, 'README.md and the Gouge sit next to the build');
-    ok(fg && fg.summary === 'Field guide - v3.4.2', 'field-guide label reads "Field guide - v3.4.2"');
+    ok(fg && fg.summary === 'Field guide - v3.5', 'field-guide label reads "Field guide - v3.5"');
     const why = versionRule(page, readme, gouge);
     ok(why.length === 0, 'field-guide label version equals the newest README What\'s New version (' + (why.join('; ') || 'v' + readmeNewest(readme)) + ')');
     // The rule discriminates (in-memory mutants of the shipped files).
@@ -126,10 +126,10 @@ for (const html of builds()) {
     ok(stale !== page && versionRule(stale, readme, gouge).some(w => /label v3\.1 != README/.test(w)), 'rule FAILS a stale label (v3.1 against README v3.4.2)');
     const unlabeled = page.replace(/<summary>Field guide - v[\d.]+<\/summary>/, '<summary>Field guide</summary>');
     ok(versionRule(unlabeled, readme, gouge).some(w => /not "Field guide - v/.test(w)), 'rule FAILS an unversioned label');
-    const newer = (readme || '').replace(/^(#{2,3}\s+What's New in Air Boss v)[\d.]+/m, '$13.5');
-    ok(newer !== readme && versionRule(page, newer, gouge).some(w => /!= README newest What's New v3\.5/.test(w)), 'rule FAILS when the README gains a newer What\'s New (v3.5) the label lacks');
+    const newer = (readme || '').replace(/^(#{2,3}\s+What's New in Air Boss v)[\d.]+/m, '$13.6');
+    ok(newer !== readme && versionRule(page, newer, gouge).some(w => /!= README newest What's New v3\.6/.test(w)), 'rule FAILS when the README gains a newer What\'s New (v3.6) the label lacks');
     ok(versionRule(page, '# Air Boss\n', gouge).some(w => /README has no/.test(w)), 'rule FAILS a README with no What\'s New section (fail-closed)');
-    ok(versionRule(page, readme, (gouge || '').replace(/New in v3\.4\.2(?![\d.]*\d)/g, 'New in vX')).some(w => /Gouge has no "New in v3\.4\.2"/.test(w)), 'rule FAILS a Gouge without a note for the newest version');
+    ok(versionRule(page, readme, (gouge || '').replace(/New in v3\.5(?![\d.]*\d)/g, 'New in vX')).some(w => /Gouge has no "New in v3\.5"/.test(w)), 'rule FAILS a Gouge without a note for the newest version');
     ok(readmeNewest('## What\'s New in Air Boss v3.3\n## What\'s New in Air Boss v3.2\n## New in v3.1\n') === '3.3' && readmeNewest('### What\'s New in Air Boss v3.10: x\n### What\'s New in Air Boss v3.9: y\n') === '3.10', 'README newest is numeric (v3.10 > v3.9), public "##" layout read');
   });
 
@@ -204,7 +204,7 @@ for (const html of builds()) {
     ok(has(G, 'They can fly as strikers (less payload per spot, fewer crew at risk) or on defensive CAP (same strike wing, fewer crew in the air).'), 'Event 02: CCX-1 strike and CAP roles');
     const gcl = G.match(/closing approach speed \(C_L,app = ([\d.]+)\), thrust margin, fuel tankage, and length-augmented deck spot constraints simultaneously\. Catalog unit costs are rounded public or illustrative figures, not normalized to one dollar year\./);
     ok(has(G, 'New in v3.4: close your own carrier CCA under Your Design') && gcl && +gcl[1] === T.designer.C.clApp && !/statutory flyaway/.test(G), 'Event 02: New in v3.4 Your Design note (C_L,app = engine; flyaway is not called statutory)');
-    ok(has(G, 'Air Boss v3.4 series: Educational Visual Tour') && !has(G, 'Air Boss v3.4 Educational Visual Tour') && /a 12-hour deck reset to enter, debited against the fly day \(the return to Stealth is not charged in this model\)/.test(G) && !/overnight reset|Hot day:/.test(G), 'Gouge subtitle is the explicit v3.4 series label (N623-1); beast-mode reset on the fly-day ledger; thrust-sensitivity check, not "Hot day"');
+    ok(has(G, 'Air Boss v3.5 Series: Realistic Deck') && !has(G, 'Air Boss v3.4 Educational Visual Tour') && /a 12-hour deck reset to enter, debited against the fly day \(the return to Stealth is not charged in this model\)/.test(G) && !/overnight reset|Hot day:/.test(G), 'Gouge subtitle is the explicit v3.5 series label (N623-1); beast-mode reset on the fly-day ledger; thrust-sensitivity check, not "Hot day"');
     ok(has(G, 'Mission-governed launch: a strike jet launches only when') && has(G, 'binding resource (weapons, fuel, or deck)'), 'Event 09: mission-governed launch (no version prefix)');
     ok(has(G, 'New in v3.2 -- tempo is a logistics bill: the daily tally also solves for fuel burned (gal/day), weapons expended (short tons/day)') && has(G, 'and supervisory CCA console operators.'), 'Event 09: New in v3.2 logistics note');
     ok(has(G, 'New in v3.3 / v3.3.1 -- guided tour comparison:') && has(G, 'compare three CCA modes (Off crewed baseline, CAP defensive cover, or Strike mass) side by side on the same deck'), 'Event 09: New in v3.3 / v3.3.1 tour comparison note');
@@ -237,7 +237,7 @@ for (const html of builds()) {
     ok(disclaimerRule(page, gouge, (readme || '').split(DISCLAIMER).join('Illustrative.')).some(w => /README lacks/.test(w)), 'rule FAILS a README without the published-figures wording');
   });
 
-  // v3.4.2 round 2: the loss rows read "Potential ...", not "Expected ..." (Captain wording). The rule discriminates.
+  // v3.4.2 round 2: the loss rows read "Potential ...", not "Expected ..." (Chief Engineer wording). The rule discriminates.
   group('H2 loss labels: "Potential" wording, no "Expected ... loss" label (page, Gouge, README)', () => {
     const why = lossLabelRule(page, gouge, readme);
     ok(why.length === 0, 'DISCRIMINATOR: loss labels read "Potential" on page, Gouge and README (' + (why.join('; ') || 'ok') + ')');

@@ -9,19 +9,37 @@ the cyclic-ops "ballet" run the day, read the sortie tally, see who survives und
 **▶ Play it: https://rockworx.github.io/air-boss/**
 **▶ The Gouge — animated field guide: https://rockworx.github.io/air-boss/gouge.html**
 
-## What's New in Air Boss v3.4.2: Honest Disclaimer
+## What's New in Air Boss v3.5: "Realistic Deck"
+- **Real Supply Ships:** the replenishment pipeline now uses named Military Sealift Command ships with their published
+  capacities (MSC Handbook 2026): T-AO 187 *Henry J. Kaiser* or T-AO 205 *John Lewis* with T-AKE 1 *Lewis and Clark* at
+  20 knots, or T-AOE 6 *Supply* as a 25-knot fast shuttle. The share of each delivery dedicated to the carrier stays
+  illustrative, since the handbook does not give it.
+- **Deck Space for Helicopters:** three deck spots are now reserved for the embarked MH-60 helicopters, leaving 41
+  fixed-wing spots on a Nimitz-class carrier and 45 on a Ford-class, a basis taken from public carrier-sortie studies.
+- **Fighters Fly as Sections and Divisions:** crewed strike fighters and CAP task in sections (2) or divisions (4) --
+  there is no solo Super Hornet. Spare airframes stay visible as deck-cycle slack. Tankers, the E-2D and ISR/EW
+  aircraft may still fly singly.
+- **Continuous E-2D Coverage:** airborne early warning is modeled as an on-station relief cycle with a handover overlap:
+  at least 7 sorties a day unrefueled, or 4 when E-2Ds refuel from the carrier's tankers (which charges the tanker
+  ledger). Endurance, overlap and fuel-per-hookup values are illustrative.
+- **CMV-22B Carrier Onboard Delivery:** parts, people and mail fly by CMV-22B Osprey out to 1,150 nm from the supply
+  base (its published mission profile); beyond that the air link closes and only surface resupply remains. A fleet-wide
+  availability proxy (about 50% mission capable) shows why a single-type air logistics lane is fragile.
+- **Wording:** release notes use realistic, plain wording throughout. The Chief Engineer is the release authority.
+
+## What's New in Air Boss v3.4.2: Disclaimer Corrected
 - **Disclaimer Corrected:** the page header, the Gouge footer and this README now state what is real, replacing an outdated blanket disclaimer: real aircraft use published program figures; the CCA and other values are notional or illustrative. Text only: no model numbers change.
 
 ## What's New in Air Boss v3.4.1: Watch Shows the Whole Deck
 - **Pinned Support-Mission Counts in Watch:** while "Watch the Air Boss" runs, a strip pinned to the bottom of the screen shows the CAP, tanker and ISR/EW counts (aircraft on deck and sorties per day) at every tour step, on desktop and phone. The tour's auto-scroll never reached those roster rows, so the deck looked under-used. Display only: no model numbers change.
 
-## What's New in Air Boss v3.4: "Model Honesty"
+## What's New in Air Boss v3.4: "Model Realism"
 - **Fuel per Sortie Scales with Distance:** Under an illustrative scaling law, fuel per sortie is 1,550 gal at the 200-nm
   reference (a rough anchor from a published carrier surge record of about 1,590 gal per fixed-wing sortie, whose fuel
   total also includes helicopters) and 2,382 gal at 500 nm (+54%). The daily bill is fuel per sortie times sorties flown:
   at a fixed tempo it rises with distance, but at this example schedule's ceilings it falls slightly (186,000 gal/day at
   200 nm with 120 sorties, 178,646 at 500 nm with 75) because fewer sorties fly.
-- **Honest Cost Terms:** The readout shows recurring flyaway (hardware only), an APUC-style procurement unit cost (recurring
+- **Realistic Cost Terms:** The readout shows recurring flyaway (hardware only), an APUC-style procurement unit cost (recurring
   flyaway plus 15% [illustrative] for support and initial spares; about 15-25% in one published program) and a
   PAUC-style unit cost that adds development divided by the buy. Both are simplifications: no facilities and no separate
   development articles. Catalog unit costs are rounded public or illustrative figures, not normalized to one dollar year
